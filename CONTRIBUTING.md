@@ -1,4 +1,4 @@
-#  Contributing to fulfillmenttools commercetools Connect app
+# Contributing to fulfillmenttools commercetools Connect app
 
 Thank you for your interest in contributing to fulfillmenttools commercetools Connect app!
 
@@ -37,4 +37,3 @@ Feel free to reach out to us at [opensource@fulfillmenttools.com](mailto:opensou
 ## License
 
 By contributing to the fulfillmenttools commercetools Connect app, you agree that your contributions will be licensed under its [MIT license](https://github.com/fulfillmenttools/commercetools-connector/blob/master/LICENSE).
-

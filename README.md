@@ -18,7 +18,7 @@ These are [connect applications](https://marketplace.commercetools.com/) built i
 
 ## 🔁 Functionality
 
-The fulfillmenttools Connect app is a certified integration connector that can be used to exchange information between your *commercetools* project and your *fulfillmenttools* project. While fully customizable it is very easy to setup and deploy so you can start fulfilling orders from you e-commerce system without a complicated integration process.
+The fulfillmenttools Connect app is a certified integration connector that can be used to exchange information between your _commercetools_ project and your _fulfillmenttools_ project. While fully customizable it is very easy to setup and deploy so you can start fulfilling orders from you e-commerce system without a complicated integration process.
 
 ### 🛒 Orders
 
