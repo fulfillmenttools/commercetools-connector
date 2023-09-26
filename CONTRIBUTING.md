@@ -8,7 +8,7 @@ Following these guidelines helps to communicate that you respect the time of the
 
 ## Reporting New Issues
 
-We use [GitHub issues](https://github.com/fulfillmenttools/ps-commercetools-connect-app/issues) for our public bugs. If you would like to report a problem, take a look around and see if someone already opened an issue about it. If you are certain this is a new unreported bug, you can submit a bug report.
+We use [GitHub issues](https://github.com/fulfillmenttools/commercetools-connector/issues) for our public bugs. If you would like to report a problem, take a look around and see if someone already opened an issue about it. If you are certain this is a new unreported bug, you can submit a bug report.
 
 ## Submitting a Pull Request
 
@@ -22,7 +22,7 @@ Please adhere to the coding conventions used throughout a project (indentation, 
 
 ## Setting Up a Local Copy
 
-1. Clone the repo with `git clone git@github.com:fulfillmenttools/ps-commercetools-connect-app.git`
+1. Clone the repo with `git clone git@github.com:fulfillmenttools/commercetools-connector.git`
 1. Run `nvm use` and `npm install`
 1. Use `npm run build`, `npm run test`, and `npm run lint` to make sure your modifications can be compiled and all tests are green.
 
@@ -36,5 +36,5 @@ Feel free to reach out to us at [opensource@fulfillmenttools.com](mailto:opensou
 
 ## License
 
-By contributing to the fulfillmenttools commercetools Connect app, you agree that your contributions will be licensed under its [MIT license](https://github.com/fulfillmenttools/ps-commercetools-connect-app/blob/master/LICENSE).
+By contributing to the fulfillmenttools commercetools Connect app, you agree that your contributions will be licensed under its [MIT license](https://github.com/fulfillmenttools/commercetools-connector/blob/master/LICENSE).
 

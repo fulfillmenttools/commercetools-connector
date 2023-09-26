@@ -52,7 +52,7 @@ PAYLOAD=$(cat <<EOF
     "actions": [
         {
             "action": "setRepository",
-            "url": "git@github.com:fulfillmenttools/ps-commercetools-connect-app.git",
+            "url": "git@github.com:fulfillmenttools/commercetools-connector.git",
             "tag": "$VERSION"
         }
     ]

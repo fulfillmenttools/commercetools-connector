@@ -76,6 +76,6 @@
     "validator": "13.11.0"
   },
   "config": {
-    "docker_image_name": "ocff/ps-commercetools-connect-event"
+    "docker_image_name": "ocff/commercetools-connector-event"
   }
 }

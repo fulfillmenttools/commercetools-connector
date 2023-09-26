@@ -5,8 +5,8 @@
   <b>A commercetools Connect app by fulfillmenttools</b>
 </p>
 
-![CI](https://github.com/fulfillmenttools/ps-commercetools-connect-app/actions/workflows/ci.yml/badge.svg)
-[![License](https://img.shields.io/github/license/fulfillmenttools/ps-commercetools-connect-app)](./LICENSE)
+![CI](https://github.com/fulfillmenttools/commercetools-connector/actions/workflows/ci.yml/badge.svg)
+[![License](https://img.shields.io/github/license/fulfillmenttools/commercetools-connector)](./LICENSE)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](./CODE_OF_CONDUCT.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
 
@@ -194,7 +194,7 @@ This is automatically done by the `connector:post-deploy` script which is invok
 
 ## 📜 License
 
-All code in this repository is licensed under the [MIT license](https://github.com/fulfillmenttools/ps-commercetools-connect-app/blob/master/LICENSE).
+All code in this repository is licensed under the [MIT license](https://github.com/fulfillmenttools/commercetools-connector/blob/master/LICENSE).
 
 ## 🙌 Contributing
 
