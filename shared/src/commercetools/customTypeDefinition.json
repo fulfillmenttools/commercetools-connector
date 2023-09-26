@@ -1,0 +1,74 @@
+{
+  "orderCustomTypeFieldDefinitions": [
+    {
+      "name": "fft_pickjob_id",
+      "label": {
+        "en": "FFT PickJob ID"
+      },
+      "required": false,
+      "type": {
+        "name": "String"
+      }
+    },
+    {
+      "name": "fft_handover_job_id",
+      "label": {
+        "en": "FFT HandoverJob ID"
+      },
+      "required": false,
+      "type": {
+        "name": "String"
+      }
+    },
+    {
+      "name": "fft_load_units_amount",
+      "label": {
+        "en": "FFT Load Units Amount"
+      },
+      "required": false,
+      "type": {
+        "name": "Number"
+      }
+    },
+    {
+      "name": "fft_shortid",
+      "label": {
+        "en": "FFT Short ID"
+      },
+      "required": false,
+      "type": {
+        "name": "String"
+      }
+    },
+    {
+      "name": "fft_facility_id",
+      "label": {
+        "en": "FFT Facility ID"
+      },
+      "required": false,
+      "type": {
+        "name": "String"
+      }
+    },
+    {
+      "name": "fft_order_id",
+      "label": {
+        "en": "FFT Order Id"
+      },
+      "required": false,
+      "type": {
+        "name": "String"
+      }
+    },
+    {
+      "name": "fft_parcels",
+      "label": {
+        "en": "FFT Parcels"
+      },
+      "required": false,
+      "type": {
+        "name": "String"
+      }
+    }
+  ]
+}

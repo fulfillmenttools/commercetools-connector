@@ -1,0 +1,6 @@
+{
+    "files.readonlyInclude": {
+        "event/src/shared/**/*": true,
+        "service/src/shared/**/*": true
+    }
+}

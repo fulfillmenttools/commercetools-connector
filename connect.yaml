@@ -1,0 +1,71 @@
+deployAs:
+  - name: service
+    applicationType: service
+    endpoint: /service
+    scripts:
+      postDeploy: npm ci && npm run build && npm run connector:post-deploy
+      preUndeploy: npm ci && npm run build && npm run connector:pre-undeploy
+    configuration:
+      standardConfiguration:
+        - key: CTP_PROJECT_KEY
+          description: CT project key
+        - key: CTP_REGION
+          description: CT project region
+        - key: FFT_PROJECT_ID
+          description: FFT project ID
+      securedConfiguration:
+        - key: CTP_CLIENT_ID
+          description: CT project API client ID
+        - key: CTP_CLIENT_SECRET
+          description: CT project API client secret
+        - key: CTP_SCOPE
+          description: CT project API client scope
+        - key: FFT_API_KEY
+          description: FFT project API key
+        - key: FFT_API_USER
+          description: FFT project API user
+        - key: FFT_API_PASSWORD
+          description: FFT project API password
+        - key: JWT_SECRET
+          description: shared JWT secret
+        - key: JWT_ISSUER
+          description: JWT issuer
+        - key: JWT_AUDIENCE
+          description: JWT audience
+        - key: JWT_SUBJECT
+          description: JWT subject
+  - name: event
+    applicationType: event
+    endpoint: /event
+    scripts:
+      postDeploy: npm ci && npm run build && npm run connector:post-deploy
+      preUndeploy: npm ci && npm run build && npm run connector:pre-undeploy
+    configuration:
+      standardConfiguration:
+        - key: CTP_PROJECT_KEY
+          description: CT project key
+        - key: CTP_REGION
+          description: CT project region
+        - key: FFT_PROJECT_ID
+          description: FFT project ID
+      securedConfiguration:
+        - key: CTP_CLIENT_ID
+          description: CT project API client ID
+        - key: CTP_CLIENT_SECRET
+          description: CT project API client secret
+        - key: CTP_SCOPE
+          description: CT project API client scope
+        - key: FFT_API_KEY
+          description: FFT project API key
+        - key: FFT_API_USER
+          description: FFT project API user
+        - key: FFT_API_PASSWORD
+          description: FFT project API password
+        - key: JWT_SECRET
+          description: shared JWT secret
+        - key: JWT_ISSUER
+          description: JWT issuer
+        - key: JWT_AUDIENCE
+          description: JWT audience
+        - key: JWT_SUBJECT
+          description: JWT subject

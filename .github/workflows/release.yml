@@ -1,0 +1,76 @@
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      type:
+        type: choice
+        description: Choose release type
+        options:
+          - patch
+          - minor
+          - major
+        default: patch
+      beta:
+        type: boolean
+        description: Prerelease
+        default: false
+      dry:
+        type: boolean
+        description: Dry release
+        default: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+      pull-requests: write
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: Show git info
+        run: |
+          echo "Branch: $(git branch --show-current)"
+          echo "SHA: $(git rev-parse --short HEAD)"
+
+      - name: Set git config
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+
+      - name: Set up node
+        uses: actions/setup-node@v3
+        with:
+          node-version-file: '.nvmrc'
+          cache: 'npm'
+          cache-dependency-path: '**/package-lock.json'
+
+      - name: Bump version
+        env:
+          TYPE_ARG: ${{ fromJSON('{"patch":"patch", "minor":"minor", "major":"major"}')[github.event.inputs.type] }}
+          BETA_ARG: ${{ github.event.inputs.beta == 'true' && 'pre' || '' }}
+        run: |
+          ./scripts/prepare_release.sh "${BETA_ARG}${TYPE_ARG}"
+
+      - name: Determine new version
+        id: version
+        run: |
+          NEW_VERSION="$(jq -r '.version' shared/package.json)"
+          echo "release-version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Create PR
+        uses: peter-evans/create-pull-request@38e0b6e68b4c852a5500a94740f0e535e0d7ba54
+        if: ${{ github.event.inputs.dry == 'false' }}
+        with:
+          base: main
+          branch: release
+          title: Release ${{ steps.version.outputs.release-version }}
+          commit-message: "chore: Release v${{ steps.version.outputs.release-version }}"
+          labels: ocff:release
+

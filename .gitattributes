@@ -1,0 +1,20 @@
+# https://git-scm.com/docs/gitattributes
+
+# https://git-scm.com/docs/gitattributes#__code_text_code
+* text=auto eol=lf
+
+# https://git-scm.com/docs/gitattributes#__code_whitespace_code
+* whitespace=tab-in-indent,trailing-space,tabwidth=2
+
+package-lock.json linguist-generated=true -diff
+
+# https://git-scm.com/docs/gitattributes#_export_ignore
+.github/ export-ignore
+targets.yaml export-ignore
+config/ export-ignore
+
+event/src/shared/** linguist-generated=true -diff
+service/src/shared/** linguist-generated=true -diff
+
+# Automatically resolve changelog conflicts
+CHANGELOG.md merge=union

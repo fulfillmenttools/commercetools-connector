@@ -1,0 +1,43 @@
+name: Publish
+
+on:
+  pull_request:
+    types:
+      - closed
+    branches:
+      - 'main'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    if: github.event_name == 'workflow_dispatch' || (github.event.pull_request.merged == true && github.event.pull_request.head.label == 'fulfillmenttools:release')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Determine new version
+        id: version
+        run: |
+          NEW_VERSION="$(jq -r '.version' shared/package.json)"
+          echo "release-version=${NEW_VERSION}" >> $GITHUB_OUTPUT
+
+      - name: Create GH release
+        uses: softprops/action-gh-release@de2c0eb89ae2a093876385947365aca7b0e5f844
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          tag_name: ${{ steps.version.outputs.release-version }}
+          name: ${{ steps.version.outputs.release-version }}
+          draft: false
+          prerelease: false
+          body: |
+            Released the project to production with tag ${{ steps.version.outputs.release-version }}
+
+      - name: Update CT Connector
+        env:
+          CT_CLIENT_ID: ${{ secrets.CT_CLIENT_ID }}
+          CT_CLIENT_SECRET: ${{ secrets.CT_CLIENT_SECRET }}
+        run: |
+          ./scripts/update_connector.sh ${{ steps.version.outputs.release-version }}

@@ -1,0 +1,11 @@
+# Ignore everything
+*
+
+# Allow files and folders with a pattern starting with !
+!event/**
+!service/**
+!shared/**
+
+*/node_modules
+*/lib
+*/build
