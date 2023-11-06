@@ -1,6 +1,6 @@
 {
   "name": "event-typescript",
-  "version": "0.0.12",
+  "version": "0.0.13",
   "main": "index.js",
   "description": "CT Connect - Fulfillmenttools App",
   "author": "OC fulfillment GmbH",
