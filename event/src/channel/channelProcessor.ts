@@ -37,8 +37,6 @@ export class ChannelProcessor {
           const facility = await this.channelService.processChannel(channelId);
           if (facility) {
             logger.info(`Updated FFT Facility '${facility.id}' for CT Channel '${facility.tenantFacilityId}'`);
-          } else {
-            logger.error(`Could not process CT message - channelId '${channelId}'`);
           }
         } else {
           logger.error(`Could not process CT message - ${notificationType}: resource.id required`);

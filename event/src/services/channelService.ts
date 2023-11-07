@@ -18,12 +18,12 @@ export class ChannelService {
     const channel = await getChannelById(channelId);
 
     if (!channel) {
-      logger.warn(`Could not read CT Channel '${channelId}'`);
+      logger.error(`Could not read CT Channel '${channelId}'`);
       return;
     }
 
     if (channel.roles.includes('InventorySupply')) {
-      const fftFacilityId = await this.fftFacilityService.getFacilityId(channel.key);
+      const fftFacilityId = await this.fftFacilityService.getFacilityId(channel.key, true);
       const project = await getProject();
 
       if (fftFacilityId !== undefined) {
@@ -39,7 +39,6 @@ export class ChannelService {
       }
     } else {
       logger.info(`Nothing to do for CT Channel '${channel.key}' because it does not have 'InventorySupply' role`);
-
       return undefined;
     }
   }
