@@ -54,7 +54,7 @@ export class ChannelService {
       locationType: FacilityForCreation.LocationTypeEnum.STORE,
       tenantFacilityId: channel.key,
       status: FacilityStatus.ONLINE,
-      address: this.mapAddress(channel.address, project.name),
+      address: this.mapAddress(channel.address, project.name, project.countries),
       // TODO make services configurable, e.g. read from channel custom attribute
       services: [
         {
@@ -75,7 +75,7 @@ export class ChannelService {
       action: ModifyFacilityAction.ActionEnum.ModifyFacility,
       name: this.mapName(channel, project.languages),
       tenantFacilityId: channel.key,
-      address: this.mapAddress(channel.address, project.name),
+      address: this.mapAddress(channel.address, project.name, project.countries),
     };
   }
 
@@ -90,7 +90,12 @@ export class ChannelService {
     return channel.key;
   }
 
-  private mapAddress(address: Address | undefined, name: string): FacilityAddressForCreation {
+  private mapAddress(
+    address: Address | undefined,
+    defaultName: string,
+    countries: string[]
+  ): FacilityAddressForCreation {
+    const defaultCountry = countries && countries.length > 0 ? countries[0] : 'DE';
     if (address) {
       return {
         street: address.streetName?.trim() || 'not set',
@@ -98,8 +103,8 @@ export class ChannelService {
         postalCode: address.postalCode?.replace(/\s/g, '') || '00000',
         city: address.city?.trim() || 'not set',
         province: address.state?.trim() || '',
-        country: address.country?.trim() || 'DE',
-        companyName: name,
+        country: address.country?.trim() || defaultCountry,
+        companyName: defaultName,
         phoneNumbers: [
           {
             type: AddressPhoneNumbers.TypeEnum.PHONE,
@@ -114,8 +119,8 @@ export class ChannelService {
         houseNumber: '0',
         postalCode: '00000',
         city: 'not set',
-        country: 'DE',
-        companyName: name,
+        country: defaultCountry,
+        companyName: defaultName,
         phoneNumbers: [
           {
             type: AddressPhoneNumbers.TypeEnum.PHONE,
