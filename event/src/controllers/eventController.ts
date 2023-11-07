@@ -3,9 +3,10 @@ import { Message, OrderStateChangedMessage, Reference } from '@commercetools/pla
 
 import { logger, CustomError, SubscriptionMessage } from 'shared';
 import { OrderProcessor } from '../order/orderProcessor';
+import { ChannelProcessor } from '../channel/channelProcessor';
 
 export class EventController {
-  constructor(private readonly orderProcessor: OrderProcessor) {
+  constructor(private readonly orderProcessor: OrderProcessor, private readonly channelProcessor: ChannelProcessor) {
     this.post = this.post.bind(this);
   }
 
@@ -31,6 +32,11 @@ export class EventController {
       case 'order':
         if (this.isOrderStateConfirmedMessage(message)) {
           await this.orderProcessor.processOrder(resourceRef.id);
+        }
+        break;
+      case 'channel':
+        if (this.isChannelMessage(message)) {
+          await this.channelProcessor.processChannel(message);
         }
         break;
       default:
@@ -93,5 +99,14 @@ export class EventController {
       return (message as OrderStateChangedMessage).orderState === 'Confirmed';
     }
     return false;
+  }
+
+  private isChannelMessage(message: Message & { notificationType?: string }): boolean {
+    const notificationType = message['notificationType'];
+    return (
+      notificationType === 'ResourceUpdated' ||
+      notificationType === 'ResourceCreated' ||
+      notificationType === 'ResourceDeleted'
+    );
   }
 }

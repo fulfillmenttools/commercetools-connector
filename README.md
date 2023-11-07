@@ -125,6 +125,7 @@ least the following scopes:
 - `manage_subscriptions`
 - `manage_types`
 - `view_products`
+- `view_project_settings`
 - `view_published_products`
 - `view_stores`
 
