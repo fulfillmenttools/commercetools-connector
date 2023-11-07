@@ -14,7 +14,7 @@ import { getChannelById, getProject, logger } from 'shared';
 export class ChannelService {
   constructor(private readonly fftFacilityService: FftFacilityService) {}
 
-  public async processChannel(channelId: string): Promise<Facility | undefined> {
+  public async upsertFacility(channelId: string): Promise<Facility | undefined> {
     const channel = await getChannelById(channelId);
 
     if (!channel) {
@@ -43,7 +43,7 @@ export class ChannelService {
     }
   }
 
-  public async deleteChannel(tenantFacilityId: string): Promise<string | undefined> {
+  public async setFacilityOffline(tenantFacilityId: string): Promise<string | undefined> {
     return await this.fftFacilityService.deleteFacility(tenantFacilityId, false);
   }
 

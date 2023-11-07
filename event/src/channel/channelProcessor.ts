@@ -22,7 +22,7 @@ export class ChannelProcessor {
       if (notificationType === 'ResourceDeleted') {
         const tenantFacilityId = message.resourceUserProvidedIdentifiers?.key;
         if (tenantFacilityId) {
-          const facilityId = await this.channelService.deleteChannel(tenantFacilityId);
+          const facilityId = await this.channelService.setFacilityOffline(tenantFacilityId);
           if (facilityId) {
             logger.info(`Set FFT Facility '${facilityId}' to OFFLINE for CT Channel '${tenantFacilityId}'`);
           }
@@ -34,7 +34,7 @@ export class ChannelProcessor {
       } else if (notificationType === 'ResourceCreated' || notificationType === 'ResourceUpdated') {
         const channelId = message.resource.id;
         if (channelId) {
-          const facility = await this.channelService.processChannel(channelId);
+          const facility = await this.channelService.upsertFacility(channelId);
           if (facility) {
             logger.info(`Updated FFT Facility '${facility.id}' for CT Channel '${facility.tenantFacilityId}'`);
           }
