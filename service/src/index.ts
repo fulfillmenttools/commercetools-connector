@@ -39,7 +39,7 @@ app.use(errorMiddleware);
 
 // Listen the application
 const server = app.listen(PORT, () => {
-  logger.info(`⚡️ Service application listening on port ${PORT}`);
+  logger.info(`⚡️ fulfillmenttools service connector listening on port ${PORT}`);
 });
 
 export default server;

@@ -23,26 +23,17 @@ export class ChannelService {
     }
 
     if (channel.roles.includes('InventorySupply')) {
-      let fftFacilityId: string | undefined;
-      try {
-        fftFacilityId = await this.fftFacilityService.getFacilityId(channel.key);
-      } catch (err) {
-        // TODO
-        logger.info(`Did not find an existing FFT Facility for CT Channel '${channel.key}'`);
-      }
-
+      const fftFacilityId = await this.fftFacilityService.getFacilityId(channel.key);
       const project = await getProject();
 
       if (fftFacilityId !== undefined) {
         logger.info(`Updating FFT Facility '${fftFacilityId}' from CT Channel '${channel.key}'`);
         const facilityForUpdate = this.mapChannelToFacilityUpdate(channel, project);
-        logger.debug(`Mapped CT Channel '${channel.key}' to FFT Facility: ${JSON.stringify(facilityForUpdate)}`);
 
         return await this.fftFacilityService.updateFacility(fftFacilityId, facilityForUpdate);
       } else {
         logger.info(`Creating new FFT Facility from CT Channel '${channel.key}'`);
         const facilityForCreation = this.mapChannelToFacility(channel, project);
-        logger.debug(`Mapped CT Channel '${channel.key}' to FFT Facility: ${JSON.stringify(facilityForCreation)}`);
 
         return await this.fftFacilityService.createFacility(facilityForCreation);
       }
@@ -61,7 +52,7 @@ export class ChannelService {
     return {
       name: this.mapName(channel, project.languages),
       // TODO make location type configurable, e.g. read from channel custom attribute
-      locationType: FacilityForCreation.LocationTypeEnum.WAREHOUSE,
+      locationType: FacilityForCreation.LocationTypeEnum.STORE,
       tenantFacilityId: channel.key,
       status: FacilityStatus.ONLINE,
       address: this.mapAddress(channel.address, project.name),
@@ -69,6 +60,9 @@ export class ChannelService {
       services: [
         {
           type: FacilityServiceType.SHIPFROMSTORE,
+        },
+        {
+          type: FacilityServiceType.PICKUP,
         },
       ],
       customAttributes: {
