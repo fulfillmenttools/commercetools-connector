@@ -53,14 +53,16 @@ See the section on [customization](#⚙️-commercetools-customization) below fo
 
 ### Channels
 
-The connector also synchronizes information from commercetools [Channels](https://docs.commercetools.com/api/projects/channels) to create or update a fulfillmenttools [Facility](https://fulfillmenttools.github.io/api-reference-ui/#/Facilities). Please note that only Channels with the `InventorySupply` role are synchronized, other roles are ignored.
+The connector also synchronizes information from commercetools [Channels](https://docs.commercetools.com/api/projects/channels) to create or update a fulfillmenttools [Facility](https://fulfillmenttools.github.io/api-reference-ui/#/Facilities). Please note that only Channels with the `InventorySupply` role are synchronized, other roles are ignored. The created fulfillmenttools Facility will be of type `STORE` and have the `SHIP_FROM_STORE` and `PICKUP` services enabled. In a future version of this connector, we will support Channel custom fields to configure the Facility type and services. 
 
 <img alt="ct channel" src="./.github/images/ct-channel-to-fft.png">
 
 The Channel `key` is used as Facility `tenantFacilityId` to establish a relationship between the two entities.
-When the commercetools Channel has an address, it is used as the Facility's address, otherwise a default is used, because an address is mandatory for a fulfillmenttools Facility. In this case you may have to update/edit the Facility with the correct data.
+When the commercetools Channel has an address, it is used as the Facility's address, otherwise a default is used, because an address is mandatory for a fulfillmenttools Facility. In this case you may have to update/edit the Facility with the correct data, please see the [product documentation](https://docs.fulfillmenttools.com/api-docs/use-cases/core-functionality/add-and-manage-facilities) for details.
 
 When the commercetools Channel is deleted, the related fulfillmenttools Facility is NOT deleted but only set to `OFFLINE`. This is to prevent accidental deletion of operational data. You can still delete the Facility via the API or in the backoffice, should you wish to do so.
+
+Currently, the synchronization between Channels and Facilities is in one direction only, i.e. changes made to a fulfillmenttools Facility will not be forwarded to related commercetools Channel.
 
 ## 👨‍💻 Development
 
