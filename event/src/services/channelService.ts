@@ -102,7 +102,7 @@ export class ChannelService {
         houseNumber: address.streetNumber?.trim() || '0',
         postalCode: address.postalCode?.replace(/\s/g, '') || '00000',
         city: address.city?.trim() || 'not set',
-        province: address.state?.trim() || '',
+        province: address.state?.trim() || undefined,
         country: address.country?.trim() || defaultCountry,
         companyName: defaultName,
         phoneNumbers: [
