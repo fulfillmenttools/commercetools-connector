@@ -2,6 +2,18 @@ import { CUSTOM_OBJECT_CONTAINER, CUSTOM_OBJECT_KEY, CUSTOM_TYPE_NAME } from '..
 import errors from './fixtures/errors.json';
 import { Channel } from '@commercetools/platform-sdk';
 
+export function mockProject(initialValue = {}) {
+  return {
+    key: '',
+    name: '',
+    countries: ['DE'],
+    currencies: ['EUR'],
+    languages: ['de-DE', 'en-US'],
+    version: 1,
+    ...initialValue,
+  };
+}
+
 export function mockCtOrder(initialValue = {}) {
   return {
     type: 'Order',
@@ -54,6 +66,29 @@ export function mockStore(initialValue = {}) {
     productSelections: [],
     distributionChannels: [],
     version: 1,
+    ...initialValue,
+  };
+}
+
+export function mockChannel(initialValue = {}) {
+  return {
+    id: 'f348e5c2-e2db-4cf3-b254-41220801d2c6',
+    version: 1,
+    key: 'channel_01',
+    roles: ['InventorySupply', 'ProductDistribution'],
+    name: {
+      'de-DE': 'Köln',
+      'en-US': 'Cologne',
+    },
+    address: {
+      streetName: 'Schanzenstr.',
+      streetNumber: '6-20',
+      postalCode: '51063',
+      city: 'Köln',
+      region: '',
+      state: 'NRW',
+      country: 'DE',
+    },
     ...initialValue,
   };
 }

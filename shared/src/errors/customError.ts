@@ -15,3 +15,8 @@ export class CustomError extends Error {
     this.errors = errors;
   }
 }
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export function isErrorItem(object: any): object is ErrorItem {
+  return 'message' in object && 'statusCode' in object;
+}
