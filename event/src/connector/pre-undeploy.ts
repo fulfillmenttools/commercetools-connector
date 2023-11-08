@@ -2,11 +2,12 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import { assertError, createApiRoot } from 'shared';
-import { deleteOrderStateChangedSubscription } from './actions';
+import { deleteChannelResourceSubscription, deleteOrderStateChangedSubscription } from './actions';
 
 async function preUndeploy(): Promise<void> {
   const apiRoot = createApiRoot();
-  await deleteOrderStateChangedSubscription(apiRoot);
+  const actions = [deleteOrderStateChangedSubscription, deleteChannelResourceSubscription];
+  await Promise.all(actions.map(async (a) => await a.call(null, apiRoot)));
 }
 
 async function run(): Promise<void> {
@@ -14,7 +15,8 @@ async function run(): Promise<void> {
     await preUndeploy();
   } catch (error) {
     assertError(error);
-    process.stderr.write(`Post-undeploy failed: ${error.message}\n`);
+    process.stderr.write(`ERROR: Post-undeploy failed: ${error.message}\n`);
+    process.stderr.write(JSON.stringify(error));
     process.exitCode = 1;
   }
 }
