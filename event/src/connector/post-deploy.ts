@@ -2,7 +2,7 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import { assertString, assertError, createApiRoot } from 'shared';
-import { createOrderStateChangedSubscription } from './actions';
+import { createChannelResourceSubscription, createOrderStateChangedSubscription } from './actions';
 
 const CONNECT_GCP_TOPIC_NAME_KEY = 'CONNECT_GCP_TOPIC_NAME';
 const CONNECT_GCP_PROJECT_ID_KEY = 'CONNECT_GCP_PROJECT_ID';
@@ -15,7 +15,8 @@ async function postDeploy(properties: Map<string, unknown>): Promise<void> {
   assertString(projectId, CONNECT_GCP_PROJECT_ID_KEY);
 
   const apiRoot = createApiRoot();
-  await createOrderStateChangedSubscription(apiRoot, topicName, projectId);
+  const actions = [createOrderStateChangedSubscription, createChannelResourceSubscription];
+  await Promise.all(actions.map(async (a) => await a.call(null, apiRoot, topicName, projectId)));
 }
 
 async function run(): Promise<void> {
@@ -24,7 +25,8 @@ async function run(): Promise<void> {
     await postDeploy(properties);
   } catch (error) {
     assertError(error);
-    process.stderr.write(`Post-deploy failed: ${error.message}\n`);
+    process.stderr.write(`ERROR: Post-deploy failed: ${error.message}\n`);
+    process.stderr.write(JSON.stringify(error));
     process.exitCode = 1;
   }
 }

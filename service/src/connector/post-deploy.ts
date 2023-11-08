@@ -37,6 +37,7 @@ async function run(): Promise<void> {
   } catch (error) {
     assertError(error);
     process.stderr.write(`ERROR: Post-deploy failed: ${error.message}\n`);
+    process.stderr.write(JSON.stringify(error));
     process.exitCode = 1;
   }
 }

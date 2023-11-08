@@ -33,6 +33,7 @@ async function run(): Promise<void> {
   } catch (error) {
     assertError(error);
     process.stderr.write(`ERROR: Pre-undeploy failed: ${error.message}\n`);
+    process.stderr.write(JSON.stringify(error));
     process.exitCode = 1;
   }
 }
