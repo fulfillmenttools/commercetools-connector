@@ -18,7 +18,7 @@ These are [connect applications](https://marketplace.commercetools.com/) built i
 
 ## 🔁 Functionality
 
-The fulfillmenttools Connect app is a certified integration connector that can be used to exchange information between your _commercetools_ project and your _fulfillmenttools_ project. While fully customizable it is very easy to setup and deploy so you can start fulfilling orders from you e-commerce system without a complicated integration process.
+The fulfillmenttools Connect app is a certified integration connector that can be used to exchange information between your _commercetools_ project and your _fulfillmenttools_ project. While fully customizable it is very easy to setup and deploy so you can start fulfilling orders from you e-commerce system without a complicated integration process. It is available in the commercetools Connect [Marketplace](https://docs.commercetools.com/merchant-center/connect).
 
 ### 🛒 Orders
 
@@ -53,7 +53,7 @@ See the section on [customization](#⚙️-commercetools-customization) below fo
 
 ### Channels
 
-The connector also synchronizes information from commercetools [Channels](https://docs.commercetools.com/api/projects/channels) to create or update a fulfillmenttools [Facility](https://fulfillmenttools.github.io/api-reference-ui/#/Facilities). Please note that only Channels with the `InventorySupply` role are synchronized, other roles are ignored. The created fulfillmenttools Facility will be of type `STORE` and have the `SHIP_FROM_STORE` and `PICKUP` services enabled. In a future version of this connector, we will support Channel custom fields to configure the Facility type and services. 
+The connector also synchronizes information from commercetools [Channels](https://docs.commercetools.com/api/projects/channels) to create or update a fulfillmenttools [Facility](https://fulfillmenttools.github.io/api-reference-ui/#/Facilities). Please note that only Channels with the `InventorySupply` role are synchronized, other roles are ignored. The created fulfillmenttools Facility will be of type `STORE` and have the `SHIP_FROM_STORE` and `PICKUP` services enabled. In a future version of this connector, we will support Channel custom fields to configure the Facility type and services.
 
 <img alt="ct channel" src="./.github/images/ct-channel-to-fft.png">
 
@@ -129,8 +129,7 @@ Have a look at the [commercetools documentation](https://docs.commercetools.com/
 
 ### 🙋‍♂️ Commercetools API client
 
-For each commercetools project we need an API client (managed in merchant center under Settings > Developer settings) with at
-least the following scopes:
+For each commercetools project we need an [API client](https://docs.commercetools.com/merchant-center/api-clients) (managed in Merchant Center under Settings > Developer settings) with at least the following scopes:
 
 - `manage_orders`
 - `manage_order_edits`

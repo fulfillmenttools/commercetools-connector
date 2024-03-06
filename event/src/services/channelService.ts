@@ -117,6 +117,7 @@ export class ChannelService {
       return {
         street: 'not set',
         houseNumber: '0',
+        // TODO dummy postal code will clash with validation for country
         postalCode: '00000',
         city: 'not set',
         country: defaultCountry,

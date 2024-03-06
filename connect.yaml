@@ -8,32 +8,46 @@ deployAs:
     configuration:
       standardConfiguration:
         - key: CTP_PROJECT_KEY
-          description: CT project key
+          required: true
+          description: commercetools Composable Commerce project key
         - key: CTP_REGION
-          description: CT project region
+          required: true
+          description: commercetools Composable Commerce API region
+          default: "europe-west1.gcp"
         - key: FFT_PROJECT_ID
-          description: FFT project ID
+          required: true
+          description: fulfillmenttools project ID
       securedConfiguration:
         - key: CTP_CLIENT_ID
-          description: CT project API client ID
+          required: true
+          description: commercetools Composable Commerce project API client ID
         - key: CTP_CLIENT_SECRET
-          description: CT project API client secret
+          required: true
+          description: commercetools Composable Commerce project API client secret
         - key: CTP_SCOPE
-          description: CT project API client scope
+          required: true
+          description: commercetools Composable Commerce project API client scope
         - key: FFT_API_KEY
-          description: FFT project API key
+          required: true
+          description: fulfillmenttools project API key
         - key: FFT_API_USER
-          description: FFT project API user
+          required: true
+          description: fulfillmenttools project API user
         - key: FFT_API_PASSWORD
-          description: FFT project API password
+          required: true
+          description: fulfillmenttools project API password
         - key: JWT_SECRET
-          description: shared JWT secret
+          required: true
+          description: JSON web token shared secret
         - key: JWT_ISSUER
-          description: JWT issuer
+          required: true
+          description: JSON web token issuer claim
         - key: JWT_AUDIENCE
-          description: JWT audience
+          required: true
+          description: JSON web token audience claim
         - key: JWT_SUBJECT
-          description: JWT subject
+          required: true
+          description: JSON web token subject claim
   - name: event
     applicationType: event
     endpoint: /event
@@ -43,29 +57,43 @@ deployAs:
     configuration:
       standardConfiguration:
         - key: CTP_PROJECT_KEY
-          description: CT project key
+          required: true
+          description: commercetools Composable Commerce project key
         - key: CTP_REGION
-          description: CT project region
+          required: true
+          description: commercetools Composable Commerce API region
+          default: "europe-west1.gcp"
         - key: FFT_PROJECT_ID
-          description: FFT project ID
+          required: true
+          description: fulfillmenttools project ID
       securedConfiguration:
         - key: CTP_CLIENT_ID
-          description: CT project API client ID
+          required: true
+          description: commercetools Composable Commerce project API client ID
         - key: CTP_CLIENT_SECRET
-          description: CT project API client secret
+          required: true
+          description: commercetools Composable Commerce project API client secret
         - key: CTP_SCOPE
-          description: CT project API client scope
+          required: true
+          description: commercetools Composable Commerce project API client scope
         - key: FFT_API_KEY
-          description: FFT project API key
+          required: true
+          description: fulfillmenttools project API key
         - key: FFT_API_USER
-          description: FFT project API user
+          required: true
+          description: fulfillmenttools project API user
         - key: FFT_API_PASSWORD
-          description: FFT project API password
+          required: true
+          description: fulfillmenttools project API password
         - key: JWT_SECRET
-          description: shared JWT secret
+          required: true
+          description: JSON web token shared secret
         - key: JWT_ISSUER
-          description: JWT issuer
+          required: true
+          description: JSON web token issuer claim
         - key: JWT_AUDIENCE
-          description: JWT audience
+          required: true
+          description: JSON web token audience claim
         - key: JWT_SUBJECT
-          description: JWT subject
+          required: true
+          description: JSON web token subject claim
