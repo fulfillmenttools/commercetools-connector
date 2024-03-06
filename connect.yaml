@@ -42,15 +42,12 @@ deployAs:
         - key: JWT_ISSUER
           required: true
           description: JSON web token issuer claim
-          default: "urn:ocff:fulfillmenttools"
         - key: JWT_AUDIENCE
           required: true
           description: JSON web token audience claim
-          default: "urn:ocff:connect"
         - key: JWT_SUBJECT
           required: true
           description: JSON web token subject claim
-          default: "urn:ocff:commercetools"
   - name: event
     applicationType: event
     endpoint: /event
@@ -94,12 +91,9 @@ deployAs:
         - key: JWT_ISSUER
           required: true
           description: JSON web token issuer claim
-          default: "urn:ocff:fulfillmenttools"
         - key: JWT_AUDIENCE
           required: true
           description: JSON web token audience claim
-          default: "urn:ocff:connect"
         - key: JWT_SUBJECT
           required: true
           description: JSON web token subject claim
-          default: "urn:ocff:commercetools"
