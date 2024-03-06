@@ -14,7 +14,7 @@
     "build": "npm --prefix ../shared install && npm --prefix ../shared run build && rimraf ./build && tsc",
     "build-docker": "DOCKER_BUILDKIT=0 docker build -f Dockerfile ../",
     "build-docker:local": "npm run build-docker -- -t $npm_package_config_docker_image_name",
-    "build-docker:arm64": "docker buildx build . --load --platform linux/arm64 -t $npm_package_config_docker_image_name",
+    "build-docker:arm64": "docker buildx build -f Dockerfile ../ --load --platform linux/arm64 -t $npm_package_config_docker_image_name",
     "run-docker": "docker run -it --rm -p 8080:8080 --env-file=.env.local $npm_package_config_docker_image_name",
     "lint": "eslint . --ext .ts",
     "lint:fix": "eslint --fix .",
