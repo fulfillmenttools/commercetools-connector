@@ -2,7 +2,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import { assertError, assertString } from 'shared';
-// import { FftApiClient, FftSubscriptionService } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
+import { FftApiClient, FftSubscriptionService } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
+import { deleteFftSubscriptions } from './actions';
 
 const FFT_API_KEY = 'FFT_API_KEY';
 const FFT_API_PASSWORD = 'FFT_API_PASSWORD';
@@ -20,10 +21,10 @@ async function preUndeploy(properties: Map<string, unknown>): Promise<void> {
   assertString(fftApiUser, FFT_API_USER);
   assertString(fftProjectId, FFT_PROJECT_ID);
 
-  // const fftApiClient = new FftApiClient(fftProjectId, fftApiUser, fftApiPassword, fftApiKey);
-  // const fftSubscriptionService = new FftSubscriptionService(fftApiClient);
+  const fftApiClient = new FftApiClient(fftProjectId, fftApiUser, fftApiPassword, fftApiKey);
+  const fftSubscriptionService = new FftSubscriptionService(fftApiClient);
 
-  process.stdout.write(`Nothing to do currently in the undeploy phase`);
+  await deleteFftSubscriptions(fftSubscriptionService);
 }
 
 async function run(): Promise<void> {
