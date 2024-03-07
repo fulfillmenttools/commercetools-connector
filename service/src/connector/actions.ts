@@ -56,6 +56,32 @@ export async function createFftSubscriptions(
   }
 }
 
+export async function deleteFftSubscriptions(fftSubscriptionService: FftSubscriptionService): Promise<void> {
+  // get existing subscriptions
+  const subscriptions = await fftSubscriptionService.getSubscriptions();
+  // find out which are ours
+  const toBeDeletedSubscriptions = subscriptions.subscriptions
+    ?.filter((sub) => Object.keys(fftEvents).includes(sub.event))
+    ?.filter((sub) =>
+      Object.keys(fftEvents)
+        .map((k) => `CTC_${k}`)
+        .includes(sub.name)
+    )
+    ?.map((sub) => sub.id);
+  // delete our subscriptions
+  if (toBeDeletedSubscriptions && toBeDeletedSubscriptions.length > 0) {
+    await Promise.all(
+      toBeDeletedSubscriptions.map(async (id) => {
+        process.stdout.write(`Deleting FFT subscription ${id}\n`);
+        await fftSubscriptionService.deleteSubscription(id);
+      })
+    );
+    process.stdout.write(`All FFT subscriptions deleted, done.\n`);
+  } else {
+    process.stdout.write(`No FFT subscriptions present, nothing to do.\n`);
+  }
+}
+
 function callbackUrl(applicationUrl: string, event: string): string {
   const baseUrl = applicationUrl.endsWith('/')
     ? applicationUrl.substring(0, applicationUrl.length - 1)
