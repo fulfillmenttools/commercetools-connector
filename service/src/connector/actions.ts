@@ -60,16 +60,14 @@ export async function deleteFftSubscriptions(fftSubscriptionService: FftSubscrip
   // get existing subscriptions
   const subscriptions = await fftSubscriptionService.getSubscriptions();
   // find out which are ours
-  const matchingSubscriptions = subscriptions.subscriptions?.filter((sub) =>
-    Object.keys(fftEvents).includes(sub.event)
-  );
-  const toBeDeletedSubscriptions = matchingSubscriptions
+  const toBeDeletedSubscriptions = subscriptions.subscriptions
+    ?.filter((sub) => Object.keys(fftEvents).includes(sub.event))
     ?.filter((sub) =>
       Object.keys(fftEvents)
         .map((k) => `CTC_${k}`)
         .includes(sub.name)
     )
-    .map((sub) => sub.id);
+    ?.map((sub) => sub.id);
   // delete our subscriptions
   if (toBeDeletedSubscriptions && toBeDeletedSubscriptions.length > 0) {
     await Promise.all(
@@ -78,7 +76,7 @@ export async function deleteFftSubscriptions(fftSubscriptionService: FftSubscrip
         await fftSubscriptionService.deleteSubscription(id);
       })
     );
-    process.stdout.write(`All FFT subscriptions delete, done.\n`);
+    process.stdout.write(`All FFT subscriptions deleted, done.\n`);
   } else {
     process.stdout.write(`No FFT subscriptions present, nothing to do.\n`);
   }
