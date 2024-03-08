@@ -59,9 +59,9 @@
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@commercetools-backend/loggers": "21.25.2",
-    "@commercetools/platform-sdk": "4.7.0",
-    "@commercetools/sdk-client-v2": "2.1.5",
+    "@commercetools-backend/loggers": "22.19.0",
+    "@commercetools/platform-sdk": "7.4.0",
+    "@commercetools/sdk-client-v2": "2.3.0",
     "@fulfillmenttools/fulfillmenttools-sdk-typescript": "0.1.10",
     "body-parser": "1.20.2",
     "date-fns": "2.30.0",
