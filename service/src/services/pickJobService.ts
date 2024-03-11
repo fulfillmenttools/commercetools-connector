@@ -1,8 +1,13 @@
-import { PickJob, FftLoadUnitService } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
+import { FftLoadUnitService, PickJob } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 
-import { FFTConstants, logger } from 'shared';
-import { getCommercetoolsOrderById, updateCommercetoolsOrder } from 'shared';
-import { setCustomFieldAction, updateOrderAction } from 'shared';
+import {
+  FFTConstants,
+  getCommercetoolsOrderById,
+  logger,
+  setCustomFieldAction,
+  updateCommercetoolsOrder,
+  updateOrderAction,
+} from 'shared';
 
 export class PickJobService {
   constructor(private readonly loadUnitService: FftLoadUnitService) {}

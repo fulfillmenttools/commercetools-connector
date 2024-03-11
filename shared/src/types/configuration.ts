@@ -7,9 +7,7 @@ export type Configuration = {
   shippingMethodMapping?: ShippingMethodMapping;
 };
 
-type ShippingMethodKey = string;
-type CarrierKey = string;
-export type ShippingMethodMapping = Record<ShippingMethodKey, DeliveryConfiguration>;
+export type ShippingMethodMapping = Record<string, DeliveryConfiguration>;
 
 export enum ServiceType {
   SHIPPING = 'SHIPPING',
@@ -19,5 +17,5 @@ export enum ServiceType {
 type DeliveryConfiguration = {
   serviceLevel?: ServiceLevelEnum;
   serviceType: ServiceType;
-  carriers?: CarrierKey[];
+  carriers?: string[];
 };

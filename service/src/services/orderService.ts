@@ -18,9 +18,9 @@ export class OrderService {
 
     const commercetoolsOrder = await getCommercetoolsOrderById(commercetoolsOrderId);
 
-    let customOrderTypeId = await getCustomOrderType();
+    const customOrderTypeId = await getCustomOrderType();
     if (customOrderTypeId === undefined) {
-      customOrderTypeId = await createCustomOrderType();
+      await createCustomOrderType();
     } else {
       await updateCustomOrderType(customOrderTypeId);
     }

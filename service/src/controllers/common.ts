@@ -59,8 +59,8 @@ export function assertHandoverJobHandedOver(
 
 type ValidatedWebHookEvent = WebHookEvent & { payload: unknown };
 
-type ValidatedOrderEvent = OrderCreatedWebHookEvent & unknown;
-type ValidatedPickJobCreatedEvent = PickjobCreatedWebHookEvent & unknown;
-type ValidatedPickJobFinishedEvent = PickjobPickingFinishedWebHookEvent & unknown;
-type ValidatedHandoverJobCreatedWebHookEvent = HandoverJobCreatedWebHookEvent & unknown;
-type ValidatedHandoverJobHandedOverWebHookEvent = HandoverJobHandedOverWebHookEvent & unknown;
+type ValidatedOrderEvent = OrderCreatedWebHookEvent;
+type ValidatedPickJobCreatedEvent = PickjobCreatedWebHookEvent;
+type ValidatedPickJobFinishedEvent = PickjobPickingFinishedWebHookEvent;
+type ValidatedHandoverJobCreatedWebHookEvent = HandoverJobCreatedWebHookEvent;
+type ValidatedHandoverJobHandedOverWebHookEvent = HandoverJobHandedOverWebHookEvent;

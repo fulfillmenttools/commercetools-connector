@@ -1,15 +1,21 @@
+import { Order, OrderSetCustomFieldAction } from '@commercetools/platform-sdk';
 import {
   FftOrderService,
-  FftShipmentService,
   FftParcelService,
+  FftShipmentService,
   Handoverjob,
   Parcel,
   Shipment,
 } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
-import { FFTConstants, logger } from 'shared';
-import { getCommercetoolsOrderById, updateCommercetoolsOrder } from 'shared';
-import { changeShipmentStateAction, setCustomFieldAction, updateOrderAction } from 'shared';
-import { Order, OrderSetCustomFieldAction } from '@commercetools/platform-sdk';
+import {
+  FFTConstants,
+  changeShipmentStateAction,
+  getCommercetoolsOrderById,
+  logger,
+  setCustomFieldAction,
+  updateCommercetoolsOrder,
+  updateOrderAction,
+} from 'shared';
 
 export class HandoverJobService {
   constructor(
