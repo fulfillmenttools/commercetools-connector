@@ -16,7 +16,7 @@ async function postDeploy(properties: Map<string, unknown>): Promise<void> {
 
   const apiRoot = createApiRoot();
   const actions = [createOrderStateChangedSubscription, createChannelResourceSubscription];
-  await Promise.all(actions.map(async (a) => await a.call(null, apiRoot, topicName, projectId)));
+  await Promise.all(actions.map(async (a) => await a(apiRoot, topicName, projectId)));
 }
 
 async function run(): Promise<void> {

@@ -1,6 +1,5 @@
 import { FftSubscriptionService } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
-import { generateToken } from 'shared';
-import { AUTHORIZATION, TOKEN_VALIDITY_DAYS } from 'shared';
+import { AUTHORIZATION, TOKEN_VALIDITY_DAYS, generateToken } from 'shared';
 import { fftEvents } from '../routes/serviceRouter';
 
 const CUSTOM_HEADER_NAME = 'x-ocff-subscriber';

@@ -7,7 +7,7 @@ import { deleteChannelResourceSubscription, deleteOrderStateChangedSubscription 
 async function preUndeploy(): Promise<void> {
   const apiRoot = createApiRoot();
   const actions = [deleteOrderStateChangedSubscription, deleteChannelResourceSubscription];
-  await Promise.all(actions.map(async (a) => await a.call(null, apiRoot)));
+  await Promise.all(actions.map(async (a) => await a(apiRoot)));
 }
 
 async function run(): Promise<void> {

@@ -1,9 +1,6 @@
-// import util from 'util';
 import { JwtPayload, sign, verify } from 'jsonwebtoken';
 import { readConfiguration } from '../utils';
 import { randomUUID } from 'crypto';
-
-// const asyncSign = util.promisify(sign);
 
 export function generateToken(validityDays: number): string | undefined {
   return sign({}, readConfiguration().jwtSecret, {

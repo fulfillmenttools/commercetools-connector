@@ -10,10 +10,8 @@ import {
   OrderLineItemForCreation,
   PreselectedFacility,
 } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
+import { AmbiguousChannelError, Configuration, ServiceType, StoreService, getConfiguration, logger } from 'shared';
 import ArticleAttributeItemCategory = ArticleAttributeItem.CategoryEnum;
-import { AmbiguousChannelError, Configuration, logger, ServiceType } from 'shared';
-import { getConfiguration } from 'shared';
-import { StoreService } from 'shared';
 
 export class OrderMapper {
   constructor(private readonly ctStoreService: StoreService, private readonly facilityService: FftFacilityService) {}
