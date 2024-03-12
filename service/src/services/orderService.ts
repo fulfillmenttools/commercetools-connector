@@ -1,10 +1,20 @@
 import { Order as CommercetoolsOrder, OrderUpdateAction } from '@commercetools/platform-sdk';
 import { Order } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 
-import { FFTConstants, logger } from 'shared';
-import { getCommercetoolsOrderById, getCustomTypeOfOrder, updateCommercetoolsOrder } from 'shared';
-import { createCustomOrderType, getCustomOrderType, orderCustomTypeKey, updateCustomOrderType } from 'shared';
-import { setCustomFieldAction, setCustomTypeAction, updateOrderAction } from 'shared';
+import {
+  FFTConstants,
+  createCustomOrderType,
+  getCommercetoolsOrderById,
+  getCustomOrderType,
+  getCustomTypeOfOrder,
+  logger,
+  orderCustomTypeKey,
+  setCustomFieldAction,
+  setCustomTypeAction,
+  updateCommercetoolsOrder,
+  updateCustomOrderType,
+  updateOrderAction,
+} from 'shared';
 
 export class OrderService {
   public async orderCreated(order: Order): Promise<void> {
