@@ -103,9 +103,5 @@ function customHeader(): KeyValue {
 }
 
 function hasMatchingCustomHeader(headers: KeyValue[]) {
-  return (
-    headers !== null &&
-    headers !== undefined &&
-    headers.find((kv) => kv.key === CUSTOM_HEADER_NAME && kv.value === CUSTOM_HEADER_VALUE) !== undefined
-  );
+  return headers?.find((kv) => kv.key === CUSTOM_HEADER_NAME && kv.value === CUSTOM_HEADER_VALUE) !== undefined;
 }

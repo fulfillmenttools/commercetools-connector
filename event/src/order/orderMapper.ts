@@ -64,7 +64,7 @@ export class OrderMapper {
   private async mapDeliveryPreferences(commercetoolsOrder: CommercetoolsOrder): Promise<DeliveryPreferences> {
     const shippingMethodKey = commercetoolsOrder.shippingInfo?.shippingMethod?.obj?.key;
     const configuration = await getConfiguration();
-    if (!shippingMethodKey || !configuration || !configuration.shippingMethodMapping?.[shippingMethodKey]) {
+    if (!shippingMethodKey || !configuration?.shippingMethodMapping?.[shippingMethodKey]) {
       return {
         shipping: {
           preselectedFacilities: await this.getPreselectedFacilities(commercetoolsOrder),
