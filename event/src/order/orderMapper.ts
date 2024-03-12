@@ -82,13 +82,14 @@ export class OrderMapper {
         },
       };
     } else if (deliveryConfig?.serviceType === ServiceType.CLICK_AND_COLLECT) {
+      const paid = commercetoolsOrder.paymentState === 'Paid';
       const supplyChannelKey = this.getSupplyChannelFromCustomField(commercetoolsOrder, configuration);
       if (supplyChannelKey) {
         const facility = await this.facilityService.getStrippedFacility(supplyChannelKey);
-        return { collect: [{ facilityRef: facility.id }] };
+        return { collect: [{ facilityRef: facility.id, paid }] };
       }
       return {
-        collect: [{ facilityRef: await this.getFacilityIdForLineItemChannel(commercetoolsOrder) }],
+        collect: [{ facilityRef: await this.getFacilityIdForLineItemChannel(commercetoolsOrder), paid }],
       };
     }
     return {
