@@ -35,6 +35,7 @@ export async function getCustomOrderType(): Promise<string | undefined> {
     logger.error(JSON.stringify(error));
     throw new CustomError(status, `Cannot read CT custom type`);
   }
+  return undefined;
 }
 
 async function getCustomTypeById(id: string): Promise<Type | undefined> {
@@ -87,6 +88,7 @@ export async function createCustomOrderType(): Promise<string | undefined> {
     logger.error(JSON.stringify(error));
     throw new CustomError(statusCode(error), `Cannot create CT custom type`);
   }
+  return undefined;
 }
 
 export async function updateCustomOrderType(id: string): Promise<string | undefined> {
@@ -116,6 +118,7 @@ export async function updateCustomOrderType(id: string): Promise<string | undefi
     logger.error(JSON.stringify(error));
     throw new CustomError(statusCode(error), `Cannot update CT custom type`);
   }
+  return undefined;
 }
 
 export async function orderCustomTypeKey(): Promise<string | undefined> {
