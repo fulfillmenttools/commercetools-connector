@@ -1,5 +1,5 @@
 import { FftSubscriptionService } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
-import { AUTHORIZATION, TOKEN_VALIDITY_DAYS, generateToken } from 'shared';
+import { AUTHORIZATION, TOKEN_VALIDITY_DAYS, generateToken, logger } from 'shared';
 import { fftEvents } from '../routes/serviceRouter';
 
 const CUSTOM_HEADER_NAME = 'x-ocff-subscriber';
@@ -30,7 +30,7 @@ export async function createFftSubscriptions(
   if (toBeDeletedSubscriptions && toBeDeletedSubscriptions.length > 0) {
     await Promise.all(
       toBeDeletedSubscriptions.map(async (id) => {
-        process.stdout.write(`Deleting wrong FFT subscription ${id}\n`);
+        logger.info(`Deleting wrong FFT subscription ${id}\n`);
         await fftSubscriptionService.deleteSubscription(id);
       })
     );
@@ -45,13 +45,13 @@ export async function createFftSubscriptions(
           event,
           name: `CTC_${event}`,
         };
-        process.stdout.write(`Creating FFT subscription for ${event}\n`);
+        logger.info(`Creating FFT subscription for ${event}\n`);
         await fftSubscriptionService.createSubscription(subscriptionDraft);
       })
     );
-    process.stdout.write(`All FFT subscriptions created, done.\n`);
+    logger.info(`All FFT subscriptions created, done.\n`);
   } else {
-    process.stdout.write(`All FFT subscriptions are present, nothing to do.\n`);
+    logger.info(`All FFT subscriptions are present, nothing to do.\n`);
   }
 }
 
@@ -71,13 +71,13 @@ export async function deleteFftSubscriptions(fftSubscriptionService: FftSubscrip
   if (toBeDeletedSubscriptions && toBeDeletedSubscriptions.length > 0) {
     await Promise.all(
       toBeDeletedSubscriptions.map(async (id) => {
-        process.stdout.write(`Deleting FFT subscription ${id}\n`);
+        logger.info(`Deleting FFT subscription ${id}\n`);
         await fftSubscriptionService.deleteSubscription(id);
       })
     );
-    process.stdout.write(`All FFT subscriptions deleted, done.\n`);
+    logger.info(`All FFT subscriptions deleted, done.\n`);
   } else {
-    process.stdout.write(`No FFT subscriptions present, nothing to do.\n`);
+    logger.info(`No FFT subscriptions present, nothing to do.\n`);
   }
 }
 

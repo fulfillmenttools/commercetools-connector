@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { assertError, assertString } from 'shared';
+import { assertString, logger } from 'shared';
 import { FftApiClient, FftSubscriptionService } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 import { createFftSubscriptions } from './actions';
 
@@ -17,6 +17,12 @@ async function postDeploy(properties: Map<string, unknown>): Promise<void> {
   const fftApiUser = properties.get(FFT_API_USER);
   const fftProjectId = properties.get(FFT_PROJECT_ID);
   const applicationUrl = properties.get(CONNECT_APPLICATION_URL_KEY);
+
+  logger.info(`fftProjectId: ${FFT_PROJECT_ID} = ${fftProjectId}`);
+  logger.info(`fftApiKey: ${FFT_API_KEY} = ${fftApiKey}`);
+  logger.info(`fftApiUser: ${FFT_API_USER} = ${fftApiUser}`);
+  logger.info(`fftApiPassword: ${FFT_API_PASSWORD} = ***`);
+  logger.info(`applicationUrl: ${CONNECT_APPLICATION_URL_KEY} = ${applicationUrl}`);
 
   assertString(fftApiKey, FFT_API_KEY);
   assertString(fftApiPassword, FFT_API_PASSWORD);
@@ -35,9 +41,11 @@ async function run(): Promise<void> {
     const properties = new Map(Object.entries(process.env));
     await postDeploy(properties);
   } catch (error) {
-    assertError(error);
-    process.stderr.write(`ERROR: Post-deploy failed: ${error.message}\n`);
-    process.stderr.write(JSON.stringify(error));
+    if (error instanceof Error) {
+      logger.error(`Post-deploy failed: ${error.message}`, error);
+    } else {
+      logger.error(`Post-deploy failed: ${JSON.stringify(error)}`, error);
+    }
     process.exitCode = 1;
   }
 }
