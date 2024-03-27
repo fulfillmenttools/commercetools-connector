@@ -20,6 +20,7 @@
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write '**/*.{js,ts}'",
     "test": "npm run build && jest --config jest.config.cjs",
+    "test:coverage": "jest --config jest.config.cjs --coverage --collectCoverageFrom='src/**/*.{ts,jxs}'",
     "test:watch": "jest --watch",
     "connector:post-deploy": "node build/connector/post-deploy.js",
     "connector:pre-undeploy": "node build/connector/pre-undeploy.js",
