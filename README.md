@@ -1,20 +1,24 @@
+# fulfillmenttools Connector
+
 <p align="center">
   <a href="https://fulfillmenttools.com/">
     <img alt="fulfillmenttools logo" src="./.github/images/fft-mach-alliance.svg">
   </a></br>
-  <b>A commercetools Connect app by fulfillmenttools</b>
 </p>
 
-![CI](https://github.com/fulfillmenttools/commercetools-connector/actions/workflows/ci.yml/badge.svg)
+[![Release](https://img.shields.io/github/v/release/fulfillmenttools/commercetools-connector)](https://github.com/fulfillmenttools/commercetools-connector/releases)
+[![CI](https://github.com/fulfillmenttools/commercetools-connector/actions/workflows/ci.yml/badge.svg)](https://github.com/fulfillmenttools/commercetools-connector/actions/workflows/ci.yml)
+[![Sonar](https://img.shields.io/sonar/quality_gate/fulfillmenttools_commercetools-connector?server=https%3A%2F%2Fsonarcloud.io)](https://sonarcloud.io/project/overview?id=fulfillmenttools_commercetools-connector)
 [![License](https://img.shields.io/github/license/fulfillmenttools/commercetools-connector)](./LICENSE)
 [![Contributor Covenant](https://img.shields.io/badge/Contributor%20Covenant-2.1-4baaaa.svg)](./CODE_OF_CONDUCT.md)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](./CONTRIBUTING.md)
+[![TypeScript](https://img.shields.io/badge/Made%20with-TypeScript-1f425f.svg?color=3178c6)](https://www.typescriptlang.org/)
 
 # 🤖 Introduction
 
 This repository contains the source code and configuration of
 the [commercetools Connect](https://docs.commercetools.com/connect/) applications built by [fufillmenttools](https://fulfillmenttools.com/).
-These are [connect applications](https://marketplace.commercetools.com/) built in TypeScript using the [commercetools Connect Application Kit](https://github.com/commercetools/connect-application-kit#readme).
+These are [Connect applications](https://marketplace.commercetools.com/) built in TypeScript using the [commercetools Connect Application Kit](https://github.com/commercetools/connect-application-kit#readme).
 
 ## 🔁 Functionality
 
@@ -63,6 +67,25 @@ When the commercetools Channel has an address, it is used as the Facility's addr
 When the commercetools Channel is deleted, the related fulfillmenttools Facility is NOT deleted but only set to `OFFLINE`. This is to prevent accidental deletion of operational data. You can still delete the Facility via the API or in the backoffice, should you wish to do so.
 
 Currently, the synchronization between Channels and Facilities is in one direction only, i.e. changes made to a fulfillmenttools Facility will not be forwarded to related commercetools Channel.
+
+## 🚀 Deployment
+
+### 👉 Prerequisites
+
+1. commercetools Composable Commerce [account](https://commercetools.com/free-trial) and [API client](https://docs.commercetools.com/merchant-center/api-clients)
+1. fulfillmenttools [account](https://fulfillmenttools.com/en/request-free-trial/) and [API key](https://docs.fulfillmenttools.com/api-docs/getting-started/setup-your-access-to-fulfillmenttools)
+
+### 🎛 Configuration
+
+TODO
+
+### Installing the connector
+
+TODO
+
+### Uninstalling the connector
+
+TODO
 
 ## 👨‍💻 Development
 
