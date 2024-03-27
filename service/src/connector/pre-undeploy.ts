@@ -1,7 +1,7 @@
 import dotenv from 'dotenv';
 dotenv.config();
 
-import { assertError, assertString } from 'shared';
+import { assertString, logger } from 'shared';
 import { FftApiClient, FftSubscriptionService } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 import { deleteFftSubscriptions } from './actions';
 
@@ -15,6 +15,11 @@ async function preUndeploy(properties: Map<string, unknown>): Promise<void> {
   const fftApiPassword = properties.get(FFT_API_PASSWORD);
   const fftApiUser = properties.get(FFT_API_USER);
   const fftProjectId = properties.get(FFT_PROJECT_ID);
+
+  logger.info(`fftProjectId: ${FFT_PROJECT_ID} = ${fftProjectId}`);
+  logger.info(`fftApiKey: ${FFT_API_KEY} = ${fftApiKey}`);
+  logger.info(`fftApiUser: ${FFT_API_USER} = ${fftApiUser}`);
+  logger.info(`fftApiPassword: ${FFT_API_PASSWORD} = ***`);
 
   assertString(fftApiKey, FFT_API_KEY);
   assertString(fftApiPassword, FFT_API_PASSWORD);
@@ -32,9 +37,11 @@ async function run(): Promise<void> {
     const properties = new Map(Object.entries(process.env));
     await preUndeploy(properties);
   } catch (error) {
-    assertError(error);
-    process.stderr.write(`ERROR: Pre-undeploy failed: ${error.message}\n`);
-    process.stderr.write(JSON.stringify(error));
+    if (error instanceof Error) {
+      logger.error(`Pre-undeploy failed: ${error.message}`, error);
+    } else {
+      logger.error(`Pre-undeploy failed: ${JSON.stringify(error)}`, error);
+    }
     process.exitCode = 1;
   }
 }

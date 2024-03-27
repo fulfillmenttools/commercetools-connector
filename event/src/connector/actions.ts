@@ -1,4 +1,5 @@
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
+import { logger } from 'shared';
 
 const ORDER_STATE_CHANGED_SUBSCRIPTION_KEY = 'fft-ctc-orders';
 const CHANNEL_RESOURCE_SUBSCRIPTION_KEY = 'fft-ctc-channels';
@@ -8,6 +9,7 @@ export async function createOrderStateChangedSubscription(
   topicName: string,
   projectId: string
 ): Promise<void> {
+  logger.info(`Retrieving ${ORDER_STATE_CHANGED_SUBSCRIPTION_KEY} subscription`);
   const {
     body: { results: subscriptions },
   } = await apiRoot
@@ -20,6 +22,7 @@ export async function createOrderStateChangedSubscription(
     .execute();
 
   if (subscriptions.length > 0) {
+    logger.info(`Deleting ${ORDER_STATE_CHANGED_SUBSCRIPTION_KEY} subscription`);
     const subscription = subscriptions[0];
 
     await apiRoot
@@ -33,6 +36,7 @@ export async function createOrderStateChangedSubscription(
       .execute();
   }
 
+  logger.info(`Creating ${ORDER_STATE_CHANGED_SUBSCRIPTION_KEY} subscription`);
   await apiRoot
     .subscriptions()
     .post({
@@ -55,6 +59,7 @@ export async function createOrderStateChangedSubscription(
 }
 
 export async function deleteOrderStateChangedSubscription(apiRoot: ByProjectKeyRequestBuilder): Promise<void> {
+  logger.info(`Retrieving ${ORDER_STATE_CHANGED_SUBSCRIPTION_KEY} subscription`);
   const {
     body: { results: subscriptions },
   } = await apiRoot
@@ -67,6 +72,7 @@ export async function deleteOrderStateChangedSubscription(apiRoot: ByProjectKeyR
     .execute();
 
   if (subscriptions.length > 0) {
+    logger.info(`Deleting ${ORDER_STATE_CHANGED_SUBSCRIPTION_KEY} subscription`);
     const subscription = subscriptions[0];
 
     await apiRoot
@@ -86,6 +92,7 @@ export async function createChannelResourceSubscription(
   topicName: string,
   projectId: string
 ): Promise<void> {
+  logger.info(`Retrieving ${CHANNEL_RESOURCE_SUBSCRIPTION_KEY} subscription`);
   const {
     body: { results: subscriptions },
   } = await apiRoot
@@ -98,6 +105,7 @@ export async function createChannelResourceSubscription(
     .execute();
 
   if (subscriptions.length > 0) {
+    logger.info(`Deleting ${CHANNEL_RESOURCE_SUBSCRIPTION_KEY} subscription`);
     const subscription = subscriptions[0];
 
     await apiRoot
@@ -111,6 +119,7 @@ export async function createChannelResourceSubscription(
       .execute();
   }
 
+  logger.info(`Creating ${CHANNEL_RESOURCE_SUBSCRIPTION_KEY} subscription`);
   await apiRoot
     .subscriptions()
     .post({
@@ -132,6 +141,7 @@ export async function createChannelResourceSubscription(
 }
 
 export async function deleteChannelResourceSubscription(apiRoot: ByProjectKeyRequestBuilder): Promise<void> {
+  logger.info(`Retrieving ${CHANNEL_RESOURCE_SUBSCRIPTION_KEY} subscription`);
   const {
     body: { results: subscriptions },
   } = await apiRoot
@@ -144,6 +154,7 @@ export async function deleteChannelResourceSubscription(apiRoot: ByProjectKeyReq
     .execute();
 
   if (subscriptions.length > 0) {
+    logger.info(`Deleting ${CHANNEL_RESOURCE_SUBSCRIPTION_KEY} subscription`);
     const subscription = subscriptions[0];
 
     await apiRoot
