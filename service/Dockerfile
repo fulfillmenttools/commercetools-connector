@@ -1,4 +1,4 @@
-FROM node:18.19.1 AS builder
+FROM node:18.20.0 AS builder
 ENV TINI_VERSION=v0.19.0
 RUN ARCH= && dpkgArch="$(dpkg --print-architecture)" \
   && case "${dpkgArch##*-}" in \
@@ -20,7 +20,7 @@ RUN npm ci --prefix service --ignore-scripts --progress=false --fund=false --fet
 RUN npm --prefix shared run build
 RUN npm --prefix service run build
 
-FROM node:18.19.1-slim
+FROM node:18.20.0-slim
 ARG NODE_ENV=production
 ENV NODE_ENV=${NODE_ENV}
 ENV NO_COLOR=true
