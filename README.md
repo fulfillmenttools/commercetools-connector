@@ -73,19 +73,15 @@ Currently, the synchronization between Channels and Facilities is in one directi
 ### 👉 Prerequisites
 
 1. commercetools Composable Commerce [account](https://commercetools.com/free-trial) and [API client](https://docs.commercetools.com/merchant-center/api-clients)
-1. fulfillmenttools [account](https://fulfillmenttools.com/en/request-free-trial/) and [API key](https://docs.fulfillmenttools.com/api-docs/getting-started/setup-your-access-to-fulfillmenttools)
-
-### 🎛 Configuration
-
-TODO
+1. fulfillmenttools [account](https://fulfillmenttools.com/en/request-free-trial/) and [API credentials](https://docs.fulfillmenttools.com/api-docs/getting-started/setup-your-access-to-fulfillmenttools)
 
 ### Installing the connector
 
-TODO
+While you can deploy the connector into your Composable Commerce project using the [Connect API](https://docs.commercetools.com/connect/deployments), the easiest way to deploy it is using the Merchant Center. In your project go to the Connect marketplace, select the fulfillmenttools Connector, click "Install" and follow the steps for deployment.
 
 ### Uninstalling the connector
 
-TODO
+Again, you can undeploy the connector from your project using the [Connect API](https://docs.commercetools.com/connect/deployments) or simply use the Merchant Center.
 
 ## 👨‍💻 Development
 
@@ -155,7 +151,6 @@ Have a look at the [commercetools documentation](https://docs.commercetools.com/
 For each commercetools project we need an [API client](https://docs.commercetools.com/merchant-center/api-clients) (managed in Merchant Center under Settings > Developer settings) with at least the following scopes:
 
 - `manage_orders`
-- `manage_order_edits`
 - `manage_states`
 - `manage_subscriptions`
 - `manage_types`
