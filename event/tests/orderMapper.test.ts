@@ -32,6 +32,7 @@ describe('OrderMapper', () => {
     expect(fulfillmenttoolsOrder.consumer.email).toEqual('max.mustermann@fulfillmenttools.com');
     expect(fulfillmenttoolsOrder.consumer.addresses).toHaveLength(1);
     const consumerAddress = fulfillmenttoolsOrder.consumer.addresses[0];
+    expect(consumerAddress).toBeDefined();
     expect(consumerAddress.city).toEqual('Köln');
     expect(consumerAddress.street).toEqual('Schanzenstraße');
     expect(consumerAddress.houseNumber).toEqual('30');
@@ -43,6 +44,7 @@ describe('OrderMapper', () => {
 
     expect(fulfillmenttoolsOrder.orderLineItems).toHaveLength(1);
     const orderLineItem = fulfillmenttoolsOrder.orderLineItems[0];
+    expect(orderLineItem).toBeDefined();
     expect(orderLineItem.quantity).toEqual(1);
     expect(orderLineItem.article).toBeDefined();
     const article = orderLineItem.article;

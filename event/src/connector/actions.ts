@@ -27,7 +27,7 @@ export async function createOrderStateChangedSubscription(
       .withKey({ key: ORDER_STATE_CHANGED_SUBSCRIPTION_KEY })
       .delete({
         queryArgs: {
-          version: subscription.version,
+          version: subscription?.version || 0,
         },
       })
       .execute();
@@ -74,7 +74,7 @@ export async function deleteOrderStateChangedSubscription(apiRoot: ByProjectKeyR
       .withKey({ key: ORDER_STATE_CHANGED_SUBSCRIPTION_KEY })
       .delete({
         queryArgs: {
-          version: subscription.version,
+          version: subscription?.version || 0,
         },
       })
       .execute();
@@ -105,7 +105,7 @@ export async function createChannelResourceSubscription(
       .withKey({ key: CHANNEL_RESOURCE_SUBSCRIPTION_KEY })
       .delete({
         queryArgs: {
-          version: subscription.version,
+          version: subscription?.version || 0,
         },
       })
       .execute();
@@ -151,7 +151,7 @@ export async function deleteChannelResourceSubscription(apiRoot: ByProjectKeyReq
       .withKey({ key: CHANNEL_RESOURCE_SUBSCRIPTION_KEY })
       .delete({
         queryArgs: {
-          version: subscription.version,
+          version: subscription?.version || 0,
         },
       })
       .execute();
