@@ -11,7 +11,7 @@
     "start": "node build/index.js",
     "gcp-build": "cp -r /tmp/lib/shared /workspace && npm run build && npm pack ../shared && npm install shared*",
     "start:dev": "concurrently -k \"tsc --watch\" \"nodemon -q build/index.js\"",
-    "build": "npm --prefix ../shared install && npm --prefix ../shared run build && rimraf ./build && tsc",
+    "build": "npm --prefix ../shared install && npm --prefix ../shared run build && rimraf ./build ./coverage && tsc",
     "build-docker": "DOCKER_BUILDKIT=0 docker build -f Dockerfile ../",
     "build-docker:local": "npm run build-docker -- -t $npm_package_config_docker_image_name",
     "build-docker:arm64": "docker buildx build -f Dockerfile ../ --load --platform linux/arm64 -t $npm_package_config_docker_image_name",
