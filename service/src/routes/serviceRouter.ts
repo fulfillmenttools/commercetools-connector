@@ -49,25 +49,33 @@ export class ServiceRouter {
       middleware.push(checkJwt);
     }
 
-    this.serviceRouter.post(fftEvents.ORDER_CREATED, middleware, asyncHandler(orderController.orderCreated));
-
-    this.serviceRouter.post(fftEvents.PICK_JOB_CREATED, middleware, asyncHandler(pickJobController.pickJobCreated));
-    this.serviceRouter.post(
-      fftEvents.PICK_JOB_PICKING_FINISHED,
-      middleware,
-      asyncHandler(pickJobController.pickJobFinished)
-    );
-
-    this.serviceRouter.post(
-      fftEvents.HANDOVERJOB_CREATED,
-      middleware,
-      asyncHandler(handoverJobController.handoverJobCreated)
-    );
-    this.serviceRouter.post(
-      fftEvents.HANDOVERJOB_HANDED_OVER,
-      middleware,
-      asyncHandler(handoverJobController.handoverJobHandedOver)
-    );
+    if (fftEvents.ORDER_CREATED) {
+      this.serviceRouter.post(fftEvents.ORDER_CREATED, middleware, asyncHandler(orderController.orderCreated));
+    }
+    if (fftEvents.PICK_JOB_CREATED) {
+      this.serviceRouter.post(fftEvents.PICK_JOB_CREATED, middleware, asyncHandler(pickJobController.pickJobCreated));
+    }
+    if (fftEvents.PICK_JOB_PICKING_FINISHED) {
+      this.serviceRouter.post(
+        fftEvents.PICK_JOB_PICKING_FINISHED,
+        middleware,
+        asyncHandler(pickJobController.pickJobFinished)
+      );
+    }
+    if (fftEvents.HANDOVERJOB_CREATED) {
+      this.serviceRouter.post(
+        fftEvents.HANDOVERJOB_CREATED,
+        middleware,
+        asyncHandler(handoverJobController.handoverJobCreated)
+      );
+    }
+    if (fftEvents.HANDOVERJOB_HANDED_OVER) {
+      this.serviceRouter.post(
+        fftEvents.HANDOVERJOB_HANDED_OVER,
+        middleware,
+        asyncHandler(handoverJobController.handoverJobHandedOver)
+      );
+    }
   }
 
   public getRouter(): Router {

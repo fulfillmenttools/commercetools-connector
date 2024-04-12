@@ -95,7 +95,7 @@ export class ChannelService {
     defaultName: string,
     countries: string[]
   ): FacilityAddressForCreation {
-    const defaultCountry = countries && countries.length > 0 ? countries[0] : 'DE';
+    const defaultCountry = countries?.[0] || 'DE';
     if (address) {
       return {
         street: address.streetName?.trim() || 'not set',

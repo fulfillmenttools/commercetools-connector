@@ -1,12 +1,22 @@
 {
   "extends": "@tsconfig/recommended/tsconfig.json",
-  "exclude": ["node_modules", "tmp", "**/*.spec.ts", "**/*.test.ts"],
+  "exclude": [
+    "node_modules",
+    "tmp",
+    "**/*.spec.ts",
+    "**/*.test.ts"
+  ],
   "compilerOptions": {
-    "lib": ["es2021"],
-    "target": "es2021",
-    "resolveJsonModule": true,
+    "allowSyntheticDefaultImports": true,
+    "lib": [
+      "es2021"
+    ],
+    "noFallthroughCasesInSwitch": true,
+    "noImplicitReturns": true,
+    "noUncheckedIndexedAccess": true,
     "outDir": "./build",
+    "resolveJsonModule": true,
     "rootDir": "./src",
-    "inlineSourceMap": true
+    "target": "es2021",
   }
 }
