@@ -65,7 +65,7 @@ jobs:
           echo "release-version=${NEW_VERSION}" >> $GITHUB_OUTPUT
 
       - name: Create PR
-        uses: peter-evans/create-pull-request@38e0b6e68b4c852a5500a94740f0e535e0d7ba54
+        uses: peter-evans/create-pull-request@70a41aba780001da0a30141984ae2a0c95d8704e
         if: ${{ github.event.inputs.dry == 'false' }}
         with:
           base: main
