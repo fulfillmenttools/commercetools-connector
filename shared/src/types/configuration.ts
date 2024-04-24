@@ -5,7 +5,11 @@ export type Configuration = {
   orderCustomTypeKey?: string;
   collectChannelReferenceFieldName?: string;
   shippingMethodMapping?: ShippingMethodMapping;
+  customFieldTagMapping?: CustomFieldTagMapping;
+  storeTagMapping?: string;
 };
+
+export type CustomFieldTagMapping = Record<string, string>;
 
 export type ShippingMethodMapping = Record<string, DeliveryConfiguration>;
 

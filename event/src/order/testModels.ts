@@ -56,6 +56,7 @@ const shippingMethodDHL: ShippingMethod = {
   zoneRates: [],
   key: 'dhl',
 };
+
 const shippingMethodClickAndCollect: ShippingMethod = {
   createdAt: '',
   id: '',
@@ -70,8 +71,10 @@ const shippingMethodClickAndCollect: ShippingMethod = {
   zoneRates: [],
   key: 'cc',
 };
+
 const price1: CentPrecisionMoney = { type: 'centPrecision', centAmount: 600, currencyCode: 'EUR', fractionDigits: 0 };
 const price2: CentPrecisionMoney = { type: 'centPrecision', centAmount: 0, currencyCode: 'EUR', fractionDigits: 0 };
+
 const shippingInfoDHL: ShippingInfo = {
   price: price1,
   shippingMethod: {
@@ -191,9 +194,11 @@ const commercetoolsOrderTemplate: CommercetoolsOrderTemplate = {
   version: 0,
   customerEmail: 'max.mustermann@fulfillmenttools.com',
 };
+
 export function getTestOrder() {
   return mapTemplateToOrder(commercetoolsOrderTemplate);
 }
+
 export function getTestOrderWithoutOrderNumber() {
   const template = commercetoolsOrderTemplate;
   template.orderNumber = undefined;
@@ -215,6 +220,7 @@ export function getTestOrderClickAndCollect() {
   ];
   return mapTemplateToOrder(template);
 }
+
 export function getTestOrderClickAndCollectWithMultipleChannels() {
   const template = commercetoolsOrderTemplate;
   template.shippingInfo = shippingInfoClickAndCollect;
@@ -238,6 +244,15 @@ export function getTestOrderClickAndCollectWithCustomField() {
   template.custom = {
     type: { id: CUSTOM_TYPE_NAME, typeId: 'type' },
     fields: { fft_supply_channel_for_click_and_collect: 'store_hamburg' },
+  };
+  return mapTemplateToOrder(template);
+}
+
+export function getTestOrderWithCustomField() {
+  const template = commercetoolsOrderTemplate;
+  template.custom = {
+    type: { id: CUSTOM_TYPE_NAME, typeId: 'type' },
+    fields: { foo: 'urgent', bar: '12345' },
   };
   return mapTemplateToOrder(template);
 }
@@ -299,6 +314,7 @@ function mapTemplateToOrder(template: CommercetoolsOrderTemplate): Commercetools
     version: template.version,
   };
 }
+
 // Redefined ct order to have the ability to modify
 // fields as they are readonly in the original interface
 interface CommercetoolsOrderTemplate {
