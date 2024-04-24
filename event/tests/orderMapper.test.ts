@@ -6,6 +6,7 @@ import {
   getTestOrderClickAndCollectNoChannels,
   getTestOrderClickAndCollectWithCustomField,
   getTestOrderClickAndCollectWithMultipleChannels,
+  getTestOrderWithCustomField,
   getTestOrderWithDHL,
   getTestOrderWithoutOrderNumber,
   getTestOrderWithStore,
@@ -24,6 +25,7 @@ describe('OrderMapper', () => {
   const facilityService: FftFacilityService = new FftFacilityService(getTestClient());
 
   const orderMapper = new OrderMapper(new StoreService(), facilityService);
+
   it('maps Correctly', async () => {
     const commercetoolsOrder = getTestOrder();
     const fulfillmenttoolsOrder = await orderMapper.mapOrder(commercetoolsOrder);
@@ -60,6 +62,16 @@ describe('OrderMapper', () => {
     expect(fulfillmenttoolsOrder.tenantOrderId).toEqual('orderId');
   });
 
+  it('maps custom fields to tags', async () => {
+    const commercetoolsOrder = getTestOrderWithCustomField();
+    const fulfillmenttoolsOrder = await orderMapper.mapOrder(commercetoolsOrder);
+    expect(fulfillmenttoolsOrder.tags?.length).toEqual(2);
+    expect(fulfillmenttoolsOrder.tags?.[0].id).toEqual('tag_foo');
+    expect(fulfillmenttoolsOrder.tags?.[0].value).toEqual(commercetoolsOrder.custom?.fields['foo']);
+    expect(fulfillmenttoolsOrder.tags?.[1].id).toEqual('tag_bar');
+    expect(fulfillmenttoolsOrder.tags?.[1].value).toEqual(commercetoolsOrder.custom?.fields['bar']);
+  });
+
   it('maps preselected facilities if a store is defined', async () => {
     const commercetoolsOrder = getTestOrderWithStore();
     const fulfillmenttoolsOrder = await orderMapper.mapOrder(commercetoolsOrder);
@@ -68,25 +80,32 @@ describe('OrderMapper', () => {
     expect(preselectedFacilities).toHaveLength(2);
     expect(preselectedFacilities?.[0].facilityRef).toEqual('store_cologne_fft_id');
     expect(preselectedFacilities?.[1].facilityRef).toEqual('store_hamburg_fft_id');
+    expect(fulfillmenttoolsOrder.tags?.[0].id).toEqual('tag_store');
+    expect(fulfillmenttoolsOrder.tags?.[0].value).toEqual(commercetoolsOrder.store?.key);
   });
+
   it('maps shipping method correctly to carrier', async () => {
     const commercetoolsOrder = getTestOrderWithDHL();
     const fulfillmenttoolsOrder = await orderMapper.mapOrder(commercetoolsOrder);
     expect(fulfillmenttoolsOrder.deliveryPreferences?.shipping?.preferredCarriers).toEqual(['DHL_V2']);
   });
+
   it('maps shipping method correctly to click and collect', async () => {
     const commercetoolsOrder = getTestOrderClickAndCollect();
     const fulfillmenttoolsOrder = await orderMapper.mapOrder(commercetoolsOrder);
     expect(fulfillmenttoolsOrder.deliveryPreferences?.collect?.[0].facilityRef).toEqual('store_cologne_fft_id');
   });
+
   it('rejects click and collect order if no custom field is set and line items contain multiple distinct supply channels', async () => {
     const commercetoolsOrder = getTestOrderClickAndCollectWithMultipleChannels();
     await expect(orderMapper.mapOrder(commercetoolsOrder)).rejects.toThrow(AmbiguousChannelError);
   });
+
   it('rejects click and collect order if no custom field is set and line items contain no channel', async () => {
     const commercetoolsOrder = getTestOrderClickAndCollectNoChannels();
     await expect(orderMapper.mapOrder(commercetoolsOrder)).rejects.toThrow(AmbiguousChannelError);
   });
+
   it('maps shipping method correctly to click and collect and custom field', async () => {
     const commercetoolsOrder = getTestOrderClickAndCollectWithCustomField();
     const fulfillmenttoolsOrder = await orderMapper.mapOrder(commercetoolsOrder);

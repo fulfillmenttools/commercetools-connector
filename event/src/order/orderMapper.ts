@@ -9,6 +9,7 @@ import {
   OrderForCreationConsumer,
   OrderLineItemForCreation,
   PreselectedFacility,
+  TagReference,
 } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 import { AmbiguousChannelError, Configuration, ServiceType, StoreService, getConfiguration, logger } from 'shared';
 import ArticleAttributeItemCategory = ArticleAttributeItem.CategoryEnum;
@@ -17,6 +18,7 @@ export class OrderMapper {
   constructor(private readonly ctStoreService: StoreService, private readonly facilityService: FftFacilityService) {}
 
   public async mapOrder(commercetoolsOrder: CommercetoolsOrder): Promise<FulfillmenttoolsOrder> {
+    const configuration = await getConfiguration();
     return {
       tenantOrderId: commercetoolsOrder.orderNumber || commercetoolsOrder.id,
       consumer: this.mapConsumer(commercetoolsOrder),
@@ -25,7 +27,11 @@ export class OrderMapper {
       customAttributes: {
         commercetoolsId: commercetoolsOrder.id,
       },
-      deliveryPreferences: await this.mapDeliveryPreferences(commercetoolsOrder),
+      deliveryPreferences: await this.mapDeliveryPreferences(commercetoolsOrder, configuration),
+      paymentInfo: {
+        currency: commercetoolsOrder.totalPrice.currencyCode,
+      },
+      tags: this.mapTags(commercetoolsOrder, configuration),
     };
   }
 
@@ -61,9 +67,11 @@ export class OrderMapper {
     return strippedFacility.id;
   }
 
-  private async mapDeliveryPreferences(commercetoolsOrder: CommercetoolsOrder): Promise<DeliveryPreferences> {
+  private async mapDeliveryPreferences(
+    commercetoolsOrder: CommercetoolsOrder,
+    configuration?: Configuration
+  ): Promise<DeliveryPreferences> {
     const shippingMethodKey = commercetoolsOrder.shippingInfo?.shippingMethod?.obj?.key;
-    const configuration = await getConfiguration();
     if (!shippingMethodKey || !configuration?.shippingMethodMapping?.[shippingMethodKey]) {
       return {
         shipping: {
@@ -182,5 +190,26 @@ export class OrderMapper {
       return undefined;
     }
     return order.custom?.fields[supplyChannelReferenceFieldName];
+  }
+
+  private mapTags(commercetoolsOrder: CommercetoolsOrder, configuration?: Configuration): TagReference[] {
+    const tags: TagReference[] = [];
+    if (configuration?.storeTagMapping && commercetoolsOrder.store?.key) {
+      tags.push({
+        id: configuration.storeTagMapping,
+        value: commercetoolsOrder.store?.key,
+      });
+    }
+    if (configuration?.customFieldTagMapping) {
+      for (const fieldName of Object.keys(configuration.customFieldTagMapping)) {
+        if (commercetoolsOrder.custom?.fields[fieldName]) {
+          tags.push({
+            id: configuration.customFieldTagMapping[fieldName],
+            value: commercetoolsOrder.custom?.fields[fieldName],
+          });
+        }
+      }
+    }
+    return tags;
   }
 }
