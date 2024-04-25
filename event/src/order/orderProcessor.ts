@@ -1,6 +1,6 @@
 import { getCommercetoolsOrderById, isHttpError, logger, ResourceLockedError } from 'shared';
 import { OrderMapper } from './orderMapper';
-import { FftOrderService } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
+import { FftOrderService, OrderStatus } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 import { isBefore, subSeconds } from 'date-fns';
 
 export class OrderProcessor {
@@ -32,6 +32,11 @@ export class OrderProcessor {
       const fftOrder = await this.fftOrderService.findByTenantOrderId(orderId);
       if (!fftOrder) {
         logger.info(`fulfillmenttools order for CT order '${orderId}' does not exist => nothing to cancel`);
+        return;
+      } else if (fftOrder.status === OrderStatus.CANCELLED) {
+        logger.info(
+          `fulfillmenttools order '${fftOrder.id}' for CT order '${orderId}' already cancelled => nothing to do`
+        );
         return;
       }
       await this.fftOrderService.cancel(fftOrder.id, fftOrder.version);
