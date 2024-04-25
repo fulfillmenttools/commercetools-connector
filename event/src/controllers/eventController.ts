@@ -32,6 +32,8 @@ export class EventController {
       case 'order':
         if (this.isOrderStateConfirmedMessage(message)) {
           await this.orderProcessor.processOrder(resourceRef.id);
+        } else if (this.isOrderStateCancelledMessage(message)) {
+          await this.orderProcessor.cancelOrder(resourceRef.id);
         }
         break;
       case 'channel':
@@ -97,6 +99,13 @@ export class EventController {
   private isOrderStateConfirmedMessage(message: Message): boolean {
     if (message.type === 'OrderStateChanged') {
       return (message as OrderStateChangedMessage).orderState === 'Confirmed';
+    }
+    return false;
+  }
+
+  private isOrderStateCancelledMessage(message: Message): boolean {
+    if (message.type === 'OrderStateChanged') {
+      return (message as OrderStateChangedMessage).orderState === 'Cancelled';
     }
     return false;
   }

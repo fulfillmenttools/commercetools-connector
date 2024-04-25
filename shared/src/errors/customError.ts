@@ -16,7 +16,6 @@ export class CustomError extends Error {
   }
 }
 
-// eslint-disable-next-line @typescript-eslint/no-explicit-any
-export function isErrorItem(object: any): object is ErrorItem {
-  return 'message' in object && 'statusCode' in object;
+export function isErrorItem(object: unknown): object is ErrorItem {
+  return object !== null && typeof object === 'object' && 'message' in object && 'statusCode' in object;
 }
