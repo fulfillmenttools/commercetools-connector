@@ -19,7 +19,7 @@ export class OrderMapper {
 
   public async mapOrder(commercetoolsOrder: CommercetoolsOrder): Promise<FulfillmenttoolsOrder> {
     const configuration = await getConfiguration();
-    return {
+    const order: FulfillmenttoolsOrder = {
       tenantOrderId: commercetoolsOrder.orderNumber || commercetoolsOrder.id,
       consumer: this.mapConsumer(commercetoolsOrder),
       orderDate: new Date(commercetoolsOrder.createdAt),
@@ -31,8 +31,12 @@ export class OrderMapper {
       paymentInfo: {
         currency: commercetoolsOrder.totalPrice.currencyCode,
       },
-      tags: this.mapTags(commercetoolsOrder, configuration),
     };
+    const tags = this.mapTags(commercetoolsOrder, configuration);
+    if (tags && tags.length > 0) {
+      order.tags = tags;
+    }
+    return order;
   }
 
   private async getPreselectedFacilities(commercetoolsOrder: CommercetoolsOrder): Promise<PreselectedFacility[]> {

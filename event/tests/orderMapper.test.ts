@@ -54,6 +54,7 @@ describe('OrderMapper', () => {
     expect(article.title).toEqual('Cigköfte Wrap');
     expect(article.imageUrl).toEqual('https://fancy-image.example.com');
     expect(fulfillmenttoolsOrder.tenantOrderId).toEqual('orderNumber');
+    expect(fulfillmenttoolsOrder.tags).toBeUndefined();
   });
 
   it('defaults to id if orderNumber is undefined', async () => {
