@@ -27,11 +27,12 @@ export class FftOrderServiceMock extends FftOrderService {
     const consumer: OrderForCreationConsumer = { addresses: [] };
     return {
       consumer: consumer,
-      id: '12345',
+      id: '7c801788-eb1c-4afd-95d0-77e6ce377500',
       orderDate: new Date(),
       orderLineItems: [],
       status: OrderStatus.OPEN,
       version: 0,
+      processId: 'e2e199ac-f534-4fe1-a5b2-4fbb9bd679ce',
     };
   }
 

@@ -1,5 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
-import { Message, OrderStateChangedMessage, Reference } from '@commercetools/platform-sdk';
+import { Message, OrderCreatedMessage, OrderStateChangedMessage, Reference } from '@commercetools/platform-sdk';
 
 import { logger, CustomError, SubscriptionMessage } from 'shared';
 import { OrderProcessor } from '../order/orderProcessor';
@@ -30,7 +30,7 @@ export class EventController {
     const typeString = resourceRef.typeId as string;
     switch (resourceRef.typeId) {
       case 'order':
-        if (this.isOrderStateConfirmedMessage(message)) {
+        if (this.isOrderStateConfirmedMessage(message) || this.isOrderCreatedWithStateConfirmedMessage(message)) {
           await this.orderProcessor.processOrder(resourceRef.id);
         } else if (this.isOrderStateCancelledMessage(message)) {
           await this.orderProcessor.cancelOrder(resourceRef.id);
@@ -99,6 +99,13 @@ export class EventController {
   private isOrderStateConfirmedMessage(message: Message): boolean {
     if (message.type === 'OrderStateChanged') {
       return (message as OrderStateChangedMessage).orderState === 'Confirmed';
+    }
+    return false;
+  }
+
+  private isOrderCreatedWithStateConfirmedMessage(message: Message): boolean {
+    if (message.type === 'OrderCreated') {
+      return (message as OrderCreatedMessage).order.orderState === 'Confirmed';
     }
     return false;
   }
