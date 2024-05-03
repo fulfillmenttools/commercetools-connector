@@ -20,7 +20,7 @@ export class PickJobService {
     if (!commercetoolsOrder) {
       return;
     }
-    if (!canUpdateOrder(commercetoolsOrder)) {
+    if (!(await canUpdateOrder(commercetoolsOrder))) {
       return;
     }
 
@@ -42,7 +42,7 @@ export class PickJobService {
     if (!commercetoolsOrder) {
       return;
     }
-    if (!canUpdateOrder(commercetoolsOrder)) {
+    if (!(await canUpdateOrder(commercetoolsOrder))) {
       return;
     }
 

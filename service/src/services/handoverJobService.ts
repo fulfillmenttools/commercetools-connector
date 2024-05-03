@@ -32,7 +32,7 @@ export class HandoverJobService {
     if (!commercetoolsOrder) {
       return;
     }
-    if (!canUpdateOrder(commercetoolsOrder)) {
+    if (!(await canUpdateOrder(commercetoolsOrder))) {
       return;
     }
     const actions = [
@@ -59,7 +59,7 @@ export class HandoverJobService {
     if (!commercetoolsOrder) {
       return;
     }
-    if (!canUpdateOrder(commercetoolsOrder)) {
+    if (!(await canUpdateOrder(commercetoolsOrder))) {
       return;
     }
     const actions = [changeShipmentStateAction('Shipped')];
