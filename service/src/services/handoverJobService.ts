@@ -16,6 +16,7 @@ import {
   updateCommercetoolsOrder,
   updateOrderAction,
 } from 'shared';
+import { canUpdateOrder } from './orderService';
 
 export class HandoverJobService {
   constructor(
@@ -29,6 +30,9 @@ export class HandoverJobService {
 
     const commercetoolsOrder = await this.getCommercetoolsOrderForHandoverJob(handoverJob);
     if (!commercetoolsOrder) {
+      return;
+    }
+    if (!(await canUpdateOrder(commercetoolsOrder))) {
       return;
     }
     const actions = [
@@ -55,7 +59,9 @@ export class HandoverJobService {
     if (!commercetoolsOrder) {
       return;
     }
-
+    if (!(await canUpdateOrder(commercetoolsOrder))) {
+      return;
+    }
     const actions = [changeShipmentStateAction('Shipped')];
     const updateAction = updateOrderAction(commercetoolsOrder, actions);
 
@@ -85,6 +91,7 @@ export class HandoverJobService {
 
     return await getCommercetoolsOrderById(commercetoolsOrderId);
   }
+
   private async trackingDataAction(handoverJob: Handoverjob): Promise<OrderSetCustomFieldAction | undefined> {
     try {
       if (!handoverJob.shipmentRef) {

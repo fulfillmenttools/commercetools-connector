@@ -84,3 +84,21 @@ async function updateCustomField(
   }
   return actions;
 }
+
+export async function canUpdateOrder(commercetoolsOrder: CommercetoolsOrder): Promise<boolean> {
+  let updateOrder = true;
+  const orderCustomType = getCustomTypeOfOrder(commercetoolsOrder);
+  const customTypeKey = await orderCustomTypeKey();
+  if (!customTypeKey) {
+    logger.warn(
+      `No order custom type defined in configuration, CT order '${commercetoolsOrder.id}' will not be updated`
+    );
+    updateOrder = false;
+  } else if (orderCustomType !== customTypeKey) {
+    logger.warn(
+      `CT order '${commercetoolsOrder.id}' has unsupported custom type '${orderCustomType}' and will not be updated`
+    );
+    updateOrder = false;
+  }
+  return updateOrder;
+}
