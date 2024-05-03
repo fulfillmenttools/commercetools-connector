@@ -1,9 +1,9 @@
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
 
-const ORDER_STATE_CHANGED_SUBSCRIPTION_KEY = 'fft-ctc-orders';
+const ORDER_SUBSCRIPTION_KEY = 'fft-ctc-orders';
 const CHANNEL_RESOURCE_SUBSCRIPTION_KEY = 'fft-ctc-channels';
 
-export async function createOrderStateChangedSubscription(
+export async function createOrderSubscription(
   apiRoot: ByProjectKeyRequestBuilder,
   topicName: string,
   projectId: string
@@ -14,7 +14,7 @@ export async function createOrderStateChangedSubscription(
     .subscriptions()
     .get({
       queryArgs: {
-        where: `key = "${ORDER_STATE_CHANGED_SUBSCRIPTION_KEY}"`,
+        where: `key = "${ORDER_SUBSCRIPTION_KEY}"`,
       },
     })
     .execute();
@@ -24,7 +24,7 @@ export async function createOrderStateChangedSubscription(
 
     await apiRoot
       .subscriptions()
-      .withKey({ key: ORDER_STATE_CHANGED_SUBSCRIPTION_KEY })
+      .withKey({ key: ORDER_SUBSCRIPTION_KEY })
       .delete({
         queryArgs: {
           version: subscription?.version || 0,
@@ -37,7 +37,7 @@ export async function createOrderStateChangedSubscription(
     .subscriptions()
     .post({
       body: {
-        key: ORDER_STATE_CHANGED_SUBSCRIPTION_KEY,
+        key: ORDER_SUBSCRIPTION_KEY,
         destination: {
           type: 'GoogleCloudPubSub',
           topic: topicName,
@@ -46,7 +46,7 @@ export async function createOrderStateChangedSubscription(
         messages: [
           {
             resourceTypeId: 'order',
-            types: ['OrderStateChanged'],
+            types: ['OrderCreated', 'OrderStateChanged'],
           },
         ],
       },
@@ -54,14 +54,14 @@ export async function createOrderStateChangedSubscription(
     .execute();
 }
 
-export async function deleteOrderStateChangedSubscription(apiRoot: ByProjectKeyRequestBuilder): Promise<void> {
+export async function deleteOrderSubscription(apiRoot: ByProjectKeyRequestBuilder): Promise<void> {
   const {
     body: { results: subscriptions },
   } = await apiRoot
     .subscriptions()
     .get({
       queryArgs: {
-        where: `key = "${ORDER_STATE_CHANGED_SUBSCRIPTION_KEY}"`,
+        where: `key = "${ORDER_SUBSCRIPTION_KEY}"`,
       },
     })
     .execute();
@@ -71,7 +71,7 @@ export async function deleteOrderStateChangedSubscription(apiRoot: ByProjectKeyR
 
     await apiRoot
       .subscriptions()
-      .withKey({ key: ORDER_STATE_CHANGED_SUBSCRIPTION_KEY })
+      .withKey({ key: ORDER_SUBSCRIPTION_KEY })
       .delete({
         queryArgs: {
           version: subscription?.version || 0,
