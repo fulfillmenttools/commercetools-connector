@@ -1,5 +1,5 @@
+import { Order } from '@commercetools/platform-sdk';
 import { FftLoadUnitService, PickJob } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
-
 import {
   FFTConstants,
   getCommercetoolsOrderById,
@@ -8,6 +8,7 @@ import {
   updateCommercetoolsOrder,
   updateOrderAction,
 } from 'shared';
+import { canUpdateOrder } from './orderService';
 
 export class PickJobService {
   constructor(private readonly loadUnitService: FftLoadUnitService) {}
@@ -15,13 +16,13 @@ export class PickJobService {
   public async pickJobCreated(pickJob: PickJob): Promise<void> {
     logger.info(`FFT PickJob created '${pickJob.id}'`);
 
-    const commercetoolsOrderId: string | undefined = pickJob.customAttributes?.commercetoolsId;
-    if (!commercetoolsOrderId) {
-      logger.info(`Ignoring FFT order '${pickJob.orderRef}' because it does not correspond to a CT order`);
+    const commercetoolsOrder = await this.getCommercetoolsOrderForPickJob(pickJob);
+    if (!commercetoolsOrder) {
       return;
     }
-
-    const commercetoolsOrder = await getCommercetoolsOrderById(commercetoolsOrderId);
+    if (!canUpdateOrder(commercetoolsOrder)) {
+      return;
+    }
 
     const actions = [
       setCustomFieldAction(FFTConstants.PICKJOB_ID, pickJob.id),
@@ -37,13 +38,13 @@ export class PickJobService {
   public async pickJobFinished(pickJob: PickJob): Promise<void> {
     logger.info(`FFT PickJob finished '${pickJob.id}'`);
 
-    const commercetoolsOrderId: string | undefined = pickJob.customAttributes?.commercetoolsId;
-    if (!commercetoolsOrderId) {
-      logger.info(`Ignoring FFT order '${pickJob.orderRef}' because it does not correspond to a CT order`);
+    const commercetoolsOrder = await this.getCommercetoolsOrderForPickJob(pickJob);
+    if (!commercetoolsOrder) {
       return;
     }
-
-    const commercetoolsOrder = await getCommercetoolsOrderById(commercetoolsOrderId);
+    if (!canUpdateOrder(commercetoolsOrder)) {
+      return;
+    }
 
     const loadUnits = await this.loadUnitService.findByPickJobRef(pickJob.id);
     if (loadUnits && loadUnits.length > 0) {
@@ -54,5 +55,14 @@ export class PickJobService {
 
       logger.info(`Updated CT order '${commercetoolsOrder.id}' with FFT load units information`);
     }
+  }
+
+  private async getCommercetoolsOrderForPickJob(pickJob: PickJob): Promise<Order | undefined> {
+    const commercetoolsOrderId: string | undefined = pickJob.customAttributes?.commercetoolsId;
+    if (!commercetoolsOrderId) {
+      logger.info(`Ignoring FFT order '${pickJob.orderRef}' because it does not correspond to a CT order`);
+      return undefined;
+    }
+    return await getCommercetoolsOrderById(commercetoolsOrderId);
   }
 }
