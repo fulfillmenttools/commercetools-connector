@@ -1,4 +1,4 @@
-import { Order, OrderSetCustomFieldAction } from '@commercetools/platform-sdk';
+import { Order, OrderSetCustomFieldAction, OrderUpdateAction } from '@commercetools/platform-sdk';
 import {
   FftOrderService,
   FftParcelService,
@@ -33,7 +33,7 @@ export class HandoverJobService {
       return;
     }
 
-    const actions = [changeShipmentStateAction('Ready')];
+    const actions: OrderUpdateAction[] = [changeShipmentStateAction('Ready')];
     if (await canUpdateOrder(commercetoolsOrder)) {
       actions.push(setCustomFieldAction(FFTConstants.HANDOVER_JOB_ID, handoverJob.id));
       const trackingDataAction = await this.trackingDataAction(handoverJob);
