@@ -1,4 +1,4 @@
-import { Order, OrderSetCustomFieldAction } from '@commercetools/platform-sdk';
+import { Order, OrderSetCustomFieldAction, OrderUpdateAction } from '@commercetools/platform-sdk';
 import {
   FftOrderService,
   FftParcelService,
@@ -32,16 +32,14 @@ export class HandoverJobService {
     if (!commercetoolsOrder) {
       return;
     }
-    if (!(await canUpdateOrder(commercetoolsOrder))) {
-      return;
-    }
-    const actions = [
-      setCustomFieldAction(FFTConstants.HANDOVER_JOB_ID, handoverJob.id),
-      changeShipmentStateAction('Ready'),
-    ];
-    const trackingDataAction = await this.trackingDataAction(handoverJob);
-    if (trackingDataAction) {
-      actions.push(trackingDataAction);
+
+    const actions: OrderUpdateAction[] = [changeShipmentStateAction('Ready')];
+    if (await canUpdateOrder(commercetoolsOrder)) {
+      actions.push(setCustomFieldAction(FFTConstants.HANDOVER_JOB_ID, handoverJob.id));
+      const trackingDataAction = await this.trackingDataAction(handoverJob);
+      if (trackingDataAction) {
+        actions.push(trackingDataAction);
+      }
     }
     const updateAction = updateOrderAction(commercetoolsOrder, actions);
 
@@ -59,9 +57,7 @@ export class HandoverJobService {
     if (!commercetoolsOrder) {
       return;
     }
-    if (!(await canUpdateOrder(commercetoolsOrder))) {
-      return;
-    }
+
     const actions = [changeShipmentStateAction('Shipped')];
     const updateAction = updateOrderAction(commercetoolsOrder, actions);
 
