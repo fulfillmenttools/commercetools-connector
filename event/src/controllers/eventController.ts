@@ -31,9 +31,9 @@ export class EventController {
     switch (resourceRef.typeId) {
       case 'order':
         if (this.isOrderStateConfirmedMessage(message) || this.isOrderCreatedWithStateConfirmedMessage(message)) {
-          await this.orderProcessor.processOrder(resourceRef.id);
+          await this.orderProcessor.processOrder(resourceRef.id, message.resourceUserProvidedIdentifiers?.orderNumber);
         } else if (this.isOrderStateCancelledMessage(message) || this.isOrderDeletedMessage(message)) {
-          await this.orderProcessor.cancelOrder(resourceRef.id);
+          await this.orderProcessor.cancelOrder(resourceRef.id, message.resourceUserProvidedIdentifiers?.orderNumber);
         }
         break;
       case 'channel':
