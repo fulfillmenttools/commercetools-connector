@@ -8,11 +8,11 @@ export class OrderProcessor {
 
   constructor(private readonly fftOrderService: FftOrderService, private readonly orderMapper: OrderMapper) {}
 
-  async processOrder(orderId: string) {
+  async processOrder(orderId: string, orderNumber?: string) {
     this.removeOldLocks(60);
     this.lockOrder(orderId);
     try {
-      const fftOrder = await this.fftOrderService.findByTenantOrderId(orderId);
+      const fftOrder = await this.fftOrderService.findByTenantOrderId(orderNumber || orderId);
       if (fftOrder) {
         logger.info(`fulfillmenttools order for CT order '${orderId}' already exists => skip`);
         return;
@@ -25,11 +25,11 @@ export class OrderProcessor {
     }
   }
 
-  async cancelOrder(orderId: string) {
+  async cancelOrder(orderId: string, orderNumber?: string) {
     this.removeOldLocks(60);
     this.lockOrder(orderId);
     try {
-      const fftOrder = await this.fftOrderService.findByTenantOrderId(orderId);
+      const fftOrder = await this.fftOrderService.findByTenantOrderId(orderNumber || orderId);
       if (!fftOrder) {
         logger.info(`fulfillmenttools order for CT order '${orderId}' does not exist => nothing to cancel`);
         return;
