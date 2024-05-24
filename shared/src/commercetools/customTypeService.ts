@@ -163,6 +163,5 @@ async function listOfMissingFields(existingFields: FieldDefinition[]): Promise<F
   const requiredFieldNames = requiredFields.map((f) => f.name);
   const existingFieldNames = existingFields.map((f) => f.name);
   const missingFieldNames = requiredFieldNames.filter((f) => !existingFieldNames.includes(f));
-  const missingFields = requiredFields.filter((f) => missingFieldNames.includes(f.name));
-  return missingFields as FieldDefinition[];
+  return requiredFields.filter((f) => missingFieldNames.includes(f.name));
 }
