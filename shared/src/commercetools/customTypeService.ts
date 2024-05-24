@@ -66,13 +66,14 @@ export async function createCustomOrderType(): Promise<string | undefined> {
   try {
     const typeKey = await orderCustomTypeKey();
     if (typeKey) {
+      const fieldDefinitions = await requiredFieldDefinitions();
       const customType: TypeDraft = {
         key: typeKey,
         name: {
           en: CUSTOM_TYPE_NAME,
         },
         resourceTypeIds: ['order'],
-        fieldDefinitions: customTypeDefinition.orderCustomTypeFieldDefinitions as FieldDefinition[],
+        fieldDefinitions,
       };
       const result = await createApiRoot().types().post({ body: customType }).execute();
 
@@ -97,7 +98,7 @@ export async function updateCustomOrderType(id: string): Promise<string | undefi
     if (typeKey) {
       const customType = await getCustomTypeById(id);
       if (customType) {
-        const missingFields = listOfMissingFields(customType.fieldDefinitions);
+        const missingFields = await listOfMissingFields(customType.fieldDefinitions);
         if (missingFields.length > 0) {
           const updateActions = missingFields.map((f) => addFieldDefinitionAction(f));
           const typeUpdate = updateTypeAction(customType, updateActions);
@@ -130,12 +131,38 @@ export async function orderCustomTypeKey(): Promise<string | undefined> {
   return key;
 }
 
-function listOfMissingFields(existingFields: FieldDefinition[]): FieldDefinition[] {
-  const requiredFieldNames = customTypeDefinition.orderCustomTypeFieldDefinitions.map((f) => f.name);
+async function collectChannelReferenceFieldName(): Promise<string | undefined> {
+  let name: string | undefined;
+  const configuration = await getConfiguration();
+  if (configuration) {
+    name = configuration.collectChannelReferenceFieldName;
+  }
+  return name;
+}
+
+async function requiredFieldDefinitions(): Promise<FieldDefinition[]> {
+  const requiredFieldDefinitions = customTypeDefinition.orderCustomTypeFieldDefinitions as FieldDefinition[];
+  const fieldName = await collectChannelReferenceFieldName();
+  if (fieldName) {
+    requiredFieldDefinitions.push({
+      name: fieldName,
+      label: {
+        en: 'FFT Click & Collect Facility',
+      },
+      required: false,
+      type: {
+        name: 'String',
+      },
+    });
+  }
+  return requiredFieldDefinitions;
+}
+
+async function listOfMissingFields(existingFields: FieldDefinition[]): Promise<FieldDefinition[]> {
+  const requiredFields = await requiredFieldDefinitions();
+  const requiredFieldNames = requiredFields.map((f) => f.name);
   const existingFieldNames = existingFields.map((f) => f.name);
   const missingFieldNames = requiredFieldNames.filter((f) => !existingFieldNames.includes(f));
-  const missingFields = customTypeDefinition.orderCustomTypeFieldDefinitions.filter((f) =>
-    missingFieldNames.includes(f.name)
-  );
+  const missingFields = requiredFields.filter((f) => missingFieldNames.includes(f.name));
   return missingFields as FieldDefinition[];
 }
