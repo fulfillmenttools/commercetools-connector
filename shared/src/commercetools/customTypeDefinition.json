@@ -53,7 +53,7 @@
     {
       "name": "fft_order_id",
       "label": {
-        "en": "FFT Order Id"
+        "en": "FFT Order ID"
       },
       "required": false,
       "type": {

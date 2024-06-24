@@ -18,6 +18,10 @@ export class OrderProcessor {
         return;
       }
       const commercetoolsOrder = await getCommercetoolsOrderById(orderId);
+      if (commercetoolsOrder.orderState === 'Cancelled') {
+        logger.info(`CT order '${orderId}' is already cancelled => skip`);
+        return;
+      }
       const fulfillmenttoolsOrder = await this.orderMapper.mapOrder(commercetoolsOrder);
       await this.fftOrderService.create(fulfillmenttoolsOrder);
     } finally {
