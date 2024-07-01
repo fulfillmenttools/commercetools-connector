@@ -113,6 +113,7 @@ export class OrderMapper {
 
   private mapOrderLineItems(commercetoolsOrder: CommercetoolsOrder): OrderLineItemForCreation[] {
     function getStringValue(value: { [key: string]: any }): string {
+      // TODO map languages defined in CT project using ProjectService.getProject
       const locales = ['en-US', 'en-GB', 'en-AU', 'en-CA', 'en', 'de-DE', 'de-AT', 'de-CH', 'de'];
       let result: string | undefined = undefined;
       for (const locale of locales) {

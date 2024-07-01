@@ -2,11 +2,11 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import { assertError, createApiRoot } from 'shared';
-import { deleteChannelResourceSubscription, deleteOrderSubscription } from './actions';
+import { deleteChannelResourceSubscription, deleteOrderSubscription, deleteProductSubscription } from './actions';
 
 async function preUndeploy(): Promise<void> {
   const apiRoot = createApiRoot();
-  const actions = [deleteOrderSubscription, deleteChannelResourceSubscription];
+  const actions = [deleteOrderSubscription, deleteProductSubscription, deleteChannelResourceSubscription];
   await Promise.all(actions.map(async (a) => await a(apiRoot)));
 }
 

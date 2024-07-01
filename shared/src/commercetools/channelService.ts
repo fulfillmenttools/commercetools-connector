@@ -1,4 +1,4 @@
-import { Channel } from '@commercetools/platform-sdk';
+import { Channel, ChannelRoleEnum } from '@commercetools/platform-sdk';
 import { createApiRoot } from '../client';
 import { CustomError } from '../errors';
 import { logger } from '../utils';
@@ -21,5 +21,24 @@ export async function getChannelById(channelId: string): Promise<Channel | undef
     }
     logger.error(JSON.stringify(error));
     throw new CustomError(status, `Cannot read CT channel ${channelId}`);
+  }
+}
+
+export async function getChannelsWithRole(role: ChannelRoleEnum): Promise<Channel[]> {
+  try {
+    const result = await createApiRoot()
+      .channels()
+      .get({ queryArgs: { where: `roles contains any ("${role}")` } })
+      .execute();
+
+    if (result.statusCode === 200) {
+      return result.body.results;
+    } else {
+      throw new CustomError(result.statusCode || 500, `Cannot read CT channels with role ${role}`);
+    }
+  } catch (error) {
+    const status = statusCode(error);
+    logger.error(JSON.stringify(error));
+    throw new CustomError(status, `Cannot read CT channels with role ${role}`);
   }
 }

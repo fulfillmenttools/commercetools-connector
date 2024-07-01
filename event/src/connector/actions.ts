@@ -2,36 +2,14 @@ import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/dec
 
 const ORDER_SUBSCRIPTION_KEY = 'fft-ctc-orders';
 const CHANNEL_RESOURCE_SUBSCRIPTION_KEY = 'fft-ctc-channels';
+const PRODUCT_SUBSCRIPTION_KEY = 'fft-ctc-products';
 
 export async function createOrderSubscription(
   apiRoot: ByProjectKeyRequestBuilder,
   topicName: string,
   projectId: string
 ): Promise<void> {
-  const {
-    body: { results: subscriptions },
-  } = await apiRoot
-    .subscriptions()
-    .get({
-      queryArgs: {
-        where: `key = "${ORDER_SUBSCRIPTION_KEY}"`,
-      },
-    })
-    .execute();
-
-  if (subscriptions.length > 0) {
-    const subscription = subscriptions[0];
-
-    await apiRoot
-      .subscriptions()
-      .withKey({ key: ORDER_SUBSCRIPTION_KEY })
-      .delete({
-        queryArgs: {
-          version: subscription?.version || 0,
-        },
-      })
-      .execute();
-  }
+  await deleteOrderSubscription(apiRoot);
 
   await apiRoot
     .subscriptions()
@@ -55,30 +33,7 @@ export async function createOrderSubscription(
 }
 
 export async function deleteOrderSubscription(apiRoot: ByProjectKeyRequestBuilder): Promise<void> {
-  const {
-    body: { results: subscriptions },
-  } = await apiRoot
-    .subscriptions()
-    .get({
-      queryArgs: {
-        where: `key = "${ORDER_SUBSCRIPTION_KEY}"`,
-      },
-    })
-    .execute();
-
-  if (subscriptions.length > 0) {
-    const subscription = subscriptions[0];
-
-    await apiRoot
-      .subscriptions()
-      .withKey({ key: ORDER_SUBSCRIPTION_KEY })
-      .delete({
-        queryArgs: {
-          version: subscription?.version || 0,
-        },
-      })
-      .execute();
-  }
+  await deleteSubscription(ORDER_SUBSCRIPTION_KEY, apiRoot);
 }
 
 export async function createChannelResourceSubscription(
@@ -86,30 +41,7 @@ export async function createChannelResourceSubscription(
   topicName: string,
   projectId: string
 ): Promise<void> {
-  const {
-    body: { results: subscriptions },
-  } = await apiRoot
-    .subscriptions()
-    .get({
-      queryArgs: {
-        where: `key = "${CHANNEL_RESOURCE_SUBSCRIPTION_KEY}"`,
-      },
-    })
-    .execute();
-
-  if (subscriptions.length > 0) {
-    const subscription = subscriptions[0];
-
-    await apiRoot
-      .subscriptions()
-      .withKey({ key: CHANNEL_RESOURCE_SUBSCRIPTION_KEY })
-      .delete({
-        queryArgs: {
-          version: subscription?.version || 0,
-        },
-      })
-      .execute();
-  }
+  await deleteChannelResourceSubscription(apiRoot);
 
   await apiRoot
     .subscriptions()
@@ -132,13 +64,49 @@ export async function createChannelResourceSubscription(
 }
 
 export async function deleteChannelResourceSubscription(apiRoot: ByProjectKeyRequestBuilder): Promise<void> {
+  await deleteSubscription(CHANNEL_RESOURCE_SUBSCRIPTION_KEY, apiRoot);
+}
+
+export async function createProductSubscription(
+  apiRoot: ByProjectKeyRequestBuilder,
+  topicName: string,
+  projectId: string
+): Promise<void> {
+  await deleteProductSubscription(apiRoot);
+
+  await apiRoot
+    .subscriptions()
+    .post({
+      body: {
+        key: PRODUCT_SUBSCRIPTION_KEY,
+        destination: {
+          type: 'GoogleCloudPubSub',
+          topic: topicName,
+          projectId,
+        },
+        messages: [
+          {
+            resourceTypeId: 'product',
+            types: ['ProductPublished'],
+          },
+        ],
+      },
+    })
+    .execute();
+}
+
+export async function deleteProductSubscription(apiRoot: ByProjectKeyRequestBuilder): Promise<void> {
+  await deleteSubscription(PRODUCT_SUBSCRIPTION_KEY, apiRoot);
+}
+
+async function deleteSubscription(key: string, apiRoot: ByProjectKeyRequestBuilder): Promise<void> {
   const {
     body: { results: subscriptions },
   } = await apiRoot
     .subscriptions()
     .get({
       queryArgs: {
-        where: `key = "${CHANNEL_RESOURCE_SUBSCRIPTION_KEY}"`,
+        where: `key = "${key}"`,
       },
     })
     .execute();
@@ -148,7 +116,7 @@ export async function deleteChannelResourceSubscription(apiRoot: ByProjectKeyReq
 
     await apiRoot
       .subscriptions()
-      .withKey({ key: CHANNEL_RESOURCE_SUBSCRIPTION_KEY })
+      .withKey({ key })
       .delete({
         queryArgs: {
           version: subscription?.version || 0,
