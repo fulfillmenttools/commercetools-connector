@@ -7,7 +7,9 @@ export class ChannelProcessor {
 
   async processChannel(message: Message & { notificationType?: string }): Promise<void> {
     if (message.resource?.typeId != 'channel') {
-      logger.warn(`Could not process CT message - resource.typeId '${message.resource?.typeId}' != 'channel'`);
+      logger.warn(
+        `Could not process CT message '${message.resource?.id}' - resource.typeId '${message.resource?.typeId}' != 'channel'`
+      );
       return;
     }
 

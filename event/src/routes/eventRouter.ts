@@ -27,7 +27,7 @@ export class EventRouter {
     const ctStoreService = new CommercetoolsStoreService();
     const orderProcessor = new OrderProcessor(orderService, new OrderMapper(ctStoreService, facilityService));
     const channelProcessor = new ChannelProcessor(channelService);
-    const productProcessor = new ProductProcessor(facilityService, listingService, new ProductMapper(facilityService));
+    const productProcessor = new ProductProcessor(facilityService, listingService, new ProductMapper());
 
     const statusController = new StatusController();
     const eventController = new EventController(orderProcessor, productProcessor, channelProcessor);
