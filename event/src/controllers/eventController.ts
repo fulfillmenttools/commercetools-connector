@@ -1,12 +1,23 @@
 import { NextFunction, Request, Response } from 'express';
-import { Message, OrderCreatedMessage, OrderStateChangedMessage, Reference } from '@commercetools/platform-sdk';
+import {
+  Message,
+  OrderCreatedMessage,
+  OrderStateChangedMessage,
+  ProductPublishedMessage,
+  Reference,
+} from '@commercetools/platform-sdk';
 
 import { logger, CustomError, SubscriptionMessage } from 'shared';
 import { OrderProcessor } from '../order/orderProcessor';
 import { ChannelProcessor } from '../channel/channelProcessor';
+import { ProductProcessor } from '../product/productProcessor';
 
 export class EventController {
-  constructor(private readonly orderProcessor: OrderProcessor, private readonly channelProcessor: ChannelProcessor) {
+  constructor(
+    private readonly orderProcessor: OrderProcessor,
+    private readonly productProcessor: ProductProcessor,
+    private readonly channelProcessor: ChannelProcessor
+  ) {
     this.post = this.post.bind(this);
   }
 
@@ -34,6 +45,11 @@ export class EventController {
           await this.orderProcessor.processOrder(resourceRef.id, message.resourceUserProvidedIdentifiers?.orderNumber);
         } else if (this.isOrderStateCancelledMessage(message) || this.isOrderDeletedMessage(message)) {
           await this.orderProcessor.cancelOrder(resourceRef.id, message.resourceUserProvidedIdentifiers?.orderNumber);
+        }
+        break;
+      case 'product':
+        if (this.isProductPublishedMessage(message)) {
+          await this.productProcessor.processProductPublished(message as ProductPublishedMessage);
         }
         break;
       case 'channel':
@@ -128,5 +144,9 @@ export class EventController {
       notificationType === 'ResourceCreated' ||
       notificationType === 'ResourceDeleted'
     );
+  }
+
+  private isProductPublishedMessage(message: Message): boolean {
+    return message.type === 'ProductPublished';
   }
 }

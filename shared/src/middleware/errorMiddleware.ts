@@ -9,6 +9,7 @@ import { logger } from '../utils/loggerUtils';
  * @param res The Express response
  * @param next
  * @returns
+ * @see https://expressjs.com/en/guide/error-handling.html
  */
 export const errorMiddleware = (
   error: ErrorRequestHandler,
