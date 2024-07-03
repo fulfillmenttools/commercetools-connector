@@ -1,16 +1,17 @@
 import { ProductProjection, ProductVariant } from '@commercetools/platform-sdk';
-import { ListingForReplacement } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
-
-import { logger } from 'shared';
+import {
+  ArticleAttributeItem,
+  ListingAttributeItem,
+  ListingForReplacement,
+  LocaleString,
+} from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 
 export class ProductMapper {
   public async mapProduct(
     product: ProductProjection,
-    tenantArticleId: string,
-    productKey?: string
+    languages: string[],
+    tenantArticleId: string
   ): Promise<ListingForReplacement | undefined> {
-    logger.info(`mapProduct: ${product.id} (${product.masterVariant.sku})`);
-
     const variant = this.getVariant(product, tenantArticleId);
     if (!variant) {
       return undefined;
@@ -18,8 +19,32 @@ export class ProductMapper {
 
     const listing: ListingForReplacement = {
       tenantArticleId,
-      title: product.name['en-GB'], // TODO L10N
+      title: 'title', // will be overwritten by localized title
     };
+
+    const titleLocalized: LocaleString = {};
+    for (const language of languages) {
+      if (product.name[language]) {
+        titleLocalized[this.mapLocale(language)] = product.name[language];
+      }
+    }
+    listing.titleLocalized = titleLocalized;
+
+    const attr: ListingAttributeItem = {
+      category: ArticleAttributeItem.CategoryEnum.Descriptive,
+      key: '%%subtitle%%',
+      value: 'value', // will be overwritten by localized value
+    };
+
+    const valueLocalized: LocaleString = {};
+    for (const language of languages) {
+      if (product.description?.[language]) {
+        valueLocalized[this.mapLocale(language)] = product.description[language];
+      }
+    }
+    attr.valueLocalized = valueLocalized;
+
+    listing.attributes = [attr];
 
     if (variant.images !== undefined && variant.images.length > 0) {
       listing.imageUrl = variant.images[0].url;
@@ -29,8 +54,9 @@ export class ProductMapper {
       ctProductId: product.id,
       ctProductVariant: variant.id,
     };
-    if (productKey) {
-      listing.customAttributes.ctProductKey = productKey;
+
+    if (product.key) {
+      listing.customAttributes.ctProductKey = product.key;
     }
 
     return listing;
@@ -41,5 +67,9 @@ export class ProductMapper {
       return product.masterVariant;
     }
     return product.variants.find((variant) => variant.sku === tenantArticleId);
+  }
+
+  mapLocale(source: string): string {
+    return source.replace('-', '_');
   }
 }

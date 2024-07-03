@@ -1,6 +1,6 @@
 import { ProductPublishedMessage, ProductVariant } from '@commercetools/platform-sdk';
 
-import { getChannelsWithRole, logger } from 'shared';
+import { getChannelsWithRole, getProject, logger } from 'shared';
 import { ProductMapper } from './productMapper';
 import { FftFacilityService, FftListingService } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 
@@ -33,7 +33,7 @@ export class ProductProcessor {
 
     if (variants.length === 0) {
       logger.info(
-        `No SKUs defined for product variants, no listings will be created for product ${message.resource.id}`
+        `No SKUs defined for product variants, no listings will be created for product '${message.resource.id}'`
       );
       return;
     }
@@ -43,7 +43,7 @@ export class ProductProcessor {
     const channels = await getChannelsWithRole('InventorySupply');
     if (channels === undefined || channels.length === 0) {
       logger.info(
-        `No InventorySupply channels defined, no listings will be created for product ${message.resource.id}`
+        `No InventorySupply channels defined, no listings will be created for product '${message.resource.id}'`
       );
       return;
     }
@@ -58,28 +58,27 @@ export class ProductProcessor {
 
     if (facilityIds === undefined || facilityIds.length === 0) {
       logger.info(
-        `No matching facilities for InventorySupply channels defined, no listings will be created for product ${message.resource.id}`
+        `No matching facilities for InventorySupply channels defined, no listings will be created for product '${message.resource.id}'`
       );
       return;
     }
 
+    const languages = (await getProject()).languages;
+
     logger.info(`Create/Update listing for ${message.resource.id} in ${facilityIds.length} facilities`);
 
     for (const tenantArticleId of tenantArticleIds) {
+      const listing = await this.productMapper.mapProduct(message.productProjection, languages, tenantArticleId);
+      if (!listing) {
+        continue;
+      }
       for (const facilityId of facilityIds) {
-        const listing = await this.productMapper.mapProduct(
-          message.productProjection,
-          tenantArticleId,
-          message.resourceUserProvidedIdentifiers?.key
-        );
-        if (!listing) {
-          continue;
-        }
         const existingListing = await this.fftListingService.get(facilityId, tenantArticleId, true);
         if (existingListing) {
           listing.version = existingListing.version;
+          // TODO merge values from old version into update
         }
-        logger.info(`Create/Update listing for ${tenantArticleId} in ${facilityId}`, listing);
+        logger.info(`Create/Update listing for '${tenantArticleId}' in '${facilityId}'`, listing);
         await this.fftListingService.create(facilityId, listing);
       }
     }
