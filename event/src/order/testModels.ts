@@ -55,6 +55,7 @@ const shippingMethodDHL: ShippingMethod = {
   version: 0,
   zoneRates: [],
   key: 'dhl',
+  active: true,
 };
 
 const shippingMethodClickAndCollect: ShippingMethod = {
@@ -70,6 +71,7 @@ const shippingMethodClickAndCollect: ShippingMethod = {
   version: 0,
   zoneRates: [],
   key: 'cc',
+  active: true,
 };
 
 const price1: CentPrecisionMoney = { type: 'centPrecision', centAmount: 600, currencyCode: 'EUR', fractionDigits: 0 };
