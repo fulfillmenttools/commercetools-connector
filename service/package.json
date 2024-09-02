@@ -29,7 +29,7 @@
     "postversion": "git add package.json package-lock.json"
   },
   "devDependencies": {
-    "@tsconfig/recommended": "1.0.6",
+    "@tsconfig/recommended": "1.0.7",
     "@types/express": "4.17.21",
     "@types/jest": "29.5.12",
     "@types/jest-when": "3.5.5",
@@ -55,15 +55,15 @@
     "prettier": "2.8.8",
     "rimraf": "5.0.7",
     "supertest": "6.3.4",
-    "ts-jest": "29.1.5",
+    "ts-jest": "29.2.5",
     "ts-node": "10.9.2",
     "typescript": "5.2.2"
   },
   "dependencies": {
-    "@commercetools-backend/loggers": "22.28.0",
-    "@commercetools/platform-sdk": "7.9.0",
+    "@commercetools-backend/loggers": "22.31.0",
+    "@commercetools/platform-sdk": "7.11.0",
     "@commercetools/sdk-client-v2": "2.5.0",
-    "@fulfillmenttools/fulfillmenttools-sdk-typescript": "0.1.16",
+    "@fulfillmenttools/fulfillmenttools-sdk-typescript": "0.1.19",
     "body-parser": "1.20.2",
     "date-fns": "2.30.0",
     "dotenv": "16.4.5",

@@ -11,5 +11,5 @@ module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.cjs'],
-  testPathIgnorePatterns: ['lib'],
+  testPathIgnorePatterns: ['<rootDir>/lib'],
 };
