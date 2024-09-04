@@ -1,5 +1,6 @@
 import { Order as CommercetoolsOrder } from '@commercetools/platform-sdk';
 import {
+  AddressType,
   ArticleAttributeItem,
   ConsumerAddress,
   DeliveryPreferences,
@@ -158,7 +159,7 @@ export class OrderMapper {
             .filter((attr) => attr.value.trim().length > 0),
         },
         quantity: lineItem.quantity,
-        shopPrice: lineItem.price?.value?.centAmount / 100,
+        shopPrice: lineItem.price?.value?.centAmount / 10 ** lineItem.price?.value?.fractionDigits,
         customAttributes: {
           commercetoolsId: lineItem.id,
         },
@@ -168,23 +169,49 @@ export class OrderMapper {
   }
 
   private mapConsumer(commercetoolsOrder: CommercetoolsOrder): OrderForCreationConsumer {
+    const addresses: ConsumerAddress[] = [];
+    addresses.push(this.mapShippingAddress(commercetoolsOrder));
+    if (commercetoolsOrder.billingAddress) {
+      addresses.push(this.mapBillingAddress(commercetoolsOrder));
+    }
     return {
-      addresses: [this.mapConsumerAddress(commercetoolsOrder)],
+      consumerId: commercetoolsOrder.customerId,
+      addresses,
       email: commercetoolsOrder.customerEmail,
     };
   }
 
-  private mapConsumerAddress(commercetoolsOrder: CommercetoolsOrder): ConsumerAddress {
+  private mapShippingAddress(commercetoolsOrder: CommercetoolsOrder): ConsumerAddress {
     return {
+      salutation: commercetoolsOrder.shippingAddress?.salutation || '',
       firstName: commercetoolsOrder.shippingAddress?.firstName || '',
       lastName: commercetoolsOrder.shippingAddress?.lastName || '',
-      city: commercetoolsOrder.shippingAddress?.city || '',
-      country: commercetoolsOrder.shippingAddress?.country || '',
-      houseNumber: commercetoolsOrder.shippingAddress?.streetNumber || '',
-      postalCode: commercetoolsOrder.shippingAddress?.postalCode || '',
       street: commercetoolsOrder.shippingAddress?.streetName || '',
+      houseNumber: commercetoolsOrder.shippingAddress?.streetNumber || '',
       additionalAddressInfo: commercetoolsOrder.shippingAddress?.additionalAddressInfo,
+      postalCode: commercetoolsOrder.shippingAddress?.postalCode || '',
+      city: commercetoolsOrder.shippingAddress?.city || '',
+      province: commercetoolsOrder.shippingAddress?.region || '',
+      country: commercetoolsOrder.shippingAddress?.country || '',
       companyName: commercetoolsOrder.shippingAddress?.company,
+      addressType: AddressType.POSTALADDRESS,
+    };
+  }
+
+  private mapBillingAddress(commercetoolsOrder: CommercetoolsOrder): ConsumerAddress {
+    return {
+      salutation: commercetoolsOrder.billingAddress?.salutation || '',
+      firstName: commercetoolsOrder.billingAddress?.firstName || '',
+      lastName: commercetoolsOrder.billingAddress?.lastName || '',
+      street: commercetoolsOrder.billingAddress?.streetName || '',
+      houseNumber: commercetoolsOrder.billingAddress?.streetNumber || '',
+      additionalAddressInfo: commercetoolsOrder.billingAddress?.additionalAddressInfo,
+      postalCode: commercetoolsOrder.billingAddress?.postalCode || '',
+      city: commercetoolsOrder.billingAddress?.city || '',
+      province: commercetoolsOrder.billingAddress?.region || '',
+      country: commercetoolsOrder.billingAddress?.country || '',
+      companyName: commercetoolsOrder.billingAddress?.company,
+      addressType: AddressType.INVOICEADDRESS,
     };
   }
 
