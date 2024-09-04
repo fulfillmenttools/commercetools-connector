@@ -178,7 +178,8 @@ export class OrderMapper {
       addresses.push(this.mapBillingAddress(commercetoolsOrder.billingAddress));
     }
     return {
-      consumerId: commercetoolsOrder.customerId,
+      // TODO we could fetch the customer from CT and add customerNumber or externalId
+      // consumerId: commercetoolsOrder.customerId,
       addresses,
       email: commercetoolsOrder.customerEmail,
     };
