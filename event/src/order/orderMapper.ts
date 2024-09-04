@@ -1,5 +1,6 @@
-import { Order as CommercetoolsOrder } from '@commercetools/platform-sdk';
+import { Address, Order as CommercetoolsOrder } from '@commercetools/platform-sdk';
 import {
+  AddressPhoneNumbers,
   AddressType,
   ArticleAttributeItem,
   ConsumerAddress,
@@ -170,9 +171,11 @@ export class OrderMapper {
 
   private mapConsumer(commercetoolsOrder: CommercetoolsOrder): OrderForCreationConsumer {
     const addresses: ConsumerAddress[] = [];
-    addresses.push(this.mapShippingAddress(commercetoolsOrder));
+    if (commercetoolsOrder.shippingAddress) {
+      addresses.push(this.mapShippingAddress(commercetoolsOrder.shippingAddress));
+    }
     if (commercetoolsOrder.billingAddress) {
-      addresses.push(this.mapBillingAddress(commercetoolsOrder));
+      addresses.push(this.mapBillingAddress(commercetoolsOrder.billingAddress));
     }
     return {
       consumerId: commercetoolsOrder.customerId,
@@ -181,38 +184,49 @@ export class OrderMapper {
     };
   }
 
-  private mapShippingAddress(commercetoolsOrder: CommercetoolsOrder): ConsumerAddress {
-    return {
-      salutation: commercetoolsOrder.shippingAddress?.salutation || '',
-      firstName: commercetoolsOrder.shippingAddress?.firstName || '',
-      lastName: commercetoolsOrder.shippingAddress?.lastName || '',
-      street: commercetoolsOrder.shippingAddress?.streetName || '',
-      houseNumber: commercetoolsOrder.shippingAddress?.streetNumber || '',
-      additionalAddressInfo: commercetoolsOrder.shippingAddress?.additionalAddressInfo,
-      postalCode: commercetoolsOrder.shippingAddress?.postalCode || '',
-      city: commercetoolsOrder.shippingAddress?.city || '',
-      province: commercetoolsOrder.shippingAddress?.region || '',
-      country: commercetoolsOrder.shippingAddress?.country || '',
-      companyName: commercetoolsOrder.shippingAddress?.company,
-      addressType: AddressType.POSTALADDRESS,
-    };
+  private mapShippingAddress(commercetoolsAddress: Address): ConsumerAddress {
+    const address = this.mapAddress(commercetoolsAddress);
+    address.addressType = AddressType.POSTALADDRESS;
+    return address;
   }
 
-  private mapBillingAddress(commercetoolsOrder: CommercetoolsOrder): ConsumerAddress {
-    return {
-      salutation: commercetoolsOrder.billingAddress?.salutation || '',
-      firstName: commercetoolsOrder.billingAddress?.firstName || '',
-      lastName: commercetoolsOrder.billingAddress?.lastName || '',
-      street: commercetoolsOrder.billingAddress?.streetName || '',
-      houseNumber: commercetoolsOrder.billingAddress?.streetNumber || '',
-      additionalAddressInfo: commercetoolsOrder.billingAddress?.additionalAddressInfo,
-      postalCode: commercetoolsOrder.billingAddress?.postalCode || '',
-      city: commercetoolsOrder.billingAddress?.city || '',
-      province: commercetoolsOrder.billingAddress?.region || '',
-      country: commercetoolsOrder.billingAddress?.country || '',
-      companyName: commercetoolsOrder.billingAddress?.company,
-      addressType: AddressType.INVOICEADDRESS,
+  private mapBillingAddress(commercetoolsAddress: Address): ConsumerAddress {
+    const address = this.mapAddress(commercetoolsAddress);
+    address.addressType = AddressType.INVOICEADDRESS;
+    return address;
+  }
+
+  private mapAddress(commercetoolsAddress: Address): ConsumerAddress {
+    const address: ConsumerAddress = {
+      salutation: commercetoolsAddress.salutation,
+      firstName: commercetoolsAddress.firstName,
+      lastName: commercetoolsAddress.lastName,
+      street: commercetoolsAddress.streetName || '',
+      houseNumber: commercetoolsAddress.streetNumber,
+      additionalAddressInfo: commercetoolsAddress.additionalAddressInfo,
+      postalCode: commercetoolsAddress.postalCode || '',
+      city: commercetoolsAddress.city || '',
+      province: commercetoolsAddress.state,
+      country: commercetoolsAddress.country || '',
+      companyName: commercetoolsAddress.company,
     };
+    const phoneNumbers: AddressPhoneNumbers[] = [];
+    if (commercetoolsAddress.mobile) {
+      phoneNumbers.push({
+        value: commercetoolsAddress.mobile,
+        type: AddressPhoneNumbers.TypeEnum.MOBILE,
+      });
+    }
+    if (commercetoolsAddress.phone) {
+      phoneNumbers.push({
+        value: commercetoolsAddress.phone,
+        type: AddressPhoneNumbers.TypeEnum.PHONE,
+      });
+    }
+    if (phoneNumbers.length > 0) {
+      address.phoneNumbers = phoneNumbers;
+    }
+    return address;
   }
 
   private getSupplyChannelFromCustomField(order: CommercetoolsOrder, config: Configuration): string | undefined {
