@@ -13,7 +13,6 @@ import {
   handoverCreatedEvent,
   handoverHandedOverEvent,
 } from '../src/routes/eventFixtures';
-import { URLType } from 'superagent/types';
 
 describe('Protected Service Router', () => {
   let app: Express;
@@ -36,7 +35,7 @@ describe('Protected Service Router', () => {
       ${'/service/handoverjob/handedover'} | ${handoverHandedOverEvent}
     `('[$path] should reject request when no Bearer token is presented', async ({ path, event }) => {
       const res = await request(app)
-        .post(path as URLType)
+        .post(path as string)
         .send(event as string);
       expect(res.statusCode).toEqual(401);
     });
@@ -50,7 +49,7 @@ describe('Protected Service Router', () => {
     `('[$path] should reject request when Bearer token is empty', async ({ path, event }) => {
       const token = '';
       const res = await request(app)
-        .post(path as URLType)
+        .post(path as string)
         .auth(token, { type: 'bearer' })
         .send(event as string);
       expect(res.statusCode).toEqual(401);
@@ -65,7 +64,7 @@ describe('Protected Service Router', () => {
     `('[$path] should reject request when JWT audience is invalid', async ({ path, event }) => {
       const token = createToken({ audience: 'wrong' });
       const res = await request(app)
-        .post(path as URLType)
+        .post(path as string)
         .auth(token, { type: 'bearer' })
         .send(event as string);
       expect(res.statusCode).toEqual(401);
@@ -80,7 +79,7 @@ describe('Protected Service Router', () => {
     `('[$path] should reject request when JWT issuer is invalid', async ({ path, event }) => {
       const token = createToken({ issuer: 'wrong' });
       const res = await request(app)
-        .post(path as URLType)
+        .post(path as string)
         .auth(token, { type: 'bearer' })
         .send(event as string);
       expect(res.statusCode).toEqual(401);
@@ -95,7 +94,7 @@ describe('Protected Service Router', () => {
     `('[$path] should reject request when JWT subject is invalid', async ({ path, event }) => {
       const token = createToken({ subject: 'wrong' });
       const res = await request(app)
-        .post(path as URLType)
+        .post(path as string)
         .auth(token, { type: 'bearer' })
         .send(event as string);
       expect(res.statusCode).toEqual(401);
@@ -110,7 +109,7 @@ describe('Protected Service Router', () => {
     `('[$path] should reject request when JWT is expired', async ({ path, event }) => {
       const token = createToken({ expiresIn: '-1h' });
       const res = await request(app)
-        .post(path as URLType)
+        .post(path as string)
         .auth(token, { type: 'bearer' })
         .send(event as string);
       expect(res.statusCode).toEqual(401);
@@ -125,7 +124,7 @@ describe('Protected Service Router', () => {
     `('[$path] should reject request when JWT signature is invalid', async ({ path, event }) => {
       const token = createTokenWithSecret(readConfiguration().jwtSecret.split('').reverse().join(''));
       const res = await request(app)
-        .post(path as URLType)
+        .post(path as string)
         .auth(token, { type: 'bearer' })
         .send(event as string);
       expect(res.statusCode).toEqual(401);
@@ -140,7 +139,7 @@ describe('Protected Service Router', () => {
     `('[$path] should reject request when JWT algorithm is invalid', async ({ path, event }) => {
       const token = createToken({ algorithm: 'none' });
       const res = await request(app)
-        .post(path as URLType)
+        .post(path as string)
         .auth(token, { type: 'bearer' })
         .send(event as string);
       expect(res.statusCode).toEqual(401);
