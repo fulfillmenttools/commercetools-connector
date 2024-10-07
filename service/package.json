@@ -29,7 +29,6 @@
     "postversion": "git add package.json package-lock.json"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "3.1.0",
     "@eslint/js": "9.12.0",
     "@jest/globals": "29.7.0",
     "@tsconfig/recommended": "1.0.7",

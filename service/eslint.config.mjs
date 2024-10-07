@@ -5,9 +5,9 @@ import jestPlugin from 'eslint-plugin-jest';
 import tseslint from 'typescript-eslint';
 import prettierConfig from 'eslint-config-prettier';
 
-export default [
+export default tseslint.config(
   {
-    ignores: ['**/node_modules', '**/build/', '**/.nvmrc', '**/api.ts'],
+    ignores: ['**/node_modules', '**/build/', '**/.nvmrc'],
   },
   prettierConfig,
   eslint.configs.recommended,
@@ -29,7 +29,7 @@ export default [
 
       parserOptions: {
         project: 'tsconfig.*?.json',
-        tsconfigRootDir: '/Users/aerpenbeck/src/commercetools-connector/service',
+        tsconfigRootDir: globals.__dirname,
       },
     },
 
@@ -45,5 +45,5 @@ export default [
       'no-console': 'error',
       'no-const-assign': 'error',
     },
-  },
-];
+  }
+);
