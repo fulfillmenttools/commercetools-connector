@@ -9,7 +9,6 @@ export class OrderController {
     this.orderCreated = this.orderCreated.bind(this);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async orderCreated(request: Request, response: Response, _next: NextFunction): Promise<void> {
     const body = request.body;
     assertOrderCreatedEvent(body);
