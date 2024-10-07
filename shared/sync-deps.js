@@ -1,6 +1,5 @@
-/* eslint @typescript-eslint/no-var-requires: 0 */ // --> OFF
-/* eslint no-console: 0 */ // --> OFF
-
+/* eslint-disable @typescript-eslint/no-require-imports */
+/* eslint-disable no-console */
 const fs = require('fs');
 
 // Check if both arguments are provided
@@ -64,5 +63,4 @@ if (updated) {
   fs.writeFileSync(targetJson, JSON.stringify(targetData, null, 2));
 }
 
-// eslint-disable-next-line no-console
 console.log('Completed!');

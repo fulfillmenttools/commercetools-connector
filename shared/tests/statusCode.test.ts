@@ -1,4 +1,4 @@
-import { describe, expect } from '@jest/globals';
+import { describe, expect, it } from '@jest/globals';
 
 import { statusCode } from '../src/commercetools/statusCode';
 
@@ -32,7 +32,6 @@ describe('Status Code', () => {
     expect(status).toBe(404);
   });
   it('should be 500 for unsupported type', () => {
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     const fn = () => {};
     const status = statusCode(fn);
     expect(status).toBe(500);
