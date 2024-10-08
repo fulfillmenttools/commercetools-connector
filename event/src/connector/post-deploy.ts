@@ -20,24 +20,20 @@ async function postDeploy(properties: Map<string, unknown>): Promise<void> {
 
   const apiRoot = createApiRoot();
 
-  switch (connectProvider) {
-    case 'AZURE': {
-      const connectionString = properties.get(CONNECT_AZURE_CONNECTION_STRING_KEY);
-      assertString(connectionString, CONNECT_AZURE_CONNECTION_STRING_KEY);
+  if (connectProvider === 'AZURE') {
+    const connectionString = properties.get(CONNECT_AZURE_CONNECTION_STRING_KEY);
+    assertString(connectionString, CONNECT_AZURE_CONNECTION_STRING_KEY);
 
-      const actions = [createAzureServiceBusOrderSubscription, createAzureServiceBusChannelResourceSubscription];
-      await Promise.all(actions.map(async (a) => await a(apiRoot, connectionString)));
-      break;
-    }
-    default: {
-      const topicName = properties.get(CONNECT_GCP_TOPIC_NAME_KEY);
-      const projectId = properties.get(CONNECT_GCP_PROJECT_ID_KEY);
-      assertString(topicName, CONNECT_GCP_TOPIC_NAME_KEY);
-      assertString(projectId, CONNECT_GCP_PROJECT_ID_KEY);
+    const actions = [createAzureServiceBusOrderSubscription, createAzureServiceBusChannelResourceSubscription];
+    await Promise.all(actions.map(async (a) => await a(apiRoot, connectionString)));
+  } else {
+    const topicName = properties.get(CONNECT_GCP_TOPIC_NAME_KEY);
+    const projectId = properties.get(CONNECT_GCP_PROJECT_ID_KEY);
+    assertString(topicName, CONNECT_GCP_TOPIC_NAME_KEY);
+    assertString(projectId, CONNECT_GCP_PROJECT_ID_KEY);
 
-      const actions = [createGcpPubSubOrderSubscription, createGcpPubSubChannelResourceSubscription];
-      await Promise.all(actions.map(async (a) => await a(apiRoot, topicName, projectId)));
-    }
+    const actions = [createGcpPubSubOrderSubscription, createGcpPubSubChannelResourceSubscription];
+    await Promise.all(actions.map(async (a) => await a(apiRoot, topicName, projectId)));
   }
 }
 
