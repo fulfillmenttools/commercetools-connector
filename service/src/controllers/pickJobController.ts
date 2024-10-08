@@ -10,7 +10,6 @@ export class PickJobController {
     this.pickJobFinished = this.pickJobFinished.bind(this);
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async pickJobCreated(request: Request, response: Response, _next: NextFunction): Promise<void> {
     const body = request.body;
     assertPickJobCreatedEvent(body);
@@ -19,7 +18,6 @@ export class PickJobController {
     response.status(201).json({ id: pickJob.id });
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async pickJobFinished(request: Request, response: Response, _next: NextFunction): Promise<void> {
     const body = request.body;
     assertPickJobFinishedEvent(body);

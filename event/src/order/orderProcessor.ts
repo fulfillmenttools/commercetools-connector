@@ -6,7 +6,10 @@ import { isBefore, subSeconds } from 'date-fns';
 export class OrderProcessor {
   private orderLock: Map<string, Date> = new Map<string, Date>();
 
-  constructor(private readonly fftOrderService: FftOrderService, private readonly orderMapper: OrderMapper) {}
+  constructor(
+    private readonly fftOrderService: FftOrderService,
+    private readonly orderMapper: OrderMapper
+  ) {}
 
   async processOrder(orderId: string, orderNumber?: string) {
     this.removeOldLocks(60);

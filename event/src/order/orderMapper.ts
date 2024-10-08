@@ -17,7 +17,10 @@ import { AmbiguousChannelError, Configuration, ServiceType, StoreService, getCon
 import ArticleAttributeItemCategory = ArticleAttributeItem.CategoryEnum;
 
 export class OrderMapper {
-  constructor(private readonly ctStoreService: StoreService, private readonly facilityService: FftFacilityService) {}
+  constructor(
+    private readonly ctStoreService: StoreService,
+    private readonly facilityService: FftFacilityService
+  ) {}
 
   public async mapOrder(commercetoolsOrder: CommercetoolsOrder): Promise<FulfillmenttoolsOrder> {
     const configuration = await getConfiguration();
@@ -68,7 +71,7 @@ export class OrderMapper {
       logger.error(errorMessage);
       throw new AmbiguousChannelError(errorMessage);
     }
-    const channelKey = distinctChannels.values().next().value;
+    const channelKey = distinctChannels.values().next().value as string;
     const strippedFacility = await this.facilityService.getStrippedFacility(channelKey);
     return strippedFacility.id;
   }
@@ -114,6 +117,7 @@ export class OrderMapper {
   }
 
   private mapOrderLineItems(commercetoolsOrder: CommercetoolsOrder): OrderLineItemForCreation[] {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function getStringValue(value: { [key: string]: any }): string {
       const locales = ['en-US', 'en-GB', 'en-AU', 'en-CA', 'en', 'de-DE', 'de-AT', 'de-CH', 'de'];
       let result: string | undefined = undefined;
@@ -129,6 +133,7 @@ export class OrderMapper {
       return result || ' ';
     }
 
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     function mapAttributeValue(value: any): string {
       if (value === undefined || value === null) {
         return ' '; // FFT API does not allow empty attribute value;
@@ -155,7 +160,7 @@ export class OrderMapper {
                   key: attr.name,
                   value: mapAttributeValue(attr.value),
                   category: ArticleAttributeItemCategory.Miscellaneous,
-                } as OrderArticleAttributeItem)
+                }) as OrderArticleAttributeItem
             )
             .filter((attr) => attr.value.trim().length > 0),
         },

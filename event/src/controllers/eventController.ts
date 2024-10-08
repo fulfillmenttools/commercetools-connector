@@ -6,7 +6,10 @@ import { OrderProcessor } from '../order/orderProcessor';
 import { ChannelProcessor } from '../channel/channelProcessor';
 
 export class EventController {
-  constructor(private readonly orderProcessor: OrderProcessor, private readonly channelProcessor: ChannelProcessor) {
+  constructor(
+    private readonly orderProcessor: OrderProcessor,
+    private readonly channelProcessor: ChannelProcessor
+  ) {
     this.post = this.post.bind(this);
   }
 
@@ -18,7 +21,6 @@ export class EventController {
    * @param {Response} response The express response
    * @returns
    */
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async post(request: Request, response: Response, _next: NextFunction): Promise<void> {
     const message = this.validateMessage(request);
     await this.processMessage(message);
@@ -76,6 +78,7 @@ export class EventController {
     try {
       message = JSON.parse(decodedData) as SubscriptionMessage;
     } catch (e) {
+      logger.error('Cannot parse message data', e);
       throw new CustomError(400, `Bad request: Cannot parse message data`);
     }
 
