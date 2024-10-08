@@ -15,7 +15,7 @@ async function run(): Promise<void> {
     await preUndeploy();
   } catch (error) {
     assertError(error);
-    process.stderr.write(`ERROR: Post-undeploy failed: ${error.message}\n`);
+    process.stderr.write(`ERROR: Pre-undeploy failed: ${error.message}\n`);
     process.stderr.write(JSON.stringify(error));
     process.exitCode = 1;
   }

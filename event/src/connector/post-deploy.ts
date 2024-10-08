@@ -2,21 +2,43 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 import { assertString, assertError, createApiRoot } from 'shared';
-import { createChannelResourceSubscription, createOrderSubscription } from './actions';
+import {
+  createAzureServiceBusChannelResourceSubscription,
+  createAzureServiceBusOrderSubscription,
+  createGcpPubSubChannelResourceSubscription,
+  createGcpPubSubOrderSubscription,
+} from './actions';
 
 const CONNECT_GCP_TOPIC_NAME_KEY = 'CONNECT_GCP_TOPIC_NAME';
 const CONNECT_GCP_PROJECT_ID_KEY = 'CONNECT_GCP_PROJECT_ID';
+const CONNECT_AZURE_CONNECTION_STRING_KEY = 'CONNECT_AZURE_CONNECTION_STRING';
+const CONNECT_PROVIDER_KEY = 'CONNECT_PROVIDER';
 
 async function postDeploy(properties: Map<string, unknown>): Promise<void> {
-  const topicName = properties.get(CONNECT_GCP_TOPIC_NAME_KEY);
-  const projectId = properties.get(CONNECT_GCP_PROJECT_ID_KEY);
-
-  assertString(topicName, CONNECT_GCP_TOPIC_NAME_KEY);
-  assertString(projectId, CONNECT_GCP_PROJECT_ID_KEY);
+  const connectProvider = properties.get(CONNECT_PROVIDER_KEY);
+  assertString(connectProvider, CONNECT_PROVIDER_KEY);
 
   const apiRoot = createApiRoot();
-  const actions = [createOrderSubscription, createChannelResourceSubscription];
-  await Promise.all(actions.map(async (a) => await a(apiRoot, topicName, projectId)));
+
+  switch (connectProvider) {
+    case 'AZURE': {
+      const connectionString = properties.get(CONNECT_AZURE_CONNECTION_STRING_KEY);
+      assertString(connectionString, CONNECT_AZURE_CONNECTION_STRING_KEY);
+
+      const actions = [createAzureServiceBusOrderSubscription, createAzureServiceBusChannelResourceSubscription];
+      await Promise.all(actions.map(async (a) => await a(apiRoot, connectionString)));
+      break;
+    }
+    default: {
+      const topicName = properties.get(CONNECT_GCP_TOPIC_NAME_KEY);
+      const projectId = properties.get(CONNECT_GCP_PROJECT_ID_KEY);
+      assertString(topicName, CONNECT_GCP_TOPIC_NAME_KEY);
+      assertString(projectId, CONNECT_GCP_PROJECT_ID_KEY);
+
+      const actions = [createGcpPubSubOrderSubscription, createGcpPubSubChannelResourceSubscription];
+      await Promise.all(actions.map(async (a) => await a(apiRoot, topicName, projectId)));
+    }
+  }
 }
 
 async function run(): Promise<void> {

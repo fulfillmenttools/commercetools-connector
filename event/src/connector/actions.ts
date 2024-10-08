@@ -1,13 +1,34 @@
+import { AzureServiceBusDestination, Destination, GoogleCloudPubSubDestination } from '@commercetools/platform-sdk';
 import { ByProjectKeyRequestBuilder } from '@commercetools/platform-sdk/dist/declarations/src/generated/client/by-project-key-request-builder';
 
 const ORDER_SUBSCRIPTION_KEY = 'fft-ctc-orders';
 const CHANNEL_RESOURCE_SUBSCRIPTION_KEY = 'fft-ctc-channels';
 
-export async function createOrderSubscription(
+export async function createGcpPubSubOrderSubscription(
   apiRoot: ByProjectKeyRequestBuilder,
   topicName: string,
   projectId: string
 ): Promise<void> {
+  const destination: GoogleCloudPubSubDestination = {
+    type: 'GoogleCloudPubSub',
+    topic: topicName,
+    projectId,
+  };
+  await createOrderSubscription(apiRoot, destination);
+}
+
+export async function createAzureServiceBusOrderSubscription(
+  apiRoot: ByProjectKeyRequestBuilder,
+  connectionString: string
+): Promise<void> {
+  const destination: AzureServiceBusDestination = {
+    type: 'AzureServiceBus',
+    connectionString: connectionString,
+  };
+  await createOrderSubscription(apiRoot, destination);
+}
+
+async function createOrderSubscription(apiRoot: ByProjectKeyRequestBuilder, destination: Destination): Promise<void> {
   const {
     body: { results: subscriptions },
   } = await apiRoot
@@ -38,11 +59,7 @@ export async function createOrderSubscription(
     .post({
       body: {
         key: ORDER_SUBSCRIPTION_KEY,
-        destination: {
-          type: 'GoogleCloudPubSub',
-          topic: topicName,
-          projectId,
-        },
+        destination,
         messages: [
           {
             resourceTypeId: 'order',
@@ -81,10 +98,33 @@ export async function deleteOrderSubscription(apiRoot: ByProjectKeyRequestBuilde
   }
 }
 
-export async function createChannelResourceSubscription(
+export async function createGcpPubSubChannelResourceSubscription(
   apiRoot: ByProjectKeyRequestBuilder,
   topicName: string,
   projectId: string
+): Promise<void> {
+  const destination: GoogleCloudPubSubDestination = {
+    type: 'GoogleCloudPubSub',
+    topic: topicName,
+    projectId,
+  };
+  await createChannelResourceSubscription(apiRoot, destination);
+}
+
+export async function createAzureServiceBusChannelResourceSubscription(
+  apiRoot: ByProjectKeyRequestBuilder,
+  connectionString: string
+): Promise<void> {
+  const destination: AzureServiceBusDestination = {
+    type: 'AzureServiceBus',
+    connectionString: connectionString,
+  };
+  await createChannelResourceSubscription(apiRoot, destination);
+}
+
+async function createChannelResourceSubscription(
+  apiRoot: ByProjectKeyRequestBuilder,
+  destination: Destination
 ): Promise<void> {
   const {
     body: { results: subscriptions },
@@ -116,11 +156,7 @@ export async function createChannelResourceSubscription(
     .post({
       body: {
         key: CHANNEL_RESOURCE_SUBSCRIPTION_KEY,
-        destination: {
-          type: 'GoogleCloudPubSub',
-          topic: topicName,
-          projectId,
-        },
+        destination,
         changes: [
           {
             resourceTypeId: 'channel',
