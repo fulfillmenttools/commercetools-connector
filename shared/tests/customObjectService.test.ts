@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from '@jest/globals';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { getConfiguration } from '../src/commercetools/customObjectService';
 import { ctApi, mockError, server } from '../src/mocks';
@@ -17,8 +17,8 @@ describe('CustomObjectService', () => {
 
   it('should handle errors', async () => {
     server.use(
-      rest.get(ctApi('/custom-objects/:container/:key'), (_req, res, ctx) => {
-        return res(ctx.status(500), ctx.json(mockError()));
+      http.get(ctApi('/custom-objects/:container/:key'), () => {
+        return HttpResponse.json(mockError(), { status: 500 });
       })
     );
     await expect(async () => {
@@ -28,8 +28,8 @@ describe('CustomObjectService', () => {
 
   it('should handle missing configuration', async () => {
     server.use(
-      rest.get(ctApi('/custom-objects/:container/:key'), (_req, res, ctx) => {
-        return res(ctx.status(404), ctx.json(mockError({ statusCode: 404 })));
+      http.get(ctApi('/custom-objects/:container/:key'), () => {
+        return HttpResponse.json(mockError({ statusCode: 404 }), { status: 404 });
       })
     );
     const config = await getConfiguration();

@@ -1,10 +1,10 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { ctApi } from '../baseUrls';
 import { mockChannel } from '../ctEntities';
 
 export const handlers = [
-  rest.get(ctApi('/channels/:id'), (req, res, ctx) => {
-    return res(ctx.json(mockChannel({ id: req.params.id })));
+  http.get(ctApi('/channels/:id'), ({ params }) => {
+    return HttpResponse.json(mockChannel({ id: params.id }));
   }),
 ];

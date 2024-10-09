@@ -1,18 +1,17 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { fftApi } from '../baseUrls';
 import { mockFftOrder } from '../fftEntities';
 
 export const handlers = [
-  rest.get(fftApi('/orders'), (req, res, ctx) => {
-    const tenantOrderId = req.url.searchParams.get('tenantOrderId');
-    return res(
-      ctx.json({
-        total: 1,
-        orders: [mockFftOrder({ tenantOrderId })],
-      })
-    );
+  http.get(fftApi('/orders'), ({ request }) => {
+    const url = new URL(request.url);
+    const tenantOrderId = url.searchParams.get('tenantOrderId');
+    return HttpResponse.json({
+      total: 1,
+      orders: [mockFftOrder({ tenantOrderId })],
+    });
   }),
-  rest.get(fftApi('/orders/:id'), (req, res, ctx) => {
-    return res(ctx.json(mockFftOrder({ id: req.params.id })));
+  http.get(fftApi('/orders/:id'), ({ params }) => {
+    return HttpResponse.json(mockFftOrder({ id: params.id }));
   }),
 ];
