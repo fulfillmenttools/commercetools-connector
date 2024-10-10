@@ -1,4 +1,4 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { ctApi } from '../baseUrls';
 import { mockCustomObject } from '../ctEntities';
@@ -23,22 +23,20 @@ const customFieldTagMapping: CustomFieldTagMapping = {
 };
 
 export const handlers = [
-  rest.get(ctApi(`/custom-objects/${CUSTOM_OBJECT_CONTAINER}/${CUSTOM_OBJECT_KEY}`), (_req, res, ctx) => {
-    return res(
-      ctx.json(
-        mockCustomObject({
-          value: {
-            orderCustomTypeKey: CUSTOM_TYPE_NAME,
-            shippingMethodMapping,
-            collectChannelReferenceFieldName: SUPPLY_CHANNEL_REFERENCE_FIELD_NAME,
-            storeTagMapping: 'tag_store',
-            customFieldTagMapping,
-          },
-        })
-      )
+  http.get(ctApi(`/custom-objects/${CUSTOM_OBJECT_CONTAINER}/${CUSTOM_OBJECT_KEY}`), () => {
+    return HttpResponse.json(
+      mockCustomObject({
+        value: {
+          orderCustomTypeKey: CUSTOM_TYPE_NAME,
+          shippingMethodMapping,
+          collectChannelReferenceFieldName: SUPPLY_CHANNEL_REFERENCE_FIELD_NAME,
+          storeTagMapping: 'tag_store',
+          customFieldTagMapping,
+        },
+      })
     );
   }),
-  rest.get(ctApi('/custom-objects/:container/:key'), (req, res, ctx) => {
-    return res(ctx.json(mockCustomObject({ container: req.params.container, key: req.params.key })));
+  http.get(ctApi('/custom-objects/:container/:key'), ({ params }) => {
+    return HttpResponse.json(mockCustomObject({ container: params.container, key: params.key }));
   }),
 ];

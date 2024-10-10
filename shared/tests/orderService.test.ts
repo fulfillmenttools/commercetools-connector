@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from '@jest/globals';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { getCommercetoolsOrderById } from '../src/commercetools/orderService';
 import { ctApi, mockError, server } from '../src/mocks';
@@ -19,8 +19,8 @@ describe('OrderService', () => {
 
   it('should handle errors', async () => {
     server.use(
-      rest.get(ctApi('/orders/:id'), (_req, res, ctx) => {
-        return res(ctx.status(500), ctx.json(mockError()));
+      http.get(ctApi('/orders/:id'), () => {
+        return HttpResponse.json(mockError(), { status: 500 });
       })
     );
     await expect(async () => {

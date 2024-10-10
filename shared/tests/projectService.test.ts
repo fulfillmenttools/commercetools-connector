@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from '@jest/globals';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { getProject } from '../src/commercetools/projectService';
 import { ctApi, mockError, server } from '../src/mocks';
@@ -17,8 +17,8 @@ describe('ProjectService', () => {
 
   it('should handle errors', async () => {
     server.use(
-      rest.get(ctApi(''), (_req, res, ctx) => {
-        return res(ctx.status(500), ctx.json(mockError()));
+      http.get(ctApi(''), () => {
+        return HttpResponse.json(mockError(), { status: 500 });
       })
     );
     await expect(async () => {

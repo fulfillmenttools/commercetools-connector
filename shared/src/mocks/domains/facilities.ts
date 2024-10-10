@@ -1,4 +1,4 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { fftApi } from '../baseUrls';
 import {
@@ -44,13 +44,14 @@ const facilityMunich: StrippedFacility = {
 const facilities: StrippedFacility[] = [facilityCologne, facilityHamburg, facilityMunich];
 
 export const handlers = [
-  rest.get(fftApi('/facilities'), (req, res, ctx) => {
+  http.get(fftApi('/facilities'), ({ request }) => {
     let strippedFacilities: StrippedFacility[] = facilities;
-    const tenantFacilityId = req.url.searchParams.get('tenantFacilityId');
+    const url = new URL(request.url);
+    const tenantFacilityId = url.searchParams.get('tenantFacilityId');
     if (tenantFacilityId) {
       strippedFacilities = facilities.filter((f) => f.tenantFacilityId === tenantFacilityId);
     }
     const result: StrippedFacilities = { facilities: strippedFacilities, total: strippedFacilities.length };
-    return res(ctx.json(result));
+    return HttpResponse.json(result);
   }),
 ];

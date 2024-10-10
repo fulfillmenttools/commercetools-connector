@@ -1,5 +1,5 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it } from '@jest/globals';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import {
   createCustomOrderType,
@@ -22,8 +22,8 @@ describe('CustomTypeService', () => {
 
     it('should handle undefined custom type', async () => {
       server.use(
-        rest.get(ctApi('/types/key=:key'), (_req, res, ctx) => {
-          return res(ctx.status(404), ctx.json(mockError({ statusCode: 404 })));
+        http.get(ctApi('/types/key=:key'), () => {
+          return HttpResponse.json(mockError({ statusCode: 404 }), { status: 404 });
         })
       );
       const typeId = await getCustomOrderType();
@@ -32,8 +32,8 @@ describe('CustomTypeService', () => {
 
     it('should handle errors', async () => {
       server.use(
-        rest.get(ctApi('/types/key=:key'), (_req, res, ctx) => {
-          return res(ctx.status(500), ctx.json(mockError()));
+        http.get(ctApi('/types/key=:key'), () => {
+          return HttpResponse.json(mockError(), { status: 500 });
         })
       );
       await expect(async () => {
@@ -50,8 +50,8 @@ describe('CustomTypeService', () => {
 
     it('should handle errors', async () => {
       server.use(
-        rest.post(ctApi('/types'), (_req, res, ctx) => {
-          return res(ctx.status(500), ctx.json(mockError()));
+        http.post(ctApi('/types'), () => {
+          return HttpResponse.json(mockError(), { status: 500 });
         })
       );
       await expect(async () => {
@@ -70,8 +70,8 @@ describe('CustomTypeService', () => {
 
     it('should handle errors', async () => {
       server.use(
-        rest.post(ctApi('/types/:id'), (_req, res, ctx) => {
-          return res(ctx.status(500), ctx.json(mockError()));
+        http.post(ctApi('/types/:id'), () => {
+          return HttpResponse.json(mockError(), { status: 500 });
         })
       );
       const typeId = await getCustomOrderType();

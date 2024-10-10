@@ -1,20 +1,20 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { ctApi } from '../baseUrls';
 import { mockCustomType } from '../ctEntities';
 import { CUSTOM_TYPE_NAME } from '../../common';
 
 export const handlers = [
-  rest.get(ctApi(`/types/key=${CUSTOM_TYPE_NAME}`), (_req, res, ctx) => {
-    return res(ctx.json(mockCustomType()));
+  http.get(ctApi(`/types/key=${CUSTOM_TYPE_NAME}`), () => {
+    return HttpResponse.json(mockCustomType());
   }),
-  rest.get(ctApi('/types/:id'), (req, res, ctx) => {
-    return res(ctx.json(mockCustomType({ id: req.params.id })));
+  http.get(ctApi('/types/:id'), ({ params }) => {
+    return HttpResponse.json(mockCustomType({ id: params.id }));
   }),
-  rest.post(ctApi(`/types`), (_req, res, ctx) => {
-    return res(ctx.status(201), ctx.json(mockCustomType()));
+  http.post(ctApi(`/types`), () => {
+    return HttpResponse.json(mockCustomType(), { status: 201 });
   }),
-  rest.post(ctApi(`/types/:id`), (req, res, ctx) => {
-    return res(ctx.status(200), ctx.json(mockCustomType({ id: req.params.id })));
+  http.post(ctApi(`/types/:id`), ({ params }) => {
+    return HttpResponse.json(mockCustomType({ id: params.id }));
   }),
 ];

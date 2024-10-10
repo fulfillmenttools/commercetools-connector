@@ -1,13 +1,13 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { ctApi } from '../baseUrls';
 import { mockCtOrder } from '../ctEntities';
 
 export const handlers = [
-  rest.get(ctApi('/orders/:id'), (req, res, ctx) => {
-    return res(ctx.json(mockCtOrder({ id: req.params.id })));
+  http.get(ctApi('/orders/:id'), ({ params }) => {
+    return HttpResponse.json(mockCtOrder({ id: params.id }));
   }),
-  rest.post(ctApi('/orders/:id'), (req, res, ctx) => {
-    return res(ctx.json(mockCtOrder({ id: req.params.id })));
+  http.post(ctApi('/orders/:id'), ({ params }) => {
+    return HttpResponse.json(mockCtOrder({ id: params.id }));
   }),
 ];

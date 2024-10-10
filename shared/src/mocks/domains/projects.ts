@@ -1,10 +1,10 @@
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 import { ctApi } from '../baseUrls';
 import { mockProject } from '../ctEntities';
 
 export const handlers = [
-  rest.get(ctApi(''), (req, res, ctx) => {
-    return res(ctx.json(mockProject()));
+  http.get(ctApi(''), () => {
+    return HttpResponse.json(mockProject());
   }),
 ];
