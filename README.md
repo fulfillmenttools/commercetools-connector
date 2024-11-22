@@ -87,7 +87,7 @@ Again, you can undeploy the connector from your project using the [Connect API](
 
 ### 👉 Requirements
 
-- [Node.js](https://nodejs.org/en/) 18 with [NVM](https://github.com/nvm-sh/nvm) and npm
+- [Node.js](https://nodejs.org/en/) 20 with [NVM](https://github.com/nvm-sh/nvm) and npm
 - [Docker](https://www.docker.com/get-started) (optional)
 
 ### 🛫 Setup
