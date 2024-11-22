@@ -14,16 +14,14 @@ export class FftOrderServiceMock extends FftOrderService {
     super(new FftApiClient('projectId', 'apiUser', 'apiPassword', 'apiKey'));
   }
   private wait = false;
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public override async findByTenantOrderId(tenantOrderId: string): Promise<StrippedOrder | undefined> {
+  public override async findByTenantOrderId(_tenantOrderId: string): Promise<StrippedOrder | undefined> {
     while (this.wait) {
       await delay(100);
     }
     return undefined;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  public override async create(orderForCreation: OrderForCreation): Promise<Order> {
+  public override async create(_orderForCreation: OrderForCreation): Promise<Order> {
     const consumer: OrderForCreationConsumer = { addresses: [] };
     return {
       consumer: consumer,
