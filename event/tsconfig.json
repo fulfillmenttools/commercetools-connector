@@ -8,13 +8,16 @@
   ],
   "compilerOptions": {
     "allowSyntheticDefaultImports": true,
+    "allowUnreachableCode": false,
     "lib": [
       "es2021"
     ],
     "noFallthroughCasesInSwitch": true,
+    "noImplicitOverride": true,
     "noImplicitReturns": true,
     // "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
+    "noUnusedParameters": true,
     "outDir": "./build",
     "resolveJsonModule": true,
     "rootDir": "./src",
