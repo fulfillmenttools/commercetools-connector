@@ -1,17 +1,16 @@
-import { describe, expect } from '@jest/globals';
+import { beforeAll, describe, expect, it } from '@jest/globals';
 import express, { Express } from 'express';
 import request from 'supertest';
 
 import { EventRouter } from '../src/routes/eventRouter';
-import { FftApiClient } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
+import { getTestClient } from 'shared';
 
 describe('Event Router', () => {
   let app: Express;
   let router: EventRouter;
-  let fftApiClient: FftApiClient;
 
   beforeAll(() => {
-    router = new EventRouter(fftApiClient);
+    router = new EventRouter(getTestClient());
     app = express();
     app.use(express.json());
     app.use('/event', router.getRouter());
