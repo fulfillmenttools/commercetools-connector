@@ -1,45 +1,38 @@
 import {
   Address,
-  CentPrecisionMoney,
-  LineItem,
-  Order as CommercetoolsOrder,
-  ShippingMethod,
-} from '@commercetools/platform-sdk';
-import {
-  CreatedBy,
-  LastModifiedBy,
-  TypedMoney,
-} from '@commercetools/platform-sdk/dist/declarations/src/generated/models/common';
-import { BusinessUnitKeyReference } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/business-unit';
-import { StoreKeyReference } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/store';
-import {
+  BusinessUnitKeyReference,
+  CartDiscountReference,
   CartOrigin,
   CartReference,
+  CentPrecisionMoney,
+  Order as CommercetoolsOrder,
+  CreatedBy,
+  CustomerGroupReference,
+  CustomFields,
   CustomLineItem,
   DiscountCodeInfo,
   InventoryMode,
-  RoundingMode,
-  Shipping,
-  ShippingInfo,
-  ShippingMode,
-  ShippingRateInput,
-  TaxCalculationMode,
-  TaxedPrice,
-  TaxMode,
-} from '@commercetools/platform-sdk/dist/declarations/src/generated/models/cart';
-import { CustomerGroupReference } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/customer-group';
-import { StateReference } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/state';
-import { QuoteReference } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/quote';
-import { CustomFields } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/type';
-import { CartDiscountReference } from '@commercetools/platform-sdk/dist/declarations/src/generated/models/cart-discount';
-import {
+  LastModifiedBy,
+  LineItem,
   OrderState,
   PaymentInfo,
   PaymentState,
+  QuoteReference,
   ReturnInfo,
+  RoundingMode,
   ShipmentState,
+  Shipping,
+  ShippingInfo,
+  ShippingMethod,
+  ShippingMode,
+  ShippingRateInput,
+  StateReference,
+  StoreKeyReference,
   SyncInfo,
-} from '@commercetools/platform-sdk/dist/declarations/src/generated/models/order';
+  TaxCalculationMode,
+  TaxedPrice,
+  TaxMode,
+} from '@commercetools/platform-sdk';
 import { CUSTOM_TYPE_NAME } from 'shared';
 
 const shippingMethodDHL: ShippingMethod = {
@@ -335,7 +328,7 @@ interface CommercetoolsOrderTemplate {
   store?: StoreKeyReference;
   lineItems: LineItem[];
   customLineItems: CustomLineItem[];
-  totalPrice: TypedMoney;
+  totalPrice: CentPrecisionMoney;
   taxedPrice?: TaxedPrice;
   taxedShippingPrice?: TaxedPrice;
   shippingAddress?: Address;
