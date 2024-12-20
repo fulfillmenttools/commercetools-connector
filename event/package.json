@@ -61,7 +61,7 @@
   },
   "dependencies": {
     "@commercetools/platform-sdk": "7.22.0",
-    "@fulfillmenttools/fulfillmenttools-sdk-typescript": "0.3.3",
+    "@fulfillmenttools/fulfillmenttools-sdk-typescript": "0.3.4",
     "body-parser": "1.20.3",
     "date-fns": "4.1.0",
     "dotenv": "16.4.7",

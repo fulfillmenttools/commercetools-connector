@@ -53,7 +53,7 @@
     "@commercetools-backend/loggers": "22.37.0",
     "@commercetools/platform-sdk": "7.22.0",
     "@commercetools/sdk-client-v2": "2.5.0",
-    "@fulfillmenttools/fulfillmenttools-sdk-typescript": "0.3.3",
+    "@fulfillmenttools/fulfillmenttools-sdk-typescript": "0.3.4",
     "dotenv": "16.4.7",
     "express": "4.21.2",
     "jsonwebtoken": "9.0.2",
