@@ -6,7 +6,6 @@ import { ExpandedStore } from '../types/expandedStore';
 export class StoreService {
   public async query(): Promise<Store[]> {
     try {
-      // TODO: query paginated
       const response = await createApiRoot().stores().get().execute();
       return response.body.results;
     } catch (error) {

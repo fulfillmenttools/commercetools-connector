@@ -50,12 +50,10 @@ export class ChannelService {
   private mapChannelToFacility(channel: Channel, project: Project): FacilityForCreation {
     return {
       name: this.mapName(channel, project.languages),
-      // TODO make location type configurable, e.g. read from channel custom attribute
       locationType: FacilityForCreation.LocationTypeEnum.STORE,
       tenantFacilityId: channel.key,
       status: FacilityStatus.ONLINE,
       address: this.mapAddress(channel.address, project.name, project.countries),
-      // TODO make services configurable, e.g. read from channel custom attribute
       services: [
         {
           type: FacilityServiceType.SHIPFROMSTORE,
@@ -117,7 +115,6 @@ export class ChannelService {
       return {
         street: 'not set',
         houseNumber: '0',
-        // TODO dummy postal code will clash with validation for country
         postalCode: '00000',
         city: 'not set',
         country: defaultCountry,

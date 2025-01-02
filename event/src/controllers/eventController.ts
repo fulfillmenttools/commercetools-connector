@@ -94,8 +94,6 @@ export class EventController {
       throw new CustomError(400, `Bad request: Message ${message.id} does not contain valid notification type`);
     }
 
-    // TODO validate message.projectKey === CTP_PROJECT_KEY
-
     return message;
   }
 
