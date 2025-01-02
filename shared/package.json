@@ -14,7 +14,7 @@
     "prettier": "prettier --write 'src/**/*.ts' 'tests/**/*.ts'",
     "test": "jest --config jest.config.cjs",
     "test:watch": "jest --watch",
-    "preversion": "npm run build && npm run test && npm run lint",
+    "preversion": "npm run build && npm run test && npm run lint && npm audit",
     "version": "auto-changelog -p && git add CHANGELOG.md",
     "postversion": "git add package.json package-lock.json"
   },
