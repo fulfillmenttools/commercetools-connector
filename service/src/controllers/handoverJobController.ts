@@ -13,7 +13,7 @@ export class HandoverJobController {
   public async handoverJobCreated(request: Request, response: Response, _next: NextFunction): Promise<void> {
     const body = request.body;
     assertHandoverJobCreatedEvent(body);
-    const handoverJob = body.payload as Handoverjob;
+    const handoverJob = body.payload;
     await this.handoverJobService.handoverJobCreated(handoverJob);
     response.status(201).json({ id: handoverJob.id });
   }
