@@ -213,6 +213,7 @@ export class OrderMapper {
       province: commercetoolsAddress.state,
       country: commercetoolsAddress.country || '',
       companyName: commercetoolsAddress.company,
+      email: commercetoolsAddress.email,
     };
     const phoneNumbers: AddressPhoneNumbers[] = [];
     if (commercetoolsAddress.mobile) {
