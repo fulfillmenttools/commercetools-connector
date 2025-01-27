@@ -1,9 +1,9 @@
+import { Message, Reference } from '@commercetools/platform-sdk';
 import { NextFunction, Request, Response } from 'express';
-import { Message, OrderCreatedMessage, OrderStateChangedMessage, Reference } from '@commercetools/platform-sdk';
 
-import { logger, CustomError, SubscriptionMessage } from 'shared';
-import { OrderProcessor } from '../order/orderProcessor';
+import { CustomError, logger, SubscriptionMessage } from 'shared';
 import { ChannelProcessor } from '../channel/channelProcessor';
+import { OrderProcessor } from '../order/orderProcessor';
 
 export class EventController {
   constructor(
@@ -94,28 +94,26 @@ export class EventController {
       throw new CustomError(400, `Bad request: Message ${message.id} does not contain valid notification type`);
     }
 
-    // TODO validate message.projectKey === CTP_PROJECT_KEY
-
     return message;
   }
 
   private isOrderStateConfirmedMessage(message: Message): boolean {
     if (message.type === 'OrderStateChanged') {
-      return (message as OrderStateChangedMessage).orderState === 'Confirmed';
+      return message.orderState === 'Confirmed';
     }
     return false;
   }
 
   private isOrderCreatedWithStateConfirmedMessage(message: Message): boolean {
     if (message.type === 'OrderCreated') {
-      return (message as OrderCreatedMessage).order.orderState === 'Confirmed';
+      return message.order.orderState === 'Confirmed';
     }
     return false;
   }
 
   private isOrderStateCancelledMessage(message: Message): boolean {
     if (message.type === 'OrderStateChanged') {
-      return (message as OrderStateChangedMessage).orderState === 'Cancelled';
+      return message.orderState === 'Cancelled';
     }
     return false;
   }

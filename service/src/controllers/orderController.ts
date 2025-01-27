@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { Order } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 import { OrderService } from '../services/orderService';
 import { assertOrderCreatedEvent } from './common';
 
@@ -12,7 +11,7 @@ export class OrderController {
   public async orderCreated(request: Request, response: Response, _next: NextFunction): Promise<void> {
     const body = request.body;
     assertOrderCreatedEvent(body);
-    const order = body.payload as Order;
+    const order = body.payload;
     await this.orderService.orderCreated(order);
     response.status(201).json({ id: order.id });
   }

@@ -16,6 +16,10 @@ import {
 import { AmbiguousChannelError, Configuration, ServiceType, StoreService, getConfiguration, logger } from 'shared';
 import ArticleAttributeItemCategory = ArticleAttributeItem.CategoryEnum;
 
+function isValidString(input: unknown): boolean {
+  return typeof input === 'string' && input.trim().length > 0;
+}
+
 export class OrderMapper {
   constructor(
     private readonly ctStoreService: StoreService,
@@ -183,8 +187,6 @@ export class OrderMapper {
       addresses.push(this.mapBillingAddress(commercetoolsOrder.billingAddress));
     }
     return {
-      // TODO we could fetch the customer from CT and add customerNumber or externalId
-      // consumerId: commercetoolsOrder.customerId,
       addresses,
       email: commercetoolsOrder.customerEmail,
     };
@@ -212,10 +214,13 @@ export class OrderMapper {
       additionalAddressInfo: commercetoolsAddress.additionalAddressInfo,
       postalCode: commercetoolsAddress.postalCode || '',
       city: commercetoolsAddress.city || '',
-      province: commercetoolsAddress.state,
       country: commercetoolsAddress.country || '',
       companyName: commercetoolsAddress.company,
+      email: commercetoolsAddress.email,
     };
+    if (isValidString(commercetoolsAddress.state)) {
+      address.province = commercetoolsAddress.state;
+    }
     const phoneNumbers: AddressPhoneNumbers[] = [];
     if (commercetoolsAddress.mobile) {
       phoneNumbers.push({
