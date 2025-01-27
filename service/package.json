@@ -1,6 +1,6 @@
 {
   "name": "service-typescript",
-  "version": "0.1.10",
+  "version": "0.1.11",
   "main": "index.js",
   "description": "fulfillmenttools app for commercetools Connect",
   "author": "OC fulfillment GmbH",
