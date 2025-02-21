@@ -1,6 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
 
-import { Handoverjob } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 import { HandoverJobService } from '../services/handoverJobService';
 import { assertHandoverJobCreatedEvent, assertHandoverJobHandedOver } from './common';
 
@@ -21,7 +20,7 @@ export class HandoverJobController {
   public async handoverJobHandedOver(request: Request, response: Response, _next: NextFunction): Promise<void> {
     const body = request.body;
     assertHandoverJobHandedOver(body);
-    const handoverJob = body.payload as Handoverjob;
+    const handoverJob = body.payload;
     await this.handoverJobService.handoverJobHandedOver(handoverJob);
     response.status(201).json({ id: handoverJob.id });
   }
