@@ -19,9 +19,9 @@ export class ChannelProcessor {
 
     try {
       if (notificationType === 'ResourceDeleted') {
-        this.processChannelDeleted(message);
+        await this.processChannelDeleted(message);
       } else if (notificationType === 'ResourceCreated' || notificationType === 'ResourceUpdated') {
-        this.processChannelUpdated(message);
+        await this.processChannelUpdated(message);
       } else {
         logger.warn(`Could not process CT message - cannot handle notificationType '${notificationType}'`);
       }

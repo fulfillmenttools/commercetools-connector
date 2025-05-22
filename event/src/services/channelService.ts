@@ -103,13 +103,7 @@ export class ChannelService {
         province: address.state?.trim() || undefined,
         country: address.country?.trim() || defaultCountry,
         companyName: defaultName,
-        phoneNumbers: [
-          {
-            type: AddressPhoneNumbers.TypeEnum.PHONE,
-            value: '',
-            label: '',
-          },
-        ],
+        phoneNumbers: [],
       };
     } else {
       return {
@@ -119,13 +113,7 @@ export class ChannelService {
         city: 'not set',
         country: defaultCountry,
         companyName: defaultName,
-        phoneNumbers: [
-          {
-            type: AddressPhoneNumbers.TypeEnum.PHONE,
-            value: '',
-            label: '',
-          },
-        ],
+        phoneNumbers: [],
       };
     }
   }
