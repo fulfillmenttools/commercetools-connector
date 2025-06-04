@@ -7,7 +7,7 @@ import { EventController } from '../controllers/eventController';
 import { StatusController } from '../controllers/statusController';
 import { OrderMapper } from '../order/orderMapper';
 import { OrderProcessor } from '../order/orderProcessor';
-import { asyncHandler, StoreService as CommercetoolsStoreService, readConfiguration } from 'shared';
+import { asyncHandler, StoreService as CommercetoolsStoreService, readConfiguration, logger } from 'shared';
 
 export class EventRouter {
   private eventRouter = Router();
@@ -19,8 +19,9 @@ export class EventRouter {
     const ctStoreService = new CommercetoolsStoreService();
     const orderProcessor = new OrderProcessor(orderService, new OrderMapper(ctStoreService, facilityService));
 
-    let channelProcessor;
+    let channelProcessor = undefined;
     if (config.featChannelsyncActive) {
+      logger.info('eventRouter - setChannelService');
       const channelService = new ChannelService(facilityService);
       channelProcessor = new ChannelProcessor(channelService);
     }
