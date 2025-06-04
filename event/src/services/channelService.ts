@@ -12,9 +12,12 @@ import {
 import { getChannelById, getProject, logger } from 'shared';
 
 export class ChannelService {
-  constructor(private readonly fftFacilityService: FftFacilityService) {}
+  constructor(private readonly fftFacilityService: FftFacilityService) {
+    logger.info('Init ChannelService');
+  }
 
   public async upsertFacility(channelId: string): Promise<Facility | undefined> {
+    logger.info('Enter ChannelService:upsertFacility()');
     const channel = await getChannelById(channelId);
 
     if (!channel) {
