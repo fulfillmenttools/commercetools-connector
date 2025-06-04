@@ -16,6 +16,9 @@ interface Configuration {
   jwtIssuer: string;
   jwtAudience: string;
   jwtSubject: string;
+  featStatusupdatesActive: string;
+  featOrdersyncActive: string;
+  featChannelsyncActive: string;
 }
 
 /**
@@ -48,6 +51,9 @@ const validateConfiguration = () => {
     jwtIssuer: process.env.JWT_ISSUER as string,
     jwtAudience: process.env.JWT_AUDIENCE as string,
     jwtSubject: process.env.JWT_SUBJECT as string,
+    featStatusupdatesActive: process.env.FEAT_STATUSUPDATES_ACTIVE as string,
+    featOrdersyncActive: process.env.FEAT_ORDERSYNC_ACTIVE as string,
+    featChannelsyncActive: process.env.FEAT_CHANNELSYNC_ACTIVE as string,
   };
 
   const validationErrors = getValidateMessages(envValidators, envVars);

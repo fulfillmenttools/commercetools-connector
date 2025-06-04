@@ -17,6 +17,10 @@ deployAs:
         - key: FFT_PROJECT_ID
           required: true
           description: fulfillmenttools project ID
+        - key: FEAT_STATUSUPDATES_ACTIVE
+          required: true
+          default: true
+          description: fulfillmenttools project ID
       securedConfiguration:
         - key: CTP_CLIENT_ID
           required: true
@@ -65,6 +69,14 @@ deployAs:
           default: "europe-west1.gcp"
         - key: FFT_PROJECT_ID
           required: true
+          description: fulfillmenttools project ID
+        - key: FEAT_ORDERSYNC_ACTIVE
+          required: true
+          default: true
+          description: fulfillmenttools project ID
+        - key: FEAT_CHANNELSYNC_ACTIVE
+          required: true
+          default: true
           description: fulfillmenttools project ID
       securedConfiguration:
         - key: CTP_CLIENT_ID

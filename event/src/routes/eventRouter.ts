@@ -7,18 +7,23 @@ import { EventController } from '../controllers/eventController';
 import { StatusController } from '../controllers/statusController';
 import { OrderMapper } from '../order/orderMapper';
 import { OrderProcessor } from '../order/orderProcessor';
-import { asyncHandler, StoreService as CommercetoolsStoreService } from 'shared';
+import { asyncHandler, StoreService as CommercetoolsStoreService, readConfiguration } from 'shared';
 
 export class EventRouter {
   private eventRouter = Router();
 
   constructor(fftApiClient: FftApiClient) {
+    const config = readConfiguration();
     const orderService = new FftOrderService(fftApiClient);
     const facilityService = new FftFacilityService(fftApiClient);
-    const channelService = new ChannelService(facilityService);
     const ctStoreService = new CommercetoolsStoreService();
     const orderProcessor = new OrderProcessor(orderService, new OrderMapper(ctStoreService, facilityService));
-    const channelProcessor = new ChannelProcessor(channelService);
+
+    let channelProcessor;
+    if (config.featChannelsyncActive) {
+      const channelService = new ChannelService(facilityService);
+      channelProcessor = new ChannelProcessor(channelService);
+    }
 
     const statusController = new StatusController();
     const eventController = new EventController(orderProcessor, channelProcessor);

@@ -8,7 +8,7 @@ import { OrderProcessor } from '../order/orderProcessor';
 export class EventController {
   constructor(
     private readonly orderProcessor: OrderProcessor,
-    private readonly channelProcessor: ChannelProcessor
+    private readonly channelProcessor?: ChannelProcessor
   ) {
     this.post = this.post.bind(this);
   }
@@ -39,7 +39,7 @@ export class EventController {
         }
         break;
       case 'channel':
-        if (this.isChannelMessage(message)) {
+        if (this.channelProcessor && this.isChannelMessage(message)) {
           await this.channelProcessor.processChannel(message);
         }
         break;
