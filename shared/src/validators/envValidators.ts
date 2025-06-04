@@ -1,4 +1,4 @@
-import { optional, standardString, standardKey, region, standardEmail } from './helpersValidators';
+import { optional, standardString, standardKey, region, standardEmail, standardBoolean } from './helpersValidators';
 
 /**
  * Create here your own validators
@@ -118,7 +118,7 @@ const envValidators = [
     { min: 4, max: undefined }
   ),
 
-  standardString(
+  standardBoolean(
     ['featStatusupdatesActive'],
     {
       code: 'InvalidfeatStatusupdatesActive',
@@ -128,24 +128,22 @@ const envValidators = [
     { min: 4, max: 5 }
   ),
 
-  standardString(
+  standardBoolean(
     ['featChannelsyncActive'],
     {
       code: 'InvalidfeatChannelsyncActive',
       message: 'featChannelsyncActive must be true or false.',
       referencedBy: 'environmentVariables',
-    },
-    { min: 4, max: 5 }
+    }
   ),
 
-  standardString(
+  standardBoolean(
     ['featOrdersyncActive'],
     {
       code: 'InvalidfeatOrdersyncActive',
       message: 'featOrdersyncActive must be true or false.',
       referencedBy: 'environmentVariables',
-    },
-    { min: 4, max: 5 }
+    }
   ),
 ];
 
