@@ -41,8 +41,8 @@ export class EventController {
         break;
       case 'channel':
         logger.info('eventController - case:channel');
-        logger.info(config.featChannelsyncActive);
-        if (config.featChannelsyncActive && this.channelProcessor && this.isChannelMessage(message)) {
+        logger.info(!!config.featChannelsyncActive);
+        if (!!config.featChannelsyncActive && this.channelProcessor && this.isChannelMessage(message)) {
           logger.info('eventController - case:channel:entered');
           await this.channelProcessor.processChannel(message);
         }
