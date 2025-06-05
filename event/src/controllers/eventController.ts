@@ -1,7 +1,7 @@
 import { Message, Reference } from '@commercetools/platform-sdk';
 import { NextFunction, Request, Response } from 'express';
 
-import { CustomError, logger, SubscriptionMessage } from 'shared';
+import { CustomError, logger, SubscriptionMessage, readConfiguration } from 'shared';
 import { ChannelProcessor } from '../channel/channelProcessor';
 import { OrderProcessor } from '../order/orderProcessor';
 
@@ -28,6 +28,7 @@ export class EventController {
   }
 
   private async processMessage(message: Message) {
+    const config = readConfiguration();
     const resourceRef = message.resource;
     const typeString = resourceRef.typeId as string;
     switch (resourceRef.typeId) {
@@ -40,8 +41,8 @@ export class EventController {
         break;
       case 'channel':
         logger.info('eventController - case:channel');
-        logger.info(this.channelProcessor);
-        if (this.channelProcessor && this.isChannelMessage(message)) {
+        logger.info(config.featChannelsyncActive);
+        if (config.featChannelsyncActive && this.channelProcessor && this.isChannelMessage(message)) {
           logger.info('eventController - case:channel:entered');
           await this.channelProcessor.processChannel(message);
         }
