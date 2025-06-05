@@ -40,6 +40,7 @@ export class EventController {
         break;
       case 'channel':
         logger.info('eventController - case:channel');
+        logger.info(this.channelProcessor);
         if (this.channelProcessor && this.isChannelMessage(message)) {
           logger.info('eventController - case:channel:entered');
           await this.channelProcessor.processChannel(message);
