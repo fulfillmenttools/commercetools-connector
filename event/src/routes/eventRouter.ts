@@ -13,20 +13,13 @@ export class EventRouter {
   private eventRouter = Router();
 
   constructor(fftApiClient: FftApiClient) {
-    const config = readConfiguration();
     const orderService = new FftOrderService(fftApiClient);
     const facilityService = new FftFacilityService(fftApiClient);
     const ctStoreService = new CommercetoolsStoreService();
     const orderProcessor = new OrderProcessor(orderService, new OrderMapper(ctStoreService, facilityService));
 
-    logger.info('eventRouter');
-    logger.info(config.featChannelsyncActive);
-    let channelProcessor = undefined;
-    if (config.featChannelsyncActive) {
-      logger.info('eventRouter - setChannelService');
-      const channelService = new ChannelService(facilityService);
-      channelProcessor = new ChannelProcessor(channelService);
-    }
+    const channelService = new ChannelService(facilityService);
+    const channelProcessor = new ChannelProcessor(channelService);
 
     const statusController = new StatusController();
     const eventController = new EventController(orderProcessor, channelProcessor);

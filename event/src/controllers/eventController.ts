@@ -33,6 +33,10 @@ export class EventController {
     const typeString = resourceRef.typeId as string;
     switch (resourceRef.typeId) {
       case 'order':
+        if (config.featOrdersyncActive.toLowerCase() === "false") { // FeatureFlag: Disables the Order Sync from ct to fft
+          logger.info('Order Sync deactivated');
+          break;
+        }
         if (this.isOrderStateConfirmedMessage(message) || this.isOrderCreatedWithStateConfirmedMessage(message)) {
           await this.orderProcessor.processOrder(resourceRef.id, message.resourceUserProvidedIdentifiers?.orderNumber);
         } else if (this.isOrderStateCancelledMessage(message) || this.isOrderDeletedMessage(message)) {
@@ -40,15 +44,10 @@ export class EventController {
         }
         break;
       case 'channel':
-        logger.info('eventController - case:channel');
-        logger.info(config.featChannelsyncActive);
-        logger.info(!config.featChannelsyncActive);
-        
-        if (config.featChannelsyncActive.toLowerCase() === "false") {
-          logger.info('eventController - early exit');
+        if (config.featChannelsyncActive.toLowerCase() === "false") { // FeatureFlag: Disables the Channel Sync from ct to fft
+          logger.info('Channel Sync deactivated');
           break;
         }
-        
         if (this.channelProcessor && this.isChannelMessage(message)) {
           logger.info('eventController - case:channel:entered');
           await this.channelProcessor.processChannel(message);
