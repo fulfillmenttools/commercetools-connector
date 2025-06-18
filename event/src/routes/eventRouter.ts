@@ -7,7 +7,7 @@ import { EventController } from '../controllers/eventController';
 import { StatusController } from '../controllers/statusController';
 import { OrderMapper } from '../order/orderMapper';
 import { OrderProcessor } from '../order/orderProcessor';
-import { asyncHandler, StoreService as CommercetoolsStoreService, readConfiguration, logger } from 'shared';
+import { asyncHandler, StoreService as CommercetoolsStoreService } from 'shared';
 
 export class EventRouter {
   private eventRouter = Router();
