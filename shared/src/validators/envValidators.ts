@@ -124,8 +124,7 @@ const envValidators = [
       code: 'InvalidfeatStatusupdatesActive',
       message: 'featStatusupdatesActive must be true or false.',
       referencedBy: 'environmentVariables',
-    },
-    { min: 4, max: 5 }
+    }
   ),
 
   standardBoolean(

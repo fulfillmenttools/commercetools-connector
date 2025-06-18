@@ -41,10 +41,10 @@ export class EventController {
         break;
       case 'channel':
         logger.info('eventController - case:channel');
-        logger.info(!config.featChannelsyncActive);
         logger.info(config.featChannelsyncActive);
+        logger.info(!config.featChannelsyncActive);
         
-        if (config.featChannelsyncActive) {
+        if (config.featChannelsyncActive.toLowerCase() === "false") {
           logger.info('eventController - early exit');
           break;
         }
