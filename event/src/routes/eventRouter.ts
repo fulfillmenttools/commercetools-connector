@@ -15,10 +15,9 @@ export class EventRouter {
   constructor(fftApiClient: FftApiClient) {
     const orderService = new FftOrderService(fftApiClient);
     const facilityService = new FftFacilityService(fftApiClient);
+    const channelService = new ChannelService(facilityService);
     const ctStoreService = new CommercetoolsStoreService();
     const orderProcessor = new OrderProcessor(orderService, new OrderMapper(ctStoreService, facilityService));
-
-    const channelService = new ChannelService(facilityService);
     const channelProcessor = new ChannelProcessor(channelService);
 
     const statusController = new StatusController();

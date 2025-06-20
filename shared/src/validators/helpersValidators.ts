@@ -18,11 +18,6 @@ export const standardString: ValidatorCreator = (path, message, overrideConfig =
   [[required(validator.isLength), message, [{ min: 2, max: 20, ...overrideConfig }]]],
 ];
 
-export const standardBoolean: ValidatorCreator = (path, message, overrideConfig = {}) => [
-  path,
-  [[required(validator.isBoolean), message, [{ loose: false, ...overrideConfig }]]],
-];
-
 export const standardEmail: ValidatorCreator = (path, message) => [path, [[required(validator.isEmail), message]]];
 
 export const standardNaturalNumber = (path, message) => [
