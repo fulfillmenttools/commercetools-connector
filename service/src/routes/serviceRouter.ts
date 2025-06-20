@@ -14,7 +14,7 @@ import {
   FftParcelService,
   FftShipmentService,
 } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
-import { asyncHandler, checkJwt } from 'shared';
+import { asyncHandler, checkJwt, logger, readConfiguration } from 'shared';
 
 export const fftEvents: { [index: string]: string } = {
   PICK_JOB_CREATED: '/pickjob/created',
@@ -28,6 +28,8 @@ export class ServiceRouter {
   private serviceRouter = Router();
 
   constructor(fftApiClient: FftApiClient, enableAuth = true) {
+    const config = readConfiguration();
+
     const fftLoadUnitService = new FftLoadUnitService(fftApiClient);
     const fftOrderService = new FftOrderService(fftApiClient);
     const fftShipmentServie = new FftShipmentService(fftApiClient);
@@ -47,6 +49,11 @@ export class ServiceRouter {
     const middleware = [];
     if (enableAuth) {
       middleware.push(checkJwt);
+    }
+
+    if (config.featStatusupdatesActive.toLowerCase() === "false") { // FeatureFlag: Disables the Status Updates from fft to ct
+      logger.info('Status Updates deactivated');
+      return;
     }
 
     if (fftEvents.ORDER_CREATED) {

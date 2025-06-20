@@ -117,6 +117,36 @@ const envValidators = [
     },
     { min: 4, max: undefined }
   ),
+
+  standardString(
+    ['featStatusupdatesActive'],
+    {
+      code: 'InvalidfeatStatusupdatesActive',
+      message: 'featStatusupdatesActive must be true or false.',
+      referencedBy: 'environmentVariables',
+    },
+    { min: 4, max: 5 }
+  ),
+
+  standardString(
+    ['featChannelsyncActive'],
+    {
+      code: 'InvalidfeatChannelsyncActive',
+      message: 'featChannelsyncActive must be true or false.',
+      referencedBy: 'environmentVariables',
+    },
+    { min: 4, max: 5 }
+  ),
+
+  standardString(
+    ['featOrdersyncActive'],
+    {
+      code: 'InvalidfeatOrdersyncActive',
+      message: 'featOrdersyncActive must be true or false.',
+      referencedBy: 'environmentVariables',
+    },
+    { min: 4, max: 5 }
+  ),
 ];
 
 export default envValidators;

@@ -213,6 +213,16 @@ This is automatically done by the `connector:post-deploy` script which is invok
 
 This is automatically done by the `connector:post-deploy` script which is invoked after the app has been deployed into a commercetools environment.
 
+### ❌ Deactivate Event/Service
+
+By default, all three events/services are activated (order sync, facility sync and status updates). However, you can deactivate each one individually by setting the corresponding value to `false` when installing the connector.
+
+| VAR                         | Description                                                               |
+| --------------------------- | ------------------------------------------------------------------------- |
+| `FEAT_ORDERSYNC_ACTIVE`     | Set to `false` will deactivate the order sync (default is `true`)         |
+| `FEAT_CHANNELSYNC_ACTIVE`   | Set to `false` will deactivate the channel sync (default is `true`)       |
+| `FEAT_STATUSUPDATES_ACTIVE` | Set to `false` will deactivate the status updates (default is `true`)     |
+
 ## 🏰 Architecture principles for building a commercetools Connect application
 
 - Connector solution should be lightweight in nature

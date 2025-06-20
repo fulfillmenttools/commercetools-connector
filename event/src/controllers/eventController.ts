@@ -1,7 +1,7 @@
 import { Message, Reference } from '@commercetools/platform-sdk';
 import { NextFunction, Request, Response } from 'express';
 
-import { CustomError, logger, SubscriptionMessage } from 'shared';
+import { CustomError, logger, SubscriptionMessage, readConfiguration } from 'shared';
 import { ChannelProcessor } from '../channel/channelProcessor';
 import { OrderProcessor } from '../order/orderProcessor';
 
@@ -28,10 +28,15 @@ export class EventController {
   }
 
   private async processMessage(message: Message) {
+    const config = readConfiguration();
     const resourceRef = message.resource;
     const typeString = resourceRef.typeId as string;
     switch (resourceRef.typeId) {
       case 'order':
+        if (config.featOrdersyncActive.toLowerCase() === "false") { // FeatureFlag: Disables the Order Sync from ct to fft
+          logger.info('Order Sync deactivated');
+          break;
+        }
         if (this.isOrderStateConfirmedMessage(message) || this.isOrderCreatedWithStateConfirmedMessage(message)) {
           await this.orderProcessor.processOrder(resourceRef.id, message.resourceUserProvidedIdentifiers?.orderNumber);
         } else if (this.isOrderStateCancelledMessage(message) || this.isOrderDeletedMessage(message)) {
@@ -39,6 +44,10 @@ export class EventController {
         }
         break;
       case 'channel':
+        if (config.featChannelsyncActive.toLowerCase() === "false") { // FeatureFlag: Disables the Channel Sync from ct to fft
+          logger.info('Channel Sync deactivated');
+          break;
+        }
         if (this.isChannelMessage(message)) {
           await this.channelProcessor.processChannel(message);
         }
