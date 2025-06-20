@@ -1,4 +1,4 @@
-import { optional, standardString, standardKey, region, standardEmail, standardBoolean } from './helpersValidators';
+import { optional, standardString, standardKey, region, standardEmail } from './helpersValidators';
 
 /**
  * Create here your own validators
