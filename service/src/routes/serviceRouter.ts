@@ -14,7 +14,7 @@ import {
   FftParcelService,
   FftShipmentService,
 } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
-import { asyncHandler, checkJwt, logger, readConfiguration } from 'shared';
+import { asyncHandler, checkJwt } from 'shared';
 
 export const fftEvents: { [index: string]: string } = {
   PICK_JOB_CREATED: '/pickjob/created',
