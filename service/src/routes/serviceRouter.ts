@@ -28,8 +28,6 @@ export class ServiceRouter {
   private serviceRouter = Router();
 
   constructor(fftApiClient: FftApiClient, enableAuth = true) {
-    const config = readConfiguration();
-
     const fftLoadUnitService = new FftLoadUnitService(fftApiClient);
     const fftOrderService = new FftOrderService(fftApiClient);
     const fftShipmentServie = new FftShipmentService(fftApiClient);
@@ -50,12 +48,7 @@ export class ServiceRouter {
     if (enableAuth) {
       middleware.push(checkJwt);
     }
-
-    if (config.featStatusupdatesActive.toLowerCase() === "false") { // FeatureFlag: Disables the Status Updates from fft to ct
-      logger.info('Status Updates deactivated');
-      return;
-    }
-
+    
     if (fftEvents.ORDER_CREATED) {
       this.serviceRouter.post(fftEvents.ORDER_CREATED, middleware, asyncHandler(orderController.orderCreated));
     }
