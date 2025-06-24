@@ -17,6 +17,10 @@ deployAs:
         - key: FFT_PROJECT_ID
           required: true
           description: fulfillmenttools project ID
+        - key: FEAT_STATUSUPDATES_ACTIVE
+          required: true
+          default: true
+          description: feature StatusUpdates active
       securedConfiguration:
         - key: CTP_CLIENT_ID
           required: true
@@ -66,6 +70,14 @@ deployAs:
         - key: FFT_PROJECT_ID
           required: true
           description: fulfillmenttools project ID
+        - key: FEAT_ORDERSYNC_ACTIVE
+          required: true
+          default: true
+          description: feature OrderSync active
+        - key: FEAT_CHANNELSYNC_ACTIVE
+          required: true
+          default: true
+          description: feature ChannelSync active
       securedConfiguration:
         - key: CTP_CLIENT_ID
           required: true

@@ -30,10 +30,16 @@ app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
 app.disable('x-powered-by');
 
 // Define routes
-app.use('/service', router.getRouter());
-app.use('*', () => {
-  throw new CustomError(404, 'Path not found.');
-});
+if (config.featStatusupdatesActive.toLowerCase() === "false") { // FeatureFlag: Disables the Status Updates from fft to ct
+  app.use('*', () => {
+    throw new CustomError(200, 'Service updates deactivated.');
+  });
+} else {
+  app.use('/service', router.getRouter());
+  app.use('*', () => {
+    throw new CustomError(404, 'Path not found.');
+  });
+}
 
 // Global error handler
 app.use(errorMiddleware);

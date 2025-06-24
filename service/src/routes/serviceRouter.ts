@@ -48,7 +48,7 @@ export class ServiceRouter {
     if (enableAuth) {
       middleware.push(checkJwt);
     }
-
+    
     if (fftEvents.ORDER_CREATED) {
       this.serviceRouter.post(fftEvents.ORDER_CREATED, middleware, asyncHandler(orderController.orderCreated));
     }
