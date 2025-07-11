@@ -5,107 +5,65 @@ deployAs:
     scripts:
       postDeploy: npm ci && npm run build && npm run connector:post-deploy
       preUndeploy: npm ci && npm run build && npm run connector:pre-undeploy
-    configuration:
-      standardConfiguration:
-        - key: CTP_PROJECT_KEY
-          required: true
-          description: commercetools Composable Commerce project key
-        - key: CTP_REGION
-          required: true
-          description: commercetools Composable Commerce API region
-          default: "europe-west1.gcp"
-        - key: FFT_PROJECT_ID
-          required: true
-          description: fulfillmenttools project ID
-        - key: FEAT_STATUSUPDATES_ACTIVE
-          required: true
-          default: 'true'
-          description: feature StatusUpdates active
-      securedConfiguration:
-        - key: CTP_CLIENT_ID
-          required: true
-          description: commercetools Composable Commerce project API client ID
-        - key: CTP_CLIENT_SECRET
-          required: true
-          description: commercetools Composable Commerce project API client secret
-        - key: CTP_SCOPE
-          required: true
-          description: commercetools Composable Commerce project API client scope
-        - key: FFT_API_KEY
-          required: true
-          description: fulfillmenttools project API key
-        - key: FFT_API_USER
-          required: true
-          description: fulfillmenttools project API user
-        - key: FFT_API_PASSWORD
-          required: true
-          description: fulfillmenttools project API password
-        - key: JWT_SECRET
-          required: true
-          description: JSON web token shared secret
-        - key: JWT_ISSUER
-          required: true
-          description: JSON web token issuer claim
-        - key: JWT_AUDIENCE
-          required: true
-          description: JSON web token audience claim
-        - key: JWT_SUBJECT
-          required: true
-          description: JSON web token subject claim
   - name: event
     applicationType: event
     endpoint: /event
     scripts:
       postDeploy: npm ci && npm run build && npm run connector:post-deploy
       preUndeploy: npm ci && npm run build && npm run connector:pre-undeploy
-    configuration:
-      standardConfiguration:
-        - key: CTP_PROJECT_KEY
-          required: true
-          description: commercetools Composable Commerce project key
-        - key: CTP_REGION
-          required: true
-          description: commercetools Composable Commerce API region
-          default: "europe-west1.gcp"
-        - key: FFT_PROJECT_ID
-          required: true
-          description: fulfillmenttools project ID
-        - key: FEAT_ORDERSYNC_ACTIVE
-          required: true
-          default: 'true'
-          description: feature OrderSync active
-        - key: FEAT_CHANNELSYNC_ACTIVE
-          required: true
-          default: 'true'
-          description: feature ChannelSync active
-      securedConfiguration:
-        - key: CTP_CLIENT_ID
-          required: true
-          description: commercetools Composable Commerce project API client ID
-        - key: CTP_CLIENT_SECRET
-          required: true
-          description: commercetools Composable Commerce project API client secret
-        - key: CTP_SCOPE
-          required: true
-          description: commercetools Composable Commerce project API client scope
-        - key: FFT_API_KEY
-          required: true
-          description: fulfillmenttools project API key
-        - key: FFT_API_USER
-          required: true
-          description: fulfillmenttools project API user
-        - key: FFT_API_PASSWORD
-          required: true
-          description: fulfillmenttools project API password
-        - key: JWT_SECRET
-          required: true
-          description: JSON web token shared secret
-        - key: JWT_ISSUER
-          required: true
-          description: JSON web token issuer claim
-        - key: JWT_AUDIENCE
-          required: true
-          description: JSON web token audience claim
-        - key: JWT_SUBJECT
-          required: true
-          description: JSON web token subject claim
+inheritAs:
+  configuration:
+    standardConfiguration:
+      - key: CTP_PROJECT_KEY
+        required: true
+        description: commercetools Composable Commerce project key
+      - key: CTP_REGION
+        required: true
+        description: commercetools Composable Commerce API region
+        default: "europe-west1.gcp"
+      - key: FFT_PROJECT_ID
+        required: true
+        description: fulfillmenttools project ID
+      - key: FEAT_ORDERSYNC_ACTIVE
+        required: true
+        default: 'true'
+        description: feature OrderSync active
+      - key: FEAT_CHANNELSYNC_ACTIVE
+        required: true
+        default: 'true'
+        description: feature ChannelSync active
+      - key: FEAT_STATUSUPDATES_ACTIVE
+        required: true
+        default: 'true'
+        description: feature StatusUpdates active
+    securedConfiguration:
+      - key: CTP_CLIENT_ID
+        required: true
+        description: commercetools Composable Commerce project API client ID
+      - key: CTP_CLIENT_SECRET
+        required: true
+        description: commercetools Composable Commerce project API client secret
+      - key: CTP_SCOPE
+        required: true
+        description: commercetools Composable Commerce project API client scope
+      - key: FFT_API_KEY
+        required: true
+        description: fulfillmenttools project API key
+      - key: FFT_API_USER
+        required: true
+        description: fulfillmenttools project API user
+      - key: FFT_API_PASSWORD
+        required: true
+        description: fulfillmenttools project API password
+      - key: JWT_SECRET
+        required: true
+        description: JSON web token shared secret
+      - key: JWT_ISSUER
+        required: true
+        description: JSON web token issuer claim
+      - key: JWT_AUDIENCE
+        required: true
+        description: JSON web token audience claim
+      - key: JWT_SUBJECT
+        required: true
+        description: JSON web token subject claim
