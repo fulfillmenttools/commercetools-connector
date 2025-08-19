@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@commercetools-backend/loggers": "22.39.0",
-    "@commercetools/platform-sdk": "7.22.0",
+    "@commercetools/platform-sdk": "8.13.0",
     "@commercetools/sdk-client-v2": "2.5.0",
     "@fulfillmenttools/fulfillmenttools-sdk-typescript": "0.3.4",
     "dotenv": "16.5.0",
