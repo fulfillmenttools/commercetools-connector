@@ -1,29 +1,32 @@
 import { isErrorItem, logger } from 'shared';
-import { Message } from '@commercetools/platform-sdk';
 import { ChannelService } from '../services/channelService';
+import { EventMessage } from '../controllers/eventController';
 
 export class ChannelProcessor {
   constructor(private readonly channelService: ChannelService) {}
 
-  async processChannel(message: Message & { notificationType?: string }): Promise<void> {
+  async processChannel(message: EventMessage): Promise<void> {
     if (message.resource?.typeId != 'channel') {
       logger.warn(`Could not process CT message - resource.typeId '${message.resource?.typeId}' != 'channel'`);
       return;
     }
 
-    const notificationType = message['notificationType'] as string;
-
     logger.info(
-      `Processing '${notificationType}' message for '${message.resource.typeId}' '${message.resource.id}' '${message.resourceUserProvidedIdentifiers?.key}'`
+      `Processing '${message.notificationType}' message for '${message.resource.typeId}' '${message.resource.id}' '${message.resourceUserProvidedIdentifiers?.key}'`
     );
 
     try {
-      if (notificationType === 'ResourceDeleted') {
-        await this.processChannelDeleted(message);
-      } else if (notificationType === 'ResourceCreated' || notificationType === 'ResourceUpdated') {
-        await this.processChannelUpdated(message);
-      } else {
-        logger.warn(`Could not process CT message - cannot handle notificationType '${notificationType}'`);
+      switch (message.notificationType) {
+        case 'ResourceDeleted':
+          await this.processChannelDeleted(message);
+          break;
+        case 'ResourceCreated':
+        case 'ResourceUpdated':
+          await this.processChannelUpdated(message);
+          break;
+        default:
+          logger.warn(`Could not process CT message - cannot handle notificationType '${message.notificationType}'`);
+          break;
       }
     } catch (err) {
       let statusCode: string | number = 500;
@@ -33,13 +36,13 @@ export class ChannelProcessor {
         errorMessage = err.message;
       }
       logger.error(
-        `Could not process CT '${notificationType}' message for '${message.resource.typeId}' '${message.resource.id}' '${message.resourceUserProvidedIdentifiers?.key}': ${statusCode} - ${errorMessage}`,
+        `Could not process CT '${message.notificationType}' message for '${message.resource.typeId}' '${message.resource.id}' '${message.resourceUserProvidedIdentifiers?.key}': ${statusCode} - ${errorMessage}`,
         err
       );
     }
   }
 
-  private async processChannelDeleted(message: Message): Promise<void> {
+  private async processChannelDeleted(message: EventMessage): Promise<void> {
     const tenantFacilityId = message.resourceUserProvidedIdentifiers?.key;
     if (tenantFacilityId) {
       const facilityId = await this.channelService.setFacilityOffline(tenantFacilityId);
@@ -51,7 +54,7 @@ export class ChannelProcessor {
     }
   }
 
-  private async processChannelUpdated(message: Message): Promise<void> {
+  private async processChannelUpdated(message: EventMessage): Promise<void> {
     const channelId = message.resource.id;
     if (channelId) {
       const facility = await this.channelService.upsertFacility(channelId);

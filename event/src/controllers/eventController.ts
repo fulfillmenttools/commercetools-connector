@@ -1,9 +1,21 @@
-import { Message, Reference } from '@commercetools/platform-sdk';
+import {
+  Message,
+  OrderCreatedMessage,
+  OrderDeletedMessage,
+  OrderStateChangedMessage,
+  Reference,
+  ResourceCreatedDeliveryPayload,
+  ResourceDeletedDeliveryPayload,
+  ResourceUpdatedDeliveryPayload,
+  DeliveryPayload,
+} from '@commercetools/platform-sdk';
 import { NextFunction, Request, Response } from 'express';
 
-import { CustomError, logger, SubscriptionMessage, readConfiguration } from 'shared';
+import { CustomError, logger, readConfiguration } from 'shared';
 import { ChannelProcessor } from '../channel/channelProcessor';
 import { OrderProcessor } from '../order/orderProcessor';
+
+export type EventMessage = DeliveryPayload & Message;
 
 export class EventController {
   constructor(
@@ -27,24 +39,30 @@ export class EventController {
     response.status(201).send();
   }
 
-  private async processMessage(message: Message) {
+  private async processMessage(message: EventMessage) {
     const config = readConfiguration();
-    const resourceRef = message.resource;
-    const typeString = resourceRef.typeId as string;
-    switch (resourceRef.typeId) {
+    switch (message.resource.typeId) {
       case 'order':
-        if (config.featOrdersyncActive.toLowerCase() === "false") { // FeatureFlag: Disables the Order Sync from ct to fft
+        if (config.featOrdersyncActive.toLowerCase() === 'false') {
+          // FeatureFlag: Disables the Order Sync from ct to fft
           logger.info('Order Sync deactivated');
           break;
         }
         if (this.isOrderStateConfirmedMessage(message) || this.isOrderCreatedWithStateConfirmedMessage(message)) {
-          await this.orderProcessor.processOrder(resourceRef.id, message.resourceUserProvidedIdentifiers?.orderNumber);
+          await this.orderProcessor.processOrder(
+            message.resource.id,
+            message.resourceUserProvidedIdentifiers?.orderNumber
+          );
         } else if (this.isOrderStateCancelledMessage(message) || this.isOrderDeletedMessage(message)) {
-          await this.orderProcessor.cancelOrder(resourceRef.id, message.resourceUserProvidedIdentifiers?.orderNumber);
+          await this.orderProcessor.cancelOrder(
+            message.resource.id,
+            message.resourceUserProvidedIdentifiers?.orderNumber
+          );
         }
         break;
       case 'channel':
-        if (config.featChannelsyncActive.toLowerCase() === "false") { // FeatureFlag: Disables the Channel Sync from ct to fft
+        if (config.featChannelsyncActive.toLowerCase() === 'false') {
+          // FeatureFlag: Disables the Channel Sync from ct to fft
           logger.info('Channel Sync deactivated');
           break;
         }
@@ -54,17 +72,19 @@ export class EventController {
         break;
       default:
         // commercetools sends this message when a subscription is created/updated
-        if (typeString === 'subscription') {
+        // ignored because missing in ts mapping but https://docs.commercetools.com/api/types#referencetypeid
+        // @ts-ignore
+        if (message.resource.typeId === 'subscription') {
           break;
         }
         throw new CustomError(
           400,
-          `Bad request: Resource type ${resourceRef.typeId} of message ${message.id} is not supported!`
+          `Bad request: Resource type ${message.resource.typeId} of message ${message.id} is not supported!`
         );
     }
   }
 
-  private validateMessage(request: Request): SubscriptionMessage {
+  private validateMessage(request: Request): EventMessage {
     // Check request body
     if (!request.body) {
       logger.error('Missing request body.');
@@ -83,9 +103,9 @@ export class EventController {
 
     const decodedData = Buffer.from(pubSubMessage.data, 'base64').toString().trim();
 
-    let message: SubscriptionMessage;
+    let message: EventMessage;
     try {
-      message = JSON.parse(decodedData) as SubscriptionMessage;
+      message = JSON.parse(decodedData) as EventMessage;
     } catch (e) {
       logger.error('Cannot parse message data', e);
       throw new CustomError(400, `Bad request: Cannot parse message data`);
@@ -99,44 +119,35 @@ export class EventController {
     ) {
       throw new CustomError(400, `Bad request: Message ${message.id} does not contain valid resource reference`);
     }
-    if (!message.notificationType || message.notificationType === '') {
-      throw new CustomError(400, `Bad request: Message ${message.id} does not contain valid notification type`);
-    }
 
     return message;
   }
 
-  private isOrderStateConfirmedMessage(message: Message): boolean {
-    if (message.type === 'OrderStateChanged') {
-      return message.orderState === 'Confirmed';
-    }
-    return false;
+  private isOrderStateConfirmedMessage(message: Message): message is OrderStateChangedMessage {
+    return message.type === 'OrderStateChanged' && message.orderState === 'Confirmed';
   }
 
-  private isOrderCreatedWithStateConfirmedMessage(message: Message): boolean {
-    if (message.type === 'OrderCreated') {
-      return message.order.orderState === 'Confirmed';
-    }
-    return false;
+  private isOrderCreatedWithStateConfirmedMessage(message: Message): message is OrderCreatedMessage {
+    return message.type === 'OrderCreated' && message.order.orderState === 'Confirmed';
   }
 
-  private isOrderStateCancelledMessage(message: Message): boolean {
-    if (message.type === 'OrderStateChanged') {
-      return message.orderState === 'Cancelled';
-    }
-    return false;
+  private isOrderStateCancelledMessage(message: Message): message is OrderStateChangedMessage {
+    return message.type === 'OrderStateChanged' && message.orderState === 'Cancelled';
   }
 
-  private isOrderDeletedMessage(message: Message): boolean {
+  private isOrderDeletedMessage(message: Message): message is OrderDeletedMessage {
     return message.type === 'OrderDeleted';
   }
 
-  private isChannelMessage(message: Message & { notificationType?: string }): boolean {
-    const notificationType = message['notificationType'];
+  private isChannelMessage(
+    message: EventMessage
+  ): message is (ResourceCreatedDeliveryPayload | ResourceUpdatedDeliveryPayload | ResourceDeletedDeliveryPayload) &
+    Message {
     return (
-      notificationType === 'ResourceUpdated' ||
-      notificationType === 'ResourceCreated' ||
-      notificationType === 'ResourceDeleted'
+      'notificationType' in message &&
+      (message.notificationType === 'ResourceUpdated' ||
+        message.notificationType === 'ResourceCreated' ||
+        message.notificationType === 'ResourceDeleted')
     );
   }
 }
