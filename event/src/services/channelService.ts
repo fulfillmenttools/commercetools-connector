@@ -1,4 +1,4 @@
-import { Address, Channel, Project } from '@commercetools/platform-sdk';
+import { Address, Channel, Project, ChannelRoleEnumValues } from '@commercetools/platform-sdk';
 import {
   AddressPhoneNumbers,
   Facility,
@@ -22,7 +22,7 @@ export class ChannelService {
       return;
     }
 
-    if (channel.roles.includes('InventorySupply')) {
+    if (channel.roles.includes(ChannelRoleEnumValues.InventorySupply)) {
       const fftFacilityId = await this.fftFacilityService.getFacilityId(channel.key, true);
       const project = await getProject();
 

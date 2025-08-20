@@ -1,29 +1,37 @@
 import { http, HttpResponse } from 'msw';
 
 import { ctApi } from '../baseUrls';
-import { channelCologne, channelHamburg, mockStore } from '../ctEntities';
+
+import { StoreRest } from '@commercetools/composable-commerce-test-data/store';
+import { ChannelRest } from '@commercetools/composable-commerce-test-data/channel';
+
+const channelCologne = ChannelRest.random().id('12345').key('store_cologne').roles([]);
+const channelHamburg = ChannelRest.random().id('54321').key('store_hamburg').roles([]);
 
 export const handlers = [
   http.get(ctApi('/stores/key=store_01'), ({ request }) => {
+    const store = StoreRest.random()
+      .supplyChannels([channelCologne, channelHamburg])
+      .countries([])
+      .id('1123456789')
+      .key('store_02')
+      .languages([])
+      .productSelections([])
+      .distributionChannels([])
+      .buildRest();
     const url = new URL(request.url);
     const expand = url.searchParams.get('expand');
     if (expand === 'supplyChannels[*]') {
-      return HttpResponse.json(
-        mockStore({
-          supplyChannels: [
-            { typeId: 'channel', id: channelCologne.id, obj: channelCologne },
-            { typeId: 'channel', id: channelHamburg.id, obj: channelHamburg },
-          ],
-        })
-      );
+      store.supplyChannels.map((value) => {
+        return { id: value.id, typeId: value.id, obj: value };
+      });
+      return HttpResponse.json({
+        ...store,
+        supplyChannels: store.supplyChannels.map((value) => {
+          return { id: value.id, typeId: value.id, obj: value };
+        }),
+      });
     }
-    return HttpResponse.json(
-      mockStore({
-        supplyChannels: [
-          { typeId: 'channel', id: channelCologne.id },
-          { typeId: 'channel', id: channelHamburg.id },
-        ],
-      })
-    );
+    return HttpResponse.json(store);
   }),
 ];

@@ -2,6 +2,7 @@ import { http, HttpResponse } from 'msw';
 
 import { fftApi } from '../baseUrls';
 import {
+  Facility,
   FacilityStatus,
   StrippedFacilities,
   StrippedFacility,
@@ -41,7 +42,24 @@ const facilityMunich: StrippedFacility = {
   tenantFacilityId: 'store_munich',
 };
 
+const fullFacilityCologne: Facility = {
+  address: {
+    city: 'Köln',
+    country: 'DE',
+    houseNumber: '20',
+    postalCode: '51063',
+    street: 'Schanzenstraße',
+    companyName: 'fulfullmenttools',
+  },
+  id: 'store_cologne_fft_id',
+  status: FacilityStatus.ONLINE,
+  version: 1,
+  tenantFacilityId: 'store_cologne',
+  name: 'fulfullmenttools',
+};
+
 const facilities: StrippedFacility[] = [facilityCologne, facilityHamburg, facilityMunich];
+const fullFacilities = [fullFacilityCologne];
 
 export const handlers = [
   http.get(fftApi('/facilities'), ({ request }) => {
@@ -53,5 +71,27 @@ export const handlers = [
     }
     const result: StrippedFacilities = { facilities: strippedFacilities, total: strippedFacilities.length };
     return HttpResponse.json(result);
+  }),
+
+  http.get(fftApi('/facilities/:facilityId'), ({ params }) => {
+    const { facilityId } = params;
+    const facility = fullFacilities.find((f) => f.id === facilityId);
+
+    if (!facility) {
+      return HttpResponse.json({ message: 'Not found' }, { status: 404 });
+    }
+
+    return HttpResponse.json(facility);
+  }),
+
+  http.patch(fftApi('/facilities/:facilityId'), ({ params }) => {
+    const { facilityId } = params;
+    const facility = fullFacilities.find((f) => f.id === facilityId);
+
+    if (!facility) {
+      return HttpResponse.json({ message: 'Not found' }, { status: 404 });
+    }
+
+    return HttpResponse.json(facility);
   }),
 ];

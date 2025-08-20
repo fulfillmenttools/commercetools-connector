@@ -19,6 +19,7 @@
     "postversion": "git add package.json package-lock.json"
   },
   "devDependencies": {
+    "@commercetools/composable-commerce-test-data": "^13.4.0",
     "@eslint/js": "9.26.0",
     "@jest/globals": "29.7.0",
     "@tsconfig/recommended": "1.0.8",

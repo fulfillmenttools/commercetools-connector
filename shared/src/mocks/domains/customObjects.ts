@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw';
 
 import { ctApi } from '../baseUrls';
-import { mockCustomObject } from '../ctEntities';
+import { CustomObject } from '@commercetools/composable-commerce-test-data/custom-object';
 import {
   CUSTOM_OBJECT_CONTAINER,
   CUSTOM_OBJECT_KEY,
@@ -25,18 +25,18 @@ const customFieldTagMapping: CustomFieldTagMapping = {
 export const handlers = [
   http.get(ctApi(`/custom-objects/${CUSTOM_OBJECT_CONTAINER}/${CUSTOM_OBJECT_KEY}`), () => {
     return HttpResponse.json(
-      mockCustomObject({
-        value: {
+      CustomObject.random()
+        .value({
           orderCustomTypeKey: CUSTOM_TYPE_NAME,
           shippingMethodMapping,
           collectChannelReferenceFieldName: SUPPLY_CHANNEL_REFERENCE_FIELD_NAME,
           storeTagMapping: 'tag_store',
           customFieldTagMapping,
-        },
-      })
+        })
+        .buildRest()
     );
   }),
-  http.get(ctApi('/custom-objects/:container/:key'), ({ params }) => {
-    return HttpResponse.json(mockCustomObject({ container: params.container, key: params.key }));
+  http.get<{ container: string; key: string }>(ctApi('/custom-objects/:container/:key'), ({ params }) => {
+    return HttpResponse.json(CustomObject.random().container(params.container).key(params.key).buildRest());
   }),
 ];

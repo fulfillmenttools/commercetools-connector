@@ -1,13 +1,13 @@
 import { http, HttpResponse } from 'msw';
 
 import { ctApi } from '../baseUrls';
-import { mockCtOrder } from '../ctEntities';
+import { OrderRest } from '@commercetools/composable-commerce-test-data/order';
 
 export const handlers = [
-  http.get(ctApi('/orders/:id'), ({ params }) => {
-    return HttpResponse.json(mockCtOrder({ id: params.id }));
+  http.get<{ id: string }>(ctApi('/orders/:id'), ({ params }) => {
+    return HttpResponse.json(OrderRest.random().id(params.id).buildRest());
   }),
-  http.post(ctApi('/orders/:id'), ({ params }) => {
-    return HttpResponse.json(mockCtOrder({ id: params.id }));
+  http.post<{ id: string }>(ctApi('/orders/:id'), ({ params }) => {
+    return HttpResponse.json(OrderRest.random().id(params.id).buildRest());
   }),
 ];
