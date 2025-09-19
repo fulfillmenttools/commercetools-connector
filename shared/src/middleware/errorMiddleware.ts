@@ -1,5 +1,6 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
 import { CustomError } from '../errors';
+import { logger } from '../utils/loggerUtils';
 
 /**
  * Middleware for error handling
@@ -21,5 +22,6 @@ export const errorMiddleware: ErrorRequestHandler = (error: Error, _: Request, r
     return;
   }
 
+  logger.error('Error thrown on error middleware', error)
   res.status(500).send(isDevelopment ? { message: error.message } : { message: 'Internal server error' });
 };
