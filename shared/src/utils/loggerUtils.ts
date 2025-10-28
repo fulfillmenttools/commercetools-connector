@@ -1,3 +1,3 @@
-//import { createApplicationLogger } from '@commercetools-backend/loggers';
+import { createApplicationLogger } from '@commercetools-backend/loggers';
 
-export const logger = console; //createApplicationLogger({ json: true });
+export const logger = createApplicationLogger({ json: true });
