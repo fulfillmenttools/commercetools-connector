@@ -10,7 +10,7 @@ import { CustomError } from '../errors';
  * @returns
  */
 export const errorMiddleware: ErrorRequestHandler = (error: Error, _: Request, res: Response, _next: NextFunction) => {
-  const isDevelopment = true; // process.env.NODE_ENV === 'development';
+  const isDevelopment = process.env.NODE_ENV === 'development';
 
   if (error instanceof CustomError) {
     res.status(error.statusCode).json({
