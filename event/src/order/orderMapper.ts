@@ -216,8 +216,10 @@ export class OrderMapper {
       city: commercetoolsAddress.city || '',
       country: commercetoolsAddress.country || '',
       companyName: commercetoolsAddress.company || '',
-      email: commercetoolsAddress.email || '',
     };
+    if (isValidString(commercetoolsAddress.email)) {
+      address.email = commercetoolsAddress.email;
+    }
     if (isValidString(commercetoolsAddress.state)) {
       address.province = commercetoolsAddress.state;
     }
