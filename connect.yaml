@@ -36,6 +36,10 @@ inheritAs:
         required: true
         default: 'true'
         description: feature StatusUpdates active
+      - key: DEBUG_MODE
+        required: true
+        default: 'false'
+        description: activate debug mode
     securedConfiguration:
       - key: CTP_CLIENT_ID
         required: true
