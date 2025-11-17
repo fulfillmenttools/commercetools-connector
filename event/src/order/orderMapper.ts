@@ -206,18 +206,20 @@ export class OrderMapper {
 
   private mapAddress(commercetoolsAddress: Address): ConsumerAddress {
     const address: ConsumerAddress = {
-      salutation: commercetoolsAddress.salutation,
-      firstName: commercetoolsAddress.firstName,
-      lastName: commercetoolsAddress.lastName,
-      street: commercetoolsAddress.streetName || '',
-      houseNumber: commercetoolsAddress.streetNumber,
-      additionalAddressInfo: commercetoolsAddress.additionalAddressInfo,
+      salutation: commercetoolsAddress.salutation || '',
+      firstName: commercetoolsAddress.firstName || '',
+      lastName: commercetoolsAddress.lastName || '',
+      street: commercetoolsAddress.streetName || '', // mandatory for fft, but ct type says it's not
+      houseNumber: commercetoolsAddress.streetNumber || '',
+      additionalAddressInfo: commercetoolsAddress.additionalAddressInfo || '',
       postalCode: commercetoolsAddress.postalCode || '',
       city: commercetoolsAddress.city || '',
       country: commercetoolsAddress.country || '',
-      companyName: commercetoolsAddress.company,
-      email: commercetoolsAddress.email,
+      companyName: commercetoolsAddress.company || '',
     };
+    if (isValidString(commercetoolsAddress.email)) {
+      address.email = commercetoolsAddress.email;
+    }
     if (isValidString(commercetoolsAddress.state)) {
       address.province = commercetoolsAddress.state;
     }

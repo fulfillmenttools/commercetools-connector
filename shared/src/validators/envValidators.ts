@@ -147,6 +147,16 @@ const envValidators = [
     },
     { min: 4, max: 5 }
   ),
+
+  standardString(
+    ['debugmode'],
+    {
+      code: 'InvalidDebugMode',
+      message: 'debugMode must be true or false.',
+      referencedBy: 'environmentVariables',
+    },
+    { min: 4, max: 5 }
+  ),
 ];
 
 export default envValidators;

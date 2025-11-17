@@ -1,5 +1,7 @@
 import { ErrorRequestHandler, NextFunction, Request, Response } from 'express';
 import { CustomError } from '../errors';
+import { readConfiguration } from '../utils/configUtils';
+import { logger } from '../utils/loggerUtils';
 
 /**
  * Middleware for error handling
@@ -10,7 +12,13 @@ import { CustomError } from '../errors';
  * @returns
  */
 export const errorMiddleware: ErrorRequestHandler = (error: Error, _: Request, res: Response, _next: NextFunction) => {
-  const isDevelopment = process.env.NODE_ENV === 'development';
+  let isDevelopment = process.env.NODE_ENV === 'development';
+  const config = readConfiguration();
+
+  if (config.featOrdersyncActive.toLowerCase() === "true") { // FeatureFlag: Disables the Order Sync from ct to fft
+    logger.error('--- Debug Mode active ---');
+    isDevelopment = true;
+  }
 
   if (error instanceof CustomError) {
     res.status(error.statusCode).json({

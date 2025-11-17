@@ -1,4 +1,4 @@
-import { getCommercetoolsOrderById, isHttpError, logger, ResourceLockedError } from 'shared';
+import { getCommercetoolsOrderById, isHttpError, logger, ResourceLockedError, CustomError } from 'shared';
 import { OrderMapper } from './orderMapper';
 import { FftOrderService, OrderStatus } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 import { isBefore, subSeconds } from 'date-fns';
@@ -15,7 +15,13 @@ export class OrderProcessor {
     this.removeOldLocks(60);
     this.lockOrder(orderId);
     try {
-      const fftOrder = await this.fftOrderService.findByTenantOrderId(orderNumber || orderId);
+      let fftOrder = undefined;
+      try {
+        fftOrder = await this.fftOrderService.findByTenantOrderId(orderNumber || orderId);
+      } catch (e) {
+        logger.error(`Cannot load order: ${JSON.stringify(e)}`);
+        throw new CustomError(500, `Cannot load order with orderId ${orderNumber || orderId} from fulfillmenttools`);
+      }
       if (fftOrder) {
         logger.info(`fulfillmenttools order for CT order '${orderId}' already exists => skip`);
         return;
@@ -26,7 +32,12 @@ export class OrderProcessor {
         return;
       }
       const fulfillmenttoolsOrder = await this.orderMapper.mapOrder(commercetoolsOrder);
-      await this.fftOrderService.create(fulfillmenttoolsOrder);
+      try {
+        await this.fftOrderService.create(fulfillmenttoolsOrder);
+      } catch (e) {
+        logger.error(`Mapped order: ${JSON.stringify(fulfillmenttoolsOrder)}`, e);
+        throw new CustomError(500, `Cannot create mappedOrder in fulfillmenttools`);
+      }
     } finally {
       this.unlockOrder(orderId);
     }
