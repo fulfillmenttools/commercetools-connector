@@ -19,6 +19,7 @@ interface Configuration {
   featStatusupdatesActive: string;
   featOrdersyncActive: string;
   featChannelsyncActive: string;
+  debugmode: string;
 }
 
 /**
@@ -54,6 +55,7 @@ const validateConfiguration = () => {
     featStatusupdatesActive: process.env.FEAT_STATUSUPDATES_ACTIVE as string,
     featOrdersyncActive: process.env.FEAT_ORDERSYNC_ACTIVE as string,
     featChannelsyncActive: process.env.FEAT_CHANNELSYNC_ACTIVE as string,
+    debugmode: process.env.DEBUG_MODE as string,
   };
 
   const validationErrors = getValidateMessages(envValidators, envVars);
