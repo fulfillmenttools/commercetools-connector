@@ -33,7 +33,6 @@ export class EventController {
     const typeString = resourceRef.typeId as string;
     switch (resourceRef.typeId) {
       case 'order':
-        logger.error(`--- Debug Mode: ${config.debugmode} ---`);
         if (config.featOrdersyncActive.toLowerCase() === "false") { // FeatureFlag: Disables the Order Sync from ct to fft
           logger.info('Order Sync deactivated');
           break;
