@@ -35,8 +35,8 @@ export class OrderProcessor {
       try {
         await this.fftOrderService.create(fulfillmenttoolsOrder);
       } catch (e) {
-        logger.error(`Mapped order: ${JSON.stringify(fulfillmenttoolsOrder)}`, e);
-        throw new CustomError(500, `Cannot create mappedOrder in fulfillmenttools`);
+        logger.error(`Error trying to map order: ${JSON.stringify(e)}`);
+        throw new CustomError(500, `Cannot create mappedOrder from orderId ${orderNumber || orderId}`);
       }
     } finally {
       this.unlockOrder(orderId);
