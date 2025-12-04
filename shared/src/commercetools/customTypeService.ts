@@ -22,8 +22,9 @@ export async function getCustomOrderType(): Promise<string | undefined> {
         logger.info(`CT custom order type '${typeKey}' not found`);
         return undefined;
       } else {
-        logger.error(JSON.stringify(result.body));
-        throw new CustomError(result.statusCode || 500, `Cannot read CT custom type '${typeKey}'`);
+        const errorMessage = `Cannot read CT custom type '${typeKey}': ${JSON.stringify(result)}`;
+        logger.error(errorMessage);
+        throw new CustomError(result.statusCode || 500, errorMessage);
       }
     }
   } catch (error) {
@@ -32,8 +33,9 @@ export async function getCustomOrderType(): Promise<string | undefined> {
       logger.info(`CT custom order type not found`);
       return undefined;
     }
-    logger.error(JSON.stringify(error));
-    throw new CustomError(status, `Cannot read CT custom type`);
+    const errorMessage = `Cannot read CT custom type: ${JSON.stringify(error)}`;
+    logger.error(errorMessage);
+    throw new CustomError(status, errorMessage);
   }
   return undefined;
 }
@@ -48,8 +50,9 @@ async function getCustomTypeById(id: string): Promise<Type | undefined> {
       logger.info(`CT custom type '${id}' not found`);
       return undefined;
     } else {
-      logger.error(JSON.stringify(result.body));
-      throw new CustomError(result.statusCode || 500, `Cannot read CT custom type '${id}'`);
+      const errorMessage = `Cannot read CT custom type '${id}': ${JSON.stringify(result)}`;
+      logger.error(errorMessage);
+      throw new CustomError(result.statusCode || 500, errorMessage);
     }
   } catch (error) {
     const status = statusCode(error);
@@ -57,8 +60,9 @@ async function getCustomTypeById(id: string): Promise<Type | undefined> {
       logger.info(`CT custom type '${id}' not found`);
       return undefined;
     }
-    logger.error(JSON.stringify(error));
-    throw new CustomError(status, `Cannot read CT custom type`);
+    const errorMessage = `Cannot read CT custom type '${id}': ${JSON.stringify(error)}`;
+    logger.error(errorMessage);
+    throw new CustomError(status, errorMessage);
   }
 }
 
@@ -81,13 +85,15 @@ export async function createCustomOrderType(): Promise<string | undefined> {
         logger.info(`Created CT custom type '${typeKey}': '${result.body.id}'`);
         return result.body.id;
       } else {
-        logger.error(JSON.stringify(result.body));
-        throw new CustomError(result.statusCode || 500, `Cannot create CT custom type '${typeKey}'`);
+        const errorMessage = `Cannot create CT custom type '${typeKey}': ${JSON.stringify(result)}`;
+        logger.error(errorMessage);
+        throw new CustomError(result.statusCode || 500, errorMessage);
       }
     }
   } catch (error) {
-    logger.error(JSON.stringify(error));
-    throw new CustomError(statusCode(error), `Cannot create CT custom type`);
+    const errorMessage = `Cannot create CT custom type: ${JSON.stringify(error)}`;
+    logger.error(errorMessage);
+    throw new CustomError(statusCode(error), errorMessage);
   }
   return undefined;
 }
@@ -109,15 +115,17 @@ export async function updateCustomOrderType(id: string): Promise<string | undefi
             logger.info(`Updated CT custom type '${typeKey}': '${result.body.id}'`);
             return result.body.id;
           } else {
-            logger.error(JSON.stringify(result.body));
-            throw new CustomError(result.statusCode || 500, `Cannot update CT custom type '${typeKey}'`);
+            const errorMessage = `Cannot update CT custom type '${typeKey}': ${JSON.stringify(result)}`;
+            logger.error(errorMessage);
+            throw new CustomError(result.statusCode || 500, errorMessage);
           }
         }
       }
     }
   } catch (error) {
-    logger.error(JSON.stringify(error));
-    throw new CustomError(statusCode(error), `Cannot update CT custom type`);
+    const errorMessage = `Cannot update CT custom type: ${JSON.stringify(error)}`;  
+    logger.error(errorMessage);
+    throw new CustomError(statusCode(error), errorMessage);
   }
   return undefined;
 }

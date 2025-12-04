@@ -11,11 +11,14 @@ export async function getProject(): Promise<Project> {
     if (result.statusCode === 200) {
       return result.body;
     } else {
-      throw new CustomError(result.statusCode || 500, `Cannot read CT project`);
+      const errorMessage = `Cannot read CT project: ${JSON.stringify(result)}`;
+      logger.error(errorMessage);
+      throw new CustomError(result.statusCode || 500, errorMessage);
     }
   } catch (error) {
     const status = statusCode(error);
-    logger.error(JSON.stringify(error));
-    throw new CustomError(status, `Cannot read CT project`);
+    const errorMessage = `Cannot read CT project: ${JSON.stringify(error)}`;
+    logger.error(errorMessage);
+    throw new CustomError(status, errorMessage);
   }
 }
