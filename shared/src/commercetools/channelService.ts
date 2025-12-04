@@ -11,7 +11,9 @@ export async function getChannelById(channelId: string): Promise<Channel | undef
     if (result.statusCode === 200) {
       return result.body;
     } else {
-      throw new CustomError(result.statusCode || 500, `Cannot read CT channel ${channelId}`);
+      const errorMessage = `Cannot read CT channel ${channelId}: ${JSON.stringify(result)}`;
+      logger.error(errorMessage);
+      throw new CustomError(result.statusCode || 500, errorMessage);
     }
   } catch (error) {
     const status = statusCode(error);
@@ -19,7 +21,8 @@ export async function getChannelById(channelId: string): Promise<Channel | undef
       logger.warn(`CT channel ${channelId} not found`);
       return undefined;
     }
-    logger.error(JSON.stringify(error));
-    throw new CustomError(status, `Cannot read CT channel ${channelId}`);
+    const errorMessage = `Cannot read CT channel ${channelId}: ${JSON.stringify(error)}`;
+    logger.error(errorMessage);
+    throw new CustomError(status, errorMessage);
   }
 }

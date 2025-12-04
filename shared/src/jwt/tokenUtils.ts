@@ -1,6 +1,7 @@
 import { JwtPayload, JsonWebTokenError, sign, verify } from 'jsonwebtoken';
 import { readConfiguration } from '../utils';
 import { randomUUID } from 'crypto';
+import { logger } from '../utils/loggerUtils';
 
 export function generateToken(validityDays: number): string | undefined {
   return sign({}, readConfiguration().jwtSecret, {
@@ -14,7 +15,9 @@ export function generateToken(validityDays: number): string | undefined {
 
 export function validateToken(token: string | undefined): JwtPayload {
   if (!token) {
-    throw new JsonWebTokenError('JWT must be provided');
+    const errorMessage = 'JWT must be provided';
+    logger.error(errorMessage);
+    throw new JsonWebTokenError(errorMessage);
   }
   return verify(token, readConfiguration().jwtSecret, {
     complete: true,

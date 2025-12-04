@@ -1,6 +1,7 @@
 import { CustomError } from '../errors';
 import { getValidateMessages } from '../validators/helpersValidators';
 import envValidators from '../validators/envValidators';
+import { logger } from './loggerUtils';
 
 interface Configuration {
   clientId: string;
@@ -61,7 +62,11 @@ const validateConfiguration = () => {
   const validationErrors = getValidateMessages(envValidators, envVars);
 
   if (validationErrors.length) {
-    throw new CustomError(500, 'Invalid Environment Variables please check your .env file', validationErrors);
+    const errorMessage = `Invalid Environment Variables please check your .env file: ${JSON.stringify(
+      validationErrors,
+    )}`;
+    logger.error(errorMessage);
+    throw new CustomError(500, errorMessage);
   }
 
   return envVars;
