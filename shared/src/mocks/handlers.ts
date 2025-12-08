@@ -4,6 +4,8 @@ import { handlers as customTypesHandlers } from './domains/customTypes';
 import { handlers as ctOrdersHandlers } from './domains/ctOrders';
 import { handlers as facilityHandlers } from './domains/facilities';
 import { handlers as fftOrdersHandlers } from './domains/fftOrders';
+import { handlers as fftShipmentsHandlers } from './domains/fftShipments';
+import { handlers as fftParcelsHandler } from './domains/fftParcels';
 import { handlers as storeHandlers } from './domains/stores';
 import { handlers as channelHandlers } from './domains/channels';
 import { handlers as projectHandlers } from './domains/projects';
@@ -14,6 +16,8 @@ export const handlers = [
   ...customTypesHandlers,
   ...ctOrdersHandlers,
   ...fftOrdersHandlers,
+  ...fftShipmentsHandlers,
+  ...fftParcelsHandler,
   ...facilityHandlers,
   ...storeHandlers,
   ...channelHandlers,

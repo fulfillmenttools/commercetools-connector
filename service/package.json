@@ -20,6 +20,7 @@
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write 'src/**/*.ts' 'tests/**/*.ts'",
     "test": "npm run build && jest --config jest.config.cjs",
+    "test:single": "jest --config jest.config.cjs -t 'should process request with wrong ct-Ref payload'",
     "test:coverage": "jest --config jest.config.cjs --coverage --collectCoverageFrom='src/**/*.{ts,jxs}'",
     "test:watch": "jest --watch",
     "connector:post-deploy": "node build/connector/post-deploy.js",
