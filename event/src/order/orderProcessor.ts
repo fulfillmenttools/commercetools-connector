@@ -19,8 +19,7 @@ export class OrderProcessor {
       try {
         fftOrder = await this.fftOrderService.findByTenantOrderId(orderNumber || orderId);
       } catch (e) {
-        logger.error(`Cannot load order: ${JSON.stringify(e)}`);
-        throw new CustomError(500, `Cannot load order with orderId ${orderNumber || orderId} from fulfillmenttools`);
+        logger.error(`Cannot load order ${orderNumber || orderId} from FFT: ${JSON.stringify(e)}`);
       }
       if (fftOrder) {
         logger.info(`fulfillmenttools order for CT order '${orderId}' already exists => skip`);
@@ -35,8 +34,7 @@ export class OrderProcessor {
       try {
         await this.fftOrderService.create(fulfillmenttoolsOrder);
       } catch (e) {
-        logger.error(`Error trying to map order: ${JSON.stringify(e)}`);
-        throw new CustomError(500, `Cannot create mappedOrder from orderId ${orderNumber || orderId}`);
+        logger.error(`Error trying to map order ${orderNumber || orderId}: ${JSON.stringify(e)}`);
       }
     } finally {
       this.unlockOrder(orderId);
@@ -79,7 +77,9 @@ export class OrderProcessor {
 
   private lockOrder(orderId: string) {
     if (this.orderLock.get(orderId)) {
-      throw new ResourceLockedError(`CT Order '${orderId}' is already locked`);
+      const errorMessage = `CT Order '${orderId}' is already locked`;
+      logger.error(errorMessage);
+      throw new ResourceLockedError(errorMessage);
     }
     this.orderLock.set(orderId, new Date());
   }

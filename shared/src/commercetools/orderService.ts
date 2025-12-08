@@ -19,10 +19,14 @@ export async function getCommercetoolsOrderById(commercetoolsId: string): Promis
     if (response.statusCode === 200) {
       return response.body;
     } else {
-      throw new CustomError(response.statusCode || 500, `Cannot read CT order ${commercetoolsId}`);
+      const errorMessage = `Cannot read CT order ${commercetoolsId}: ${JSON.stringify(response)}`;
+      logger.error(errorMessage);
+      throw new CustomError(response.statusCode || 500, errorMessage);
     }
   } catch (error) {
-    throw new CustomError(statusCode(error), `Cannot read CT order ${commercetoolsId}`);
+    const errorMessage = `Cannot read CT order ${commercetoolsId}: ${JSON.stringify(error)}`;
+    logger.error(errorMessage);
+    throw new CustomError(statusCode(error), errorMessage);
   }
 }
 
@@ -40,10 +44,14 @@ export async function updateCommercetoolsOrder(commercetoolsId: string, orderUpd
       logger.debug(`CT Order '${commercetoolsId}' updated successfully`, orderUpdate);
       return response.body;
     } else {
-      throw new CustomError(response.statusCode || 500, `Cannot update CT order ${commercetoolsId}`);
+      const errorMessage = `Cannot update CT order ${commercetoolsId}: ${JSON.stringify(response)}`;
+      logger.error(errorMessage);
+      throw new CustomError(response.statusCode || 500, errorMessage);
     }
   } catch (error) {
-    throw new CustomError(statusCode(error), `Cannot update CT order ${commercetoolsId}`);
+    const errorMessage = `Cannot update CT order ${commercetoolsId}: ${JSON.stringify(error)}`;
+    logger.error(errorMessage);
+    throw new CustomError(statusCode(error), errorMessage);
   }
 }
 

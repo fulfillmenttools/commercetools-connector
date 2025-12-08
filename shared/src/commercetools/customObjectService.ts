@@ -16,10 +16,9 @@ async function getConfigurationObject(): Promise<unknown> {
     if (result.statusCode === 200) {
       return result.body.value;
     } else {
-      throw new CustomError(
-        result.statusCode || 500,
-        `Cannot read CT custom object ${CUSTOM_OBJECT_CONTAINER}/${CUSTOM_OBJECT_KEY}`
-      );
+      const errorMessage = `Cannot read CT custom object ${CUSTOM_OBJECT_CONTAINER}/${CUSTOM_OBJECT_KEY}`;
+      logger.error(errorMessage); 
+      throw new CustomError(result.statusCode || 500, errorMessage);
     }
   } catch (error) {
     const status = statusCode(error);
@@ -27,8 +26,10 @@ async function getConfigurationObject(): Promise<unknown> {
       logger.warn(`CT custom object ${CUSTOM_OBJECT_CONTAINER}/${CUSTOM_OBJECT_KEY} not found`);
       return undefined;
     }
-    logger.error(JSON.stringify(error));
-    throw new CustomError(status, `Cannot read CT custom object ${CUSTOM_OBJECT_CONTAINER}/${CUSTOM_OBJECT_KEY}`);
+    const errorMessage = `Cannot read CT custom object 
+      ${CUSTOM_OBJECT_CONTAINER}/${CUSTOM_OBJECT_KEY}: ${JSON.stringify(error)}`;
+    logger.error(errorMessage);
+    throw new CustomError(status, errorMessage);
   }
 }
 
