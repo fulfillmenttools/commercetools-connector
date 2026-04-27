@@ -31,9 +31,17 @@ describe('Status Code', () => {
     const status = statusCode('404');
     expect(status).toBe(404);
   });
+  it('should work on bigint', () => {
+    const status = statusCode(BigInt(404));
+    expect(status).toBe(404);
+  });
   it('should be 500 for unsupported type', () => {
     const fn = () => {};
     const status = statusCode(fn);
     expect(status).toBe(500);
+  });
+  it('should use custom default status code', () => {
+    const status = statusCode(null, 503);
+    expect(status).toBe(503);
   });
 });
