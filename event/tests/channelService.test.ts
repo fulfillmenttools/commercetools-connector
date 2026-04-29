@@ -72,6 +72,56 @@ describe('ChannelService (event)', () => {
       expect(result).toEqual(createdFacility);
     });
 
+    it('uses channel key as name when channel has no name (mapName fallback)', async () => {
+      server.use(
+        http.get(ctApi('/channels/:id'), () =>
+          HttpResponse.json({
+            id: 'ch-no-name',
+            version: 1,
+            key: 'channel_no_name',
+            roles: ['InventorySupply'],
+            createdAt: '',
+            lastModifiedAt: '',
+          })
+        )
+      );
+      const createdFacility = { id: 'fft-fac-no-name', tenantFacilityId: 'channel_no_name' };
+      getFacilityIdMock.mockImplementationOnce(() => Promise.resolve(undefined));
+      createFacilityMock.mockImplementationOnce(() => Promise.resolve(createdFacility));
+
+      const result = await channelService.upsertFacility('ch-no-name');
+      expect(result).toEqual(createdFacility);
+      expect(createFacilityMock).toHaveBeenCalledWith(
+        expect.objectContaining({ name: 'channel_no_name' })
+      );
+    });
+
+    it('uses default address values when channel has no address (mapAddress else-branch)', async () => {
+      server.use(
+        http.get(ctApi('/channels/:id'), () =>
+          HttpResponse.json({
+            id: 'ch-no-address',
+            version: 1,
+            key: 'channel_no_address',
+            roles: ['InventorySupply'],
+            createdAt: '',
+            lastModifiedAt: '',
+          })
+        )
+      );
+      const createdFacility = { id: 'fft-fac-no-addr', tenantFacilityId: 'channel_no_address' };
+      getFacilityIdMock.mockImplementationOnce(() => Promise.resolve(undefined));
+      createFacilityMock.mockImplementationOnce(() => Promise.resolve(createdFacility));
+
+      const result = await channelService.upsertFacility('ch-no-address');
+      expect(result).toEqual(createdFacility);
+      expect(createFacilityMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          address: expect.objectContaining({ street: 'not set', houseNumber: '0' }),
+        })
+      );
+    });
+
     it('updates the existing facility when one already exists in FFT', async () => {
       const updatedFacility = { id: 'existing-fac-id', tenantFacilityId: 'channel_01' };
       getFacilityIdMock.mockImplementationOnce(() => Promise.resolve('existing-fac-id'));

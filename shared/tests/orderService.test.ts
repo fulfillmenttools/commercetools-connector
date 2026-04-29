@@ -1,5 +1,10 @@
-import { afterAll, afterEach, beforeAll, describe, expect, it } from '@jest/globals';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it, jest } from '@jest/globals';
 import { http, HttpResponse } from 'msw';
+
+jest.mock('../src/client', () => {
+  const actual = jest.requireActual('../src/client') as { createApiRoot: () => unknown };
+  return { createApiRoot: jest.fn(() => actual.createApiRoot()) };
+});
 
 import {
   getCommercetoolsOrderById,
@@ -8,6 +13,12 @@ import {
 } from '../src/commercetools/orderService';
 import { ctApi, mockCtOrder, mockError, server } from '../src/mocks';
 import { CustomError } from '../src/errors';
+import * as clientModule from '../src/client';
+
+beforeEach(() => {
+  const actual = jest.requireActual('../src/client') as typeof clientModule;
+  jest.mocked(clientModule.createApiRoot).mockImplementation(() => actual.createApiRoot());
+});
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -59,6 +70,32 @@ describe('OrderService', () => {
     it('returns undefined when no custom type is set', () => {
       const order = mockCtOrder({ custom: undefined }) as any;
       expect(getCustomTypeOfOrder(order)).toBeUndefined();
+    });
+  });
+
+  describe('non-throwing SDK status branches', () => {
+    it('getCommercetoolsOrderById throws on a non-200 result in the try block', async () => {
+      jest.mocked(clientModule.createApiRoot).mockReturnValue({
+        orders: () => ({
+          withId: () => ({
+            get: () => ({ execute: async () => ({ statusCode: 503 }) }),
+          }),
+        }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+      await expect(getCommercetoolsOrderById('any-id')).rejects.toThrow(CustomError);
+    });
+
+    it('updateCommercetoolsOrder throws on a non-200 result in the try block', async () => {
+      jest.mocked(clientModule.createApiRoot).mockReturnValue({
+        orders: () => ({
+          withId: () => ({
+            post: () => ({ execute: async () => ({ statusCode: 503 }) }),
+          }),
+        }),
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } as any);
+      await expect(updateCommercetoolsOrder('any-id', { version: 1, actions: [] })).rejects.toThrow(CustomError);
     });
   });
 });

@@ -88,9 +88,26 @@ describe('ChannelProcessor', () => {
     await expect(channelProcessor.processChannel(message)).resolves.not.toThrow();
   });
 
+  it('logs statusCode and message when the caught error satisfies isErrorItem', async () => {
+    upsertFacilityMock.mockImplementationOnce(() =>
+      Promise.reject({ statusCode: 503, message: 'Service Unavailable' })
+    );
+    const message = makeChannelMessage({ notificationType: 'ResourceCreated' });
+    await expect(channelProcessor.processChannel(message)).resolves.not.toThrow();
+  });
+
   it('catches and absorbs errors thrown by setFacilityOffline', async () => {
     setFacilityOfflineMock.mockImplementationOnce(() => Promise.reject(new Error('Facility not found')));
     const message = makeChannelMessage({ notificationType: 'ResourceDeleted' });
     await expect(channelProcessor.processChannel(message)).resolves.not.toThrow();
+  });
+
+  it('logs a warning when processChannelUpdated receives a message with no resource.id', async () => {
+    const message = makeChannelMessage({
+      notificationType: 'ResourceCreated',
+      resource: { typeId: 'channel', id: '' },
+    });
+    await expect(channelProcessor.processChannel(message)).resolves.not.toThrow();
+    expect(upsertFacilityMock).not.toHaveBeenCalled();
   });
 });

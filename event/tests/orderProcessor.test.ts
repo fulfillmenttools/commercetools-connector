@@ -44,6 +44,38 @@ describe('OrderProcessor', () => {
       expect(mapperSpy.mapOrder).not.toHaveBeenCalled();
     });
 
+    it('logs an error and continues when findByTenantOrderId throws', async () => {
+      server.use(
+        http.get(ctApi('/orders/:id'), () =>
+          HttpResponse.json({ id: 'ct-any', version: 1, orderState: 'Cancelled' })
+        )
+      );
+      const findMock = jest.fn();
+      findMock.mockImplementationOnce(() => Promise.reject(new Error('FFT down')));
+      const mockService = { findByTenantOrderId: findMock, create: jest.fn() } as unknown as FftOrderService;
+      const processor = new OrderProcessor(mockService, orderMapperMock);
+
+      await expect(processor.processOrder('ct-any')).resolves.not.toThrow();
+    });
+
+    it('logs an error and continues when fftOrderService.create throws', async () => {
+      server.use(
+        http.get(ctApi('/orders/:id'), () =>
+          HttpResponse.json({ id: 'ct-open', version: 1, orderState: 'Open' })
+        )
+      );
+      const findMock = jest.fn();
+      const createMock = jest.fn();
+      const mapperMock2 = { mapOrder: jest.fn() } as unknown as OrderMapper;
+      findMock.mockImplementationOnce(() => Promise.resolve(undefined));
+      createMock.mockImplementationOnce(() => Promise.reject(new Error('FFT create failed')));
+      (mapperMock2.mapOrder as jest.Mock).mockImplementationOnce(() => Promise.resolve({}));
+      const mockService = { findByTenantOrderId: findMock, create: createMock } as unknown as FftOrderService;
+      const processor = new OrderProcessor(mockService, mapperMock2);
+
+      await expect(processor.processOrder('ct-open')).resolves.not.toThrow();
+    });
+
     it('skips creating an FFT order when the CT order is already Cancelled', async () => {
       server.use(
         http.get(fftApi('/orders'), () => HttpResponse.json({ total: 0, orders: [] })),
@@ -154,6 +186,23 @@ describe('OrderProcessor', () => {
       const orderProcessor = new OrderProcessor(mockService, orderMapperMock);
 
       await expect(orderProcessor.cancelOrder('order-404')).resolves.not.toThrow();
+    });
+
+    it('rethrows and logs error when cancel throws a non-HttpError', async () => {
+      const openOrder = { id: 'fft-5', tenantOrderId: 'order-non-http', status: OrderStatus.OPEN, version: 1 };
+      const nonHttpError = new Error('unexpected failure');
+      const findMock = jest.fn();
+      const cancelMock = jest.fn();
+      findMock.mockImplementationOnce(() => Promise.resolve(openOrder));
+      cancelMock.mockImplementationOnce(() => Promise.reject(nonHttpError));
+      const mockService = {
+        findByTenantOrderId: findMock,
+        cancel: cancelMock,
+        create: jest.fn(),
+      } as unknown as FftOrderService;
+      const processor = new OrderProcessor(mockService, orderMapperMock);
+
+      await expect(processor.cancelOrder('order-non-http')).rejects.toEqual(nonHttpError);
     });
 
     it('rethrows when the FFT cancel endpoint responds with an unexpected HTTP 500 error', async () => {
