@@ -22,7 +22,7 @@ describe('StoreService', () => {
       );
       const stores = await service.query();
       expect(stores).toHaveLength(2);
-      expect(stores.at(0)!.id).toBe('store-1');
+      expect(stores[0]?.id).toBe('store-1');
     });
 
     it('throws CustomError on failure', async () => {
@@ -62,8 +62,8 @@ describe('StoreService', () => {
       const store = await service.getByKeyWithChannels('store_01');
       expect(store).toBeDefined();
       expect(store.supplyChannels).toHaveLength(2);
-      expect(store.supplyChannels[0]!.obj).toEqual(channelCologne);
-      expect(store.supplyChannels[1]!.obj).toEqual(channelHamburg);
+      expect(store.supplyChannels[0]?.obj).toEqual(channelCologne);
+      expect(store.supplyChannels[1]?.obj).toEqual(channelHamburg);
     });
 
     it('throws CustomError on failure', async () => {
