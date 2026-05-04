@@ -37,7 +37,6 @@ export class HandoverJobService {
     if (await canUpdateOrder(commercetoolsOrder)) {
       actions.push(setCustomFieldAction(FFTConstants.HANDOVER_JOB_ID, handoverJob.id));
       const trackingDataAction = await this.trackingDataAction(handoverJob);
-      console.log('trackingDataAction', trackingDataAction);
       if (trackingDataAction) {
         actions.push(trackingDataAction);
       }

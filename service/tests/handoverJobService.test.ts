@@ -94,7 +94,7 @@ describe('HandoverJobService', () => {
       await service.handoverJobCreated(mockHandoverJob);
 
       expect(shared.updateCommercetoolsOrder).toHaveBeenCalled();
-      const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
+      const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as [string, OrderUpdate])[1];
       expect((update.actions as OrderUpdate['actions']).find((a) => a.action === 'changeShipmentState')).toMatchObject({ shipmentState: 'Ready' });
     });
 
@@ -104,7 +104,7 @@ describe('HandoverJobService', () => {
       await service.handoverJobCreated(jobWithoutShipment);
 
       expect(shared.updateCommercetoolsOrder).toHaveBeenCalled();
-      const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
+      const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as [string, OrderUpdate])[1];
       expect(update.actions.some((a) => (a as { name?: string }).name === 'fft_parcels')).toBe(false);
     });
 
@@ -114,7 +114,7 @@ describe('HandoverJobService', () => {
       await service.handoverJobCreated(mockHandoverJob);
 
       expect(shared.updateCommercetoolsOrder).toHaveBeenCalled();
-      const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
+      const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as [string, OrderUpdate])[1];
       expect(update.actions.some((a) => (a as { name?: string }).name === 'fft_parcels')).toBe(false);
     });
 
@@ -137,9 +137,9 @@ describe('HandoverJobService', () => {
       await service.handoverJobHandedOver(mockHandoverJob);
 
       expect(shared.updateCommercetoolsOrder).toHaveBeenCalled();
-      const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
-      expect(update.actions[0]!.action).toBe('changeShipmentState');
-      expect((update.actions[0]! as { shipmentState: string }).shipmentState).toBe('Shipped');
+      const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as [string, OrderUpdate])[1];
+      expect((update.actions[0] as { action: string }).action).toBe('changeShipmentState');
+      expect((update.actions[0] as { shipmentState: string }).shipmentState).toBe('Shipped');
     });
   });
 });

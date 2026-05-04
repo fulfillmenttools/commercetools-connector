@@ -62,7 +62,7 @@ describe('PickJobService', () => {
       await service.pickJobCreated(mockPickJob);
 
       expect(shared.updateCommercetoolsOrder).toHaveBeenCalledWith('ct-order-id', expect.any(Object));
-      const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
+      const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as [string, OrderUpdate])[1];
       expect(update.actions).toHaveLength(3);
       expect(update.actions.map((a) => (a as { name?: string }).name)).toEqual(
         expect.arrayContaining(['fft_pickjob_id', 'fft_shortid', 'fft_facility_id'])
@@ -90,9 +90,9 @@ describe('PickJobService', () => {
       await service.pickJobFinished(mockPickJob);
 
       expect(shared.updateCommercetoolsOrder).toHaveBeenCalledWith('ct-order-id', expect.any(Object));
-      const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
-      expect((update.actions[0]! as { name?: string }).name).toBe('fft_load_units_amount');
-      expect((update.actions[0]! as { value?: unknown }).value).toBe(2);
+      const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as [string, OrderUpdate])[1];
+      expect((update.actions[0] as { name?: string }).name).toBe('fft_load_units_amount');
+      expect((update.actions[0] as { value?: unknown }).value).toBe(2);
     });
 
     it('skips the update when no load units are found', async () => {

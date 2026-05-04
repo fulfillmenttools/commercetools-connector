@@ -60,8 +60,8 @@ describe('OrderService.orderCreated', () => {
     await service.orderCreated(mockFFTOrder);
 
     expect(shared.updateCommercetoolsOrder).toHaveBeenCalled();
-    const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
-    expect(update.actions[0]!.action).toBe('setCustomType');
+    const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as [string, OrderUpdate])[1];
+    expect((update.actions[0] as { action: string }).action).toBe('setCustomType');
   });
 
   it('sets a custom field when the CT order custom type already matches', async () => {
@@ -71,8 +71,8 @@ describe('OrderService.orderCreated', () => {
     await service.orderCreated(mockFFTOrder);
 
     expect(shared.updateCommercetoolsOrder).toHaveBeenCalled();
-    const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
-    expect(update.actions[0]!.action).toBe('setCustomField');
+    const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as [string, OrderUpdate])[1];
+    expect((update.actions[0] as { action: string }).action).toBe('setCustomField');
   });
 
   it('skips the update when the CT order has an unsupported custom type', async () => {
