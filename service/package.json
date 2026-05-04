@@ -20,6 +20,7 @@
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write 'src/**/*.ts' 'tests/**/*.ts'",
     "test": "npm run build && jest --config jest.config.cjs",
+    "test:single": "jest --config jest.config.cjs -t 'should process request with wrong ct-Ref payload'",
     "test:coverage": "jest --config jest.config.cjs --coverage --collectCoverageFrom='src/**/*.{ts,jxs}'",
     "test:watch": "jest --watch",
     "connector:post-deploy": "node build/connector/post-deploy.js",
@@ -63,9 +64,9 @@
   "dependencies": {
     "@commercetools/platform-sdk": "7.22.0",
     "@fulfillmenttools/fulfillmenttools-sdk-typescript": "0.3.4",
-    "body-parser": "1.20.3",
+    "body-parser": "^1.20.4",
     "dotenv": "16.5.0",
-    "express": "4.21.2",
+    "express": "^4.22.1",
     "jsonwebtoken": "9.0.2",
     "shared": "file:../shared"
   },

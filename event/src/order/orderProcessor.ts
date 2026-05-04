@@ -1,4 +1,4 @@
-import { getCommercetoolsOrderById, isHttpError, logger, ResourceLockedError, CustomError } from 'shared';
+import { getCommercetoolsOrderById, isHttpError, logger, ResourceLockedError } from 'shared';
 import { OrderMapper } from './orderMapper';
 import { FftOrderService, OrderStatus } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 import { isBefore, subSeconds } from 'date-fns';

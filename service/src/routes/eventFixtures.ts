@@ -4,10 +4,46 @@ export const orderCreatedEvent = {
   payload: { id: 'c829e6dc-31fd-4efe-a3f0-9ea78f9b2260', version: 1 },
 };
 
+export const ctRefOrderCreatedEvent = {
+  eventId: 'bf29e98b-1ec2-4f11-b736-e1a1c8884365',
+  event: 'ORDER_CREATED',
+  payload: {
+    id: 'c829e6dc-31fd-4efe-a3f0-9ea78f9b2260',
+    version: 1,
+    customAttributes: {
+      commercetoolsId: 'f2a5dc23-e032-4320-bc84-b3d5e1d38b7e',
+    }
+  },
+};
+
 export const pickJobCreatedEvent = {
   eventId: '72e383f3-649a-4e8e-9b74-0bf0be8a92bf',
   event: 'PICK_JOB_CREATED',
   payload: { id: 'c829e6dc-31fd-4efe-a3f0-9ea78f9b2260', version: 1 },
+};
+
+export const ctRefPickJobCreatedEvent = {
+  eventId: '72e383f3-649a-4e8e-9b74-0bf0be8a92bf',
+  event: 'PICK_JOB_CREATED',
+  payload: {
+    id: 'c829e6dc-31fd-4efe-a3f0-9ea78f9b2260',
+    version: 1,
+    customAttributes: {
+      commercetoolsId: 'f2a5dc23-e032-4320-bc84-b3d5e1d38b7e',
+    }
+  },
+};
+
+export const wrongCtRefPickJobCreatedEvent = {
+  eventId: '72e383f3-649a-4e8e-9b74-0bf0be8a92bf',
+  event: 'PICK_JOB_CREATED',
+  payload: {
+    id: 'c829e6dc-31fd-4efe-a3f0-9ea78f9b2260',
+    version: 1,
+    customAttributes: {
+      commercetoolsId: 'f2a5dc23-e032-4320-bc84-b3d5e1d38b7e',
+    }
+  },
 };
 
 export const pickJobFinishedEvent = {
@@ -23,6 +59,16 @@ export const handoverCreatedEvent = {
     id: '7f4186ba-d630-4967-9898-36c6e455fad2',
     tenantOrderId: 'cdca0e33-1055-489d-bc9f-a09024aa1431',
     version: 1,
+    shipmentRef: '124',
+  },
+};
+
+export const wrongHandoverCreatedEvent = {
+  eventId: 'adeea6f0-edef-437a-8b0f-7cebb1329bcc',
+  event: 'HANDOVERJOB_CREATED',
+  payload: {
+    id: '7f4186ba-d630-4967-9898-36c6e455fad2',
+    version: 1,
   },
 };
 
@@ -34,4 +80,13 @@ export const handoverHandedOverEvent = {
     tenantOrderId: 'cdca0e33-1055-489d-bc9f-a09024aa1431',
     version: 1,
   },
+};
+
+export const wrongHandoverHandedOverEvent = {
+  eventId: 'b65c859e-dfaa-4e40-a94c-fd288300d956',
+  event: 'HANDOVERJOB_HANDED_OVER',
+  payload: {
+    id: '7f4186ba-d630-4967-9898-36c6e455fad2',
+    version: 1,
+  }
 };

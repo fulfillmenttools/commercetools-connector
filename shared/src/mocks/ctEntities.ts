@@ -19,6 +19,13 @@ export function mockCtOrder(initialValue = {}) {
     type: 'Order',
     id: 'f2a5dc23-e032-4320-bc84-b3d5e1d38b7e',
     version: 1,
+    custom: {
+      type: {
+        obj: {
+          key: 'fftOrderType'
+        }
+      }
+    },
     ...initialValue,
   };
 }

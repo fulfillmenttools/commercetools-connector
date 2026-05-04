@@ -12,4 +12,5 @@ module.exports = {
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.cjs'],
   testPathIgnorePatterns: ['<rootDir>/build'],
+  coveragePathIgnorePatterns: ['<rootDir>/src/connector']
 };

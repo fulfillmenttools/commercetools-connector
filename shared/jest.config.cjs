@@ -12,4 +12,16 @@ module.exports = {
   testEnvironment: 'node',
   setupFilesAfterEnv: ['<rootDir>/jest.setup.cjs'],
   testPathIgnorePatterns: ['<rootDir>/lib'],
+  collectCoverage: true,
+  collectCoverageFrom: [
+    'src/**/*.ts',
+    '!src/mocks/**',
+    '!src/types/**',
+    '!src/fulfillmenttools/**',
+    '!src/**/*.d.ts',
+    '!src/index.ts',
+    '!src/**/index.ts',
+  ],
+  coverageDirectory: 'coverage',
+  coverageReporters: ['text', 'lcov'],
 };

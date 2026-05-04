@@ -87,8 +87,10 @@ async function updateCustomField(
 
 export async function canUpdateOrder(commercetoolsOrder: CommercetoolsOrder): Promise<boolean> {
   let updateOrder = true;
+
   const orderCustomType = getCustomTypeOfOrder(commercetoolsOrder);
   const customTypeKey = await orderCustomTypeKey();
+
   if (!customTypeKey) {
     logger.warn(
       `No order custom type defined in configuration, CT order '${commercetoolsOrder.id}' will not be updated`

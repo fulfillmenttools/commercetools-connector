@@ -11,6 +11,11 @@ import {
   pickJobFinishedEvent,
   handoverCreatedEvent,
   handoverHandedOverEvent,
+  wrongHandoverCreatedEvent,
+  wrongHandoverHandedOverEvent,
+  ctRefOrderCreatedEvent,
+  ctRefPickJobCreatedEvent,
+  wrongCtRefPickJobCreatedEvent,
 } from '../src/routes/eventFixtures';
 
 describe('Service Router', () => {
@@ -38,6 +43,7 @@ describe('Service Router', () => {
 
   describe('Order Created endpoint', () => {
     const path = '/service/order/created';
+
     it('should reject empty request body', async () => {
       const res = await request(app).post(path);
       expect(res.statusCode).toEqual(400);
@@ -72,10 +78,18 @@ describe('Service Router', () => {
       expect(res.type).toMatch(/json/);
       expect(res.body.id).toBe(orderCreatedEvent.payload.id);
     });
+
+    it('should process request with ct-Order-Ref valid payload', async () => {
+      const res = await request(app).post(path).send(ctRefOrderCreatedEvent);
+      expect(res.statusCode).toEqual(201);
+      expect(res.type).toMatch(/json/);
+      expect(res.body.id).toBe(ctRefOrderCreatedEvent.payload.id);
+    });
   });
 
   describe('PickJob Created endpoint', () => {
     const path = '/service/pickjob/created';
+
     it('should reject empty request body', async () => {
       const res = await request(app).post(path);
       expect(res.statusCode).toEqual(400);
@@ -109,6 +123,20 @@ describe('Service Router', () => {
       expect(res.statusCode).toEqual(201);
       expect(res.type).toMatch(/json/);
       expect(res.body.id).toBe(pickJobCreatedEvent.payload.id);
+    });
+
+    it('should process request with ct-Ref payload', async () => {
+      const res = await request(app).post(path).send(ctRefPickJobCreatedEvent);
+      expect(res.statusCode).toEqual(201);
+      expect(res.type).toMatch(/json/);
+      expect(res.body.id).toBe(ctRefPickJobCreatedEvent.payload.id);
+    });
+
+    it('should process request with wrong ct-Ref payload', async () => {
+      const res = await request(app).post(path).send(wrongCtRefPickJobCreatedEvent);
+      expect(res.statusCode).toEqual(201);
+      expect(res.type).toMatch(/json/);
+      expect(res.body.id).toBe(wrongCtRefPickJobCreatedEvent.payload.id);
     });
   });
 
@@ -169,6 +197,13 @@ describe('Service Router', () => {
       expect(res.statusCode).toEqual(400);
     });
 
+    it('should ignore create request with wrong payload', async () => {
+      const res = await request(app)
+        .post(path)
+        .send(wrongHandoverCreatedEvent);
+      expect(res.statusCode).toEqual(201);
+    });
+
     it('should reject request with wrong event type', async () => {
       const res = await request(app)
         .post(path)
@@ -223,6 +258,13 @@ describe('Service Router', () => {
       expect(res.statusCode).toEqual(201);
       expect(res.type).toMatch(/json/);
       expect(res.body.id).toBe(handoverHandedOverEvent.payload.id);
+    });
+
+    it('should process request with wrong payload', async () => {
+      const res = await request(app).post(path).send(wrongHandoverHandedOverEvent);
+      expect(res.statusCode).toEqual(201);
+      expect(res.type).toMatch(/json/);
+      expect(res.body.id).toBe(wrongHandoverHandedOverEvent.payload.id);
     });
   });
 });
