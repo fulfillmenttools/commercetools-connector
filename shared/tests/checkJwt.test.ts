@@ -1,21 +1,22 @@
 import { describe, expect, it, jest } from '@jest/globals';
+import type { Request, Response } from 'express';
 
 import { checkJwt } from '../src/middleware/checkJwt';
 import { generateToken } from '../src/jwt/tokenUtils';
 import { AUTHORIZATION } from '../src/common';
 
-function makeReq(authHeader?: string) {
+function makeReq(authHeader?: string): Request & { token?: unknown } {
   return {
     get: (name: string) => (name === AUTHORIZATION ? authHeader : undefined),
-  } as any;
+  } as unknown as Request & { token?: unknown };
 }
 
 function makeRes() {
-  const res: any = {};
+  const res = {} as { status: jest.Mock; type: jest.Mock; send: jest.Mock };
   res.status = jest.fn().mockReturnValue(res);
   res.type = jest.fn().mockReturnValue(res);
   res.send = jest.fn().mockReturnValue(res);
-  return res;
+  return res as unknown as Response;
 }
 
 describe('checkJwt', () => {

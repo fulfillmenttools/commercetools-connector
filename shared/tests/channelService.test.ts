@@ -58,8 +58,7 @@ describe('ChannelService', () => {
             get: () => ({ execute: async () => ({ statusCode: 503 }) }),
           }),
         }),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as unknown as ReturnType<typeof clientModule.createApiRoot>);
       await expect(getChannelById('any-id')).rejects.toThrow(CustomError);
     });
   });

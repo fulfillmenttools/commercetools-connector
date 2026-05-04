@@ -3,8 +3,7 @@ import express, { Express } from 'express';
 import request from 'supertest';
 
 jest.mock('shared', () => {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const actual = jest.requireActual('shared') as any;
+  const actual = jest.requireActual('shared') as Record<string, unknown>;
   return { ...actual, readConfiguration: jest.fn() };
 });
 

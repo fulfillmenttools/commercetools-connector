@@ -55,8 +55,7 @@ describe('CustomObjectService', () => {
             get: () => ({ execute: async () => ({ statusCode: 503 }) }),
           }),
         }),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as unknown as ReturnType<typeof clientModule.createApiRoot>);
       await expect(getConfiguration()).rejects.toThrow(CustomError);
     });
   });

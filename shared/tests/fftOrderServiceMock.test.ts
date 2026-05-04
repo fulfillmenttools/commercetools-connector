@@ -1,4 +1,5 @@
 import { describe, expect, it, jest } from '@jest/globals';
+import type { OrderForCreation } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 import { OrderStatus } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 
 import { FftOrderServiceMock } from '../src/utils/fftOrderServiceMock';
@@ -15,7 +16,7 @@ describe('FftOrderServiceMock', () => {
   describe('create', () => {
     it('returns a fixed mock order regardless of input', async () => {
       const mock = new FftOrderServiceMock();
-      const order = await mock.create({} as any);
+      const order = await mock.create({} as unknown as OrderForCreation);
       expect(order.id).toBe('7c801788-eb1c-4afd-95d0-77e6ce377500');
       expect(order.status).toBe(OrderStatus.OPEN);
       expect(order.version).toBe(0);

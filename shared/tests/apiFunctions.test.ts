@@ -1,4 +1,5 @@
 import { describe, expect, it } from '@jest/globals';
+import type { FieldDefinition, Order, Type } from '@commercetools/platform-sdk';
 
 import {
   addFieldDefinitionAction,
@@ -67,7 +68,7 @@ describe('apiFunctions', () => {
 
   describe('updateOrderAction', () => {
     it('uses the order version', () => {
-      const order = { version: 3 } as any;
+      const order = { version: 3 } as unknown as Order;
       const actions = [{ action: 'setCustomField' as const, name: 'f', value: 'v' }];
       const update = updateOrderAction(order, actions);
       expect(update.version).toBe(3);
@@ -77,8 +78,8 @@ describe('apiFunctions', () => {
 
   describe('updateTypeAction', () => {
     it('uses the custom type version', () => {
-      const customType = { version: 5 } as any;
-      const actions = [{ action: 'addFieldDefinition' as const, fieldDefinition: {} as any }];
+      const customType = { version: 5 } as unknown as Type;
+      const actions = [{ action: 'addFieldDefinition' as const, fieldDefinition: {} as unknown as FieldDefinition }];
       const update = updateTypeAction(customType, actions);
       expect(update.version).toBe(5);
       expect(update.actions).toBe(actions);

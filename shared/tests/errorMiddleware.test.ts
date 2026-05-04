@@ -1,18 +1,19 @@
 import { describe, expect, it, jest } from '@jest/globals';
+import type { NextFunction, Request, Response } from 'express';
 
 import { errorMiddleware } from '../src/middleware/errorMiddleware';
 import { CustomError } from '../src/errors';
 
 function makeRes() {
-  const res: any = {};
+  const res = {} as { status: jest.Mock; json: jest.Mock; send: jest.Mock };
   res.status = jest.fn().mockReturnValue(res);
   res.json = jest.fn().mockReturnValue(res);
   res.send = jest.fn().mockReturnValue(res);
-  return res;
+  return res as unknown as Response;
 }
 
-const req = {} as any;
-const next = jest.fn() as any;
+const req = {} as unknown as Request;
+const next = jest.fn() as unknown as NextFunction;
 
 describe('errorMiddleware', () => {
   it('responds with CustomError statusCode and message', () => {
@@ -43,14 +44,14 @@ describe('errorMiddleware', () => {
   it('includes stack trace in the response when debug mode is active (featOrdersyncActive=true)', () => {
     const res = makeRes();
     errorMiddleware(new CustomError(400, 'bad'), req, res, next);
-    const body = ((res.json as jest.Mock).mock.calls[0] as any[])[0] as any;
+    const body = ((res.json as jest.Mock).mock.calls[0] as unknown[])[0] as Record<string, unknown>;
     expect(body.stack).toBeDefined();
   });
 
   it('exposes error message for generic errors when debug mode is active', () => {
     const res = makeRes();
     errorMiddleware(new Error('detail'), req, res, next);
-    const body = ((res.send as jest.Mock).mock.calls[0] as any[])[0] as any;
+    const body = ((res.send as jest.Mock).mock.calls[0] as unknown[])[0] as Record<string, unknown>;
     expect(body.message).toBe('detail');
   });
 });

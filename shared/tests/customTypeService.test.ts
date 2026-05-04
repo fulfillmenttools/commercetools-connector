@@ -65,8 +65,7 @@ function makeMockApiRoot(overrides: {
         execute: async () => overrides.typesPost ?? { statusCode: 201, body: mockCustomType() },
       }),
     }),
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  } as any;
+  } as unknown as ReturnType<typeof clientModule.createApiRoot>;
 }
 
 beforeAll(() => server.listen());

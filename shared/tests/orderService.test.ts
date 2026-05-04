@@ -6,6 +6,7 @@ jest.mock('../src/client', () => {
   return { createApiRoot: jest.fn(() => actual.createApiRoot()) };
 });
 
+import type { Order } from '@commercetools/platform-sdk';
 import {
   getCommercetoolsOrderById,
   getCustomTypeOfOrder,
@@ -63,12 +64,12 @@ describe('OrderService', () => {
 
   describe('getCustomTypeOfOrder', () => {
     it('returns the custom type key when present', () => {
-      const order = mockCtOrder() as any;
+      const order = mockCtOrder() as unknown as Order;
       expect(getCustomTypeOfOrder(order)).toBe('fftOrderType');
     });
 
     it('returns undefined when no custom type is set', () => {
-      const order = mockCtOrder({ custom: undefined }) as any;
+      const order = mockCtOrder({ custom: undefined }) as unknown as Order;
       expect(getCustomTypeOfOrder(order)).toBeUndefined();
     });
   });
@@ -81,8 +82,7 @@ describe('OrderService', () => {
             get: () => ({ execute: async () => ({ statusCode: 503 }) }),
           }),
         }),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as unknown as ReturnType<typeof clientModule.createApiRoot>);
       await expect(getCommercetoolsOrderById('any-id')).rejects.toThrow(CustomError);
     });
 
@@ -93,8 +93,7 @@ describe('OrderService', () => {
             post: () => ({ execute: async () => ({ statusCode: 503 }) }),
           }),
         }),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as unknown as ReturnType<typeof clientModule.createApiRoot>);
       await expect(updateCommercetoolsOrder('any-id', { version: 1, actions: [] })).rejects.toThrow(CustomError);
     });
   });

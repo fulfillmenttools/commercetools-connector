@@ -61,9 +61,9 @@ describe('StoreService', () => {
     it('returns the store with expanded supply channels', async () => {
       const store = await service.getByKeyWithChannels('store_01');
       expect(store).toBeDefined();
-      expect((store as any).supplyChannels).toHaveLength(2);
-      expect((store as any).supplyChannels[0].obj).toEqual(channelCologne);
-      expect((store as any).supplyChannels[1].obj).toEqual(channelHamburg);
+      expect(store.supplyChannels).toHaveLength(2);
+      expect(store.supplyChannels[0]!.obj).toEqual(channelCologne);
+      expect(store.supplyChannels[1]!.obj).toEqual(channelHamburg);
     });
 
     it('throws CustomError on failure', async () => {

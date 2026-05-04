@@ -1,7 +1,9 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import type { Order as CTOrder, OrderUpdate } from '@commercetools/platform-sdk';
+import type { Order as FftOrder } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 
 jest.mock('shared', () => {
-  const actual = jest.requireActual('shared') as any;
+  const actual = jest.requireActual('shared') as Record<string, unknown>;
   return {
     ...actual,
     getCommercetoolsOrderById: jest.fn(),
@@ -17,11 +19,11 @@ jest.mock('shared', () => {
 import * as shared from 'shared';
 import { canUpdateOrder, OrderService } from '../src/services/orderService';
 
-const mockCTOrder = { id: 'ct-order-id', version: 1 } as any;
+const mockCTOrder = { id: 'ct-order-id', version: 1 } as unknown as CTOrder;
 const mockFFTOrder = {
   id: 'fft-order-id',
   customAttributes: { commercetoolsId: 'ct-order-id' },
-} as any;
+} as unknown as FftOrder;
 
 describe('OrderService.orderCreated', () => {
   let service: OrderService;
@@ -29,19 +31,19 @@ describe('OrderService.orderCreated', () => {
   beforeEach(() => {
     service = new OrderService();
     jest.mocked(shared.getCommercetoolsOrderById).mockResolvedValue(mockCTOrder);
-    jest.mocked(shared.getCustomOrderType).mockResolvedValue('existing-type-id' as any);
-    jest.mocked(shared.updateCustomOrderType).mockResolvedValue(undefined as any);
+    jest.mocked(shared.getCustomOrderType).mockResolvedValue('existing-type-id');
+    jest.mocked(shared.updateCustomOrderType).mockResolvedValue(undefined);
     jest.mocked(shared.updateCommercetoolsOrder).mockResolvedValue(mockCTOrder);
   });
 
   it('ignores an FFT order that has no commercetoolsId', async () => {
-    await service.orderCreated({ id: 'fft-1' } as any);
+    await service.orderCreated({ id: 'fft-1' } as unknown as FftOrder);
     expect(shared.getCommercetoolsOrderById).not.toHaveBeenCalled();
   });
 
   it('calls createCustomOrderType when no custom order type exists yet', async () => {
-    jest.mocked(shared.getCustomOrderType).mockResolvedValue(undefined as any);
-    jest.mocked(shared.createCustomOrderType).mockResolvedValue(undefined as any);
+    jest.mocked(shared.getCustomOrderType).mockResolvedValue(undefined);
+    jest.mocked(shared.createCustomOrderType).mockResolvedValue(undefined);
     jest.mocked(shared.getCustomTypeOfOrder).mockReturnValue(undefined);
     jest.mocked(shared.orderCustomTypeKey).mockResolvedValue(undefined);
 
@@ -58,8 +60,8 @@ describe('OrderService.orderCreated', () => {
     await service.orderCreated(mockFFTOrder);
 
     expect(shared.updateCommercetoolsOrder).toHaveBeenCalled();
-    const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as any[])[1] as any;
-    expect(update.actions[0].action).toBe('setCustomType');
+    const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
+    expect(update.actions[0]!.action).toBe('setCustomType');
   });
 
   it('sets a custom field when the CT order custom type already matches', async () => {
@@ -69,8 +71,8 @@ describe('OrderService.orderCreated', () => {
     await service.orderCreated(mockFFTOrder);
 
     expect(shared.updateCommercetoolsOrder).toHaveBeenCalled();
-    const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as any[])[1] as any;
-    expect(update.actions[0].action).toBe('setCustomField');
+    const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
+    expect(update.actions[0]!.action).toBe('setCustomField');
   });
 
   it('skips the update when the CT order has an unsupported custom type', async () => {

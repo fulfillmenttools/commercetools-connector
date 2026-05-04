@@ -1,10 +1,11 @@
 import { describe, expect, it, jest } from '@jest/globals';
+import type { Request, Response } from 'express';
 
 import { asyncHandler } from '../src/middleware/asyncHandler';
 
 function mockReqRes() {
-  const req = {} as any;
-  const res = {} as any;
+  const req = {} as unknown as Request;
+  const res = {} as unknown as Response;
   const next = jest.fn();
   return { req, res, next };
 }

@@ -1,7 +1,14 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import type { Order, OrderUpdate } from '@commercetools/platform-sdk';
+import type {
+  FftOrderService,
+  FftParcelService,
+  FftShipmentService,
+  Handoverjob,
+} from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 
 jest.mock('shared', () => {
-  const actual = jest.requireActual('shared') as any;
+  const actual = jest.requireActual('shared') as Record<string, unknown>;
   return {
     ...actual,
     getCommercetoolsOrderById: jest.fn(),
@@ -17,35 +24,35 @@ import * as shared from 'shared';
 import { canUpdateOrder } from '../src/services/orderService';
 import { HandoverJobService } from '../src/services/handoverJobService';
 
-const mockCTOrder = { id: 'ct-order-id', version: 1 } as any;
-const mockStrippedFftOrder = { id: 'fft-stripped-order-id' } as any;
+const mockCTOrder = { id: 'ct-order-id', version: 1 } as unknown as Order;
+const mockStrippedFftOrder = { id: 'fft-stripped-order-id' } as unknown as Awaited<ReturnType<FftOrderService['findByTenantOrderId']>>;
 const mockFftOrder = {
   id: 'fft-order-id',
   customAttributes: { commercetoolsId: 'ct-order-id' },
-} as any;
+} as unknown as Awaited<ReturnType<FftOrderService['findBy']>>;
 
 const mockHandoverJob = {
   id: 'handover-job-id',
   tenantOrderId: 'tenant-order-id',
   shipmentRef: 'shipment-ref-1',
-} as any;
+} as unknown as Handoverjob;
 
 describe('HandoverJobService', () => {
   let service: HandoverJobService;
-  let mockFftOrderService: any;
-  let mockFftShipmentService: any;
-  let mockFftParcelService: any;
+  let mockFftOrderService: { findByTenantOrderId: jest.Mock<(...args: unknown[]) => Promise<unknown>>; findBy: jest.Mock<(...args: unknown[]) => Promise<unknown>> };
+  let mockFftShipmentService: { findById: jest.Mock<(...args: unknown[]) => Promise<unknown>> };
+  let mockFftParcelService: { findMultiple: jest.Mock<(...args: unknown[]) => Promise<unknown>> };
 
   beforeEach(() => {
     mockFftOrderService = { findByTenantOrderId: jest.fn(), findBy: jest.fn() };
     mockFftShipmentService = { findById: jest.fn() };
     mockFftParcelService = { findMultiple: jest.fn() };
-    (mockFftOrderService.findByTenantOrderId as any).mockResolvedValue(mockStrippedFftOrder);
-    (mockFftOrderService.findBy as any).mockResolvedValue(mockFftOrder);
+    mockFftOrderService.findByTenantOrderId.mockResolvedValue(mockStrippedFftOrder);
+    mockFftOrderService.findBy.mockResolvedValue(mockFftOrder);
     service = new HandoverJobService(
-      mockFftOrderService as any,
-      mockFftShipmentService as any,
-      mockFftParcelService as any
+      mockFftOrderService as unknown as FftOrderService,
+      mockFftShipmentService as unknown as FftShipmentService,
+      mockFftParcelService as unknown as FftParcelService
     );
     jest.mocked(shared.getCommercetoolsOrderById).mockResolvedValue(mockCTOrder);
     jest.mocked(shared.updateCommercetoolsOrder).mockResolvedValue(mockCTOrder);
@@ -54,7 +61,7 @@ describe('HandoverJobService', () => {
 
   describe('handoverJobCreated', () => {
     it('ignores a handover job that has no tenantOrderId', async () => {
-      await service.handoverJobCreated({ id: 'hj-1' } as any);
+      await service.handoverJobCreated({ id: 'hj-1' } as unknown as Handoverjob);
       expect(mockFftOrderService.findByTenantOrderId).not.toHaveBeenCalled();
     });
 
@@ -87,8 +94,8 @@ describe('HandoverJobService', () => {
       await service.handoverJobCreated(mockHandoverJob);
 
       expect(shared.updateCommercetoolsOrder).toHaveBeenCalled();
-      const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as any[])[1] as any;
-      expect(update.actions.find((a: any) => a.action === 'changeShipmentState').shipmentState).toBe('Ready');
+      const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
+      expect((update.actions as OrderUpdate['actions']).find((a) => a.action === 'changeShipmentState')).toMatchObject({ shipmentState: 'Ready' });
     });
 
     it('still updates the CT order when shipmentRef is absent (skips tracking)', async () => {
@@ -97,8 +104,8 @@ describe('HandoverJobService', () => {
       await service.handoverJobCreated(jobWithoutShipment);
 
       expect(shared.updateCommercetoolsOrder).toHaveBeenCalled();
-      const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as any[])[1] as any;
-      expect(update.actions.some((a: any) => a.name === 'fft_parcels')).toBe(false);
+      const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
+      expect(update.actions.some((a) => (a as { name?: string }).name === 'fft_parcels')).toBe(false);
     });
 
     it('still updates the CT order when the shipment has no parcels', async () => {
@@ -107,8 +114,8 @@ describe('HandoverJobService', () => {
       await service.handoverJobCreated(mockHandoverJob);
 
       expect(shared.updateCommercetoolsOrder).toHaveBeenCalled();
-      const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as any[])[1] as any;
-      expect(update.actions.some((a: any) => a.name === 'fft_parcels')).toBe(false);
+      const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
+      expect(update.actions.some((a) => (a as { name?: string }).name === 'fft_parcels')).toBe(false);
     });
 
     it('still updates the CT order when fetching shipment data throws', async () => {
@@ -122,7 +129,7 @@ describe('HandoverJobService', () => {
 
   describe('handoverJobHandedOver', () => {
     it('ignores a handover job that has no tenantOrderId', async () => {
-      await service.handoverJobHandedOver({ id: 'hj-1' } as any);
+      await service.handoverJobHandedOver({ id: 'hj-1' } as unknown as Handoverjob);
       expect(mockFftOrderService.findByTenantOrderId).not.toHaveBeenCalled();
     });
 
@@ -130,9 +137,9 @@ describe('HandoverJobService', () => {
       await service.handoverJobHandedOver(mockHandoverJob);
 
       expect(shared.updateCommercetoolsOrder).toHaveBeenCalled();
-      const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as any[])[1] as any;
-      expect(update.actions[0].action).toBe('changeShipmentState');
-      expect(update.actions[0].shipmentState).toBe('Shipped');
+      const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
+      expect(update.actions[0]!.action).toBe('changeShipmentState');
+      expect((update.actions[0]! as { shipmentState: string }).shipmentState).toBe('Shipped');
     });
   });
 });

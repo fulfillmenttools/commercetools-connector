@@ -1,7 +1,12 @@
 import { beforeEach, describe, expect, it, jest } from '@jest/globals';
+import type { Order, OrderUpdate } from '@commercetools/platform-sdk';
+import type {
+  FftLoadUnitService,
+  PickJob,
+} from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 
 jest.mock('shared', () => {
-  const actual = jest.requireActual('shared') as any;
+  const actual = jest.requireActual('shared') as Record<string, unknown>;
   return {
     ...actual,
     getCommercetoolsOrderById: jest.fn(),
@@ -17,7 +22,7 @@ import * as shared from 'shared';
 import { canUpdateOrder } from '../src/services/orderService';
 import { PickJobService } from '../src/services/pickJobService';
 
-const mockCTOrder = { id: 'ct-order-id', version: 1 } as any;
+const mockCTOrder = { id: 'ct-order-id', version: 1 } as unknown as Order;
 
 const mockPickJob = {
   id: 'pick-job-id',
@@ -25,15 +30,15 @@ const mockPickJob = {
   facilityRef: 'facility-ref',
   orderRef: 'fft-order-ref',
   customAttributes: { commercetoolsId: 'ct-order-id' },
-} as any;
+} as unknown as PickJob;
 
 describe('PickJobService', () => {
   let service: PickJobService;
-  let mockLoadUnitService: any;
+  let mockLoadUnitService: { findByPickJobRef: jest.Mock<(...args: unknown[]) => Promise<unknown>> };
 
   beforeEach(() => {
     mockLoadUnitService = { findByPickJobRef: jest.fn() };
-    service = new PickJobService(mockLoadUnitService as any);
+    service = new PickJobService(mockLoadUnitService as unknown as FftLoadUnitService);
     jest.mocked(shared.getCommercetoolsOrderById).mockResolvedValue(mockCTOrder);
     jest.mocked(shared.updateCommercetoolsOrder).mockResolvedValue(mockCTOrder);
     jest.mocked(canUpdateOrder).mockResolvedValue(true);
@@ -41,7 +46,7 @@ describe('PickJobService', () => {
 
   describe('pickJobCreated', () => {
     it('ignores a pick job with no commercetoolsId', async () => {
-      await service.pickJobCreated({ id: 'pj-1', orderRef: 'order-ref' } as any);
+      await service.pickJobCreated({ id: 'pj-1', orderRef: 'order-ref' } as unknown as PickJob);
       expect(shared.getCommercetoolsOrderById).not.toHaveBeenCalled();
     });
 
@@ -57,9 +62,9 @@ describe('PickJobService', () => {
       await service.pickJobCreated(mockPickJob);
 
       expect(shared.updateCommercetoolsOrder).toHaveBeenCalledWith('ct-order-id', expect.any(Object));
-      const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as any[])[1] as any;
+      const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
       expect(update.actions).toHaveLength(3);
-      expect(update.actions.map((a: any) => a.name)).toEqual(
+      expect(update.actions.map((a) => (a as { name?: string }).name)).toEqual(
         expect.arrayContaining(['fft_pickjob_id', 'fft_shortid', 'fft_facility_id'])
       );
     });
@@ -67,7 +72,7 @@ describe('PickJobService', () => {
 
   describe('pickJobFinished', () => {
     it('ignores a pick job with no commercetoolsId', async () => {
-      await service.pickJobFinished({ id: 'pj-1', orderRef: 'order-ref' } as any);
+      await service.pickJobFinished({ id: 'pj-1', orderRef: 'order-ref' } as unknown as PickJob);
       expect(shared.getCommercetoolsOrderById).not.toHaveBeenCalled();
     });
 
@@ -85,9 +90,9 @@ describe('PickJobService', () => {
       await service.pickJobFinished(mockPickJob);
 
       expect(shared.updateCommercetoolsOrder).toHaveBeenCalledWith('ct-order-id', expect.any(Object));
-      const update = (jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0] as any[])[1] as any;
-      expect(update.actions[0].name).toBe('fft_load_units_amount');
-      expect(update.actions[0].value).toBe(2);
+      const update = jest.mocked(shared.updateCommercetoolsOrder).mock.calls[0]![1] as OrderUpdate;
+      expect((update.actions[0]! as { name?: string }).name).toBe('fft_load_units_amount');
+      expect((update.actions[0]! as { value?: unknown }).value).toBe(2);
     });
 
     it('skips the update when no load units are found', async () => {

@@ -41,8 +41,7 @@ describe('ProjectService', () => {
     it('throws on a non-200 result in the try block', async () => {
       jest.mocked(clientModule.createApiRoot).mockReturnValue({
         get: () => ({ execute: async () => ({ statusCode: 503 }) }),
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any);
+      } as unknown as ReturnType<typeof clientModule.createApiRoot>);
       await expect(getProject()).rejects.toThrow(CustomError);
     });
   });
