@@ -25,8 +25,8 @@ const router = new EventRouter(fftApiClient);
 const app: Express = express();
 
 // Define configurations
-app.use(bodyParser.json({ limit: '1mb' }));
-app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
+app.use(bodyParser.json({ limit: '5mb' }));
+app.use(bodyParser.urlencoded({ limit: '5mb', extended: true }));
 app.disable('x-powered-by');
 
 // Define routes

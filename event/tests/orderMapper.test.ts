@@ -6,12 +6,15 @@ import {
   getTestOrderClickAndCollectNoChannels,
   getTestOrderClickAndCollectWithCustomField,
   getTestOrderClickAndCollectWithMultipleChannels,
+  getTestOrderWithAttributes,
+  getTestOrderWithBillingAddress,
   getTestOrderWithCustomField,
   getTestOrderWithDHL,
+  getTestOrderWithFullAddress,
   getTestOrderWithoutOrderNumber,
   getTestOrderWithStore,
 } from '../src/order/testModels';
-import { FftFacilityService } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
+import { AddressPhoneNumbers, AddressType, FftFacilityService } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 import { StoreService } from 'shared';
 import { server } from 'shared';
 import { getTestClient } from 'shared';
@@ -111,5 +114,38 @@ describe('OrderMapper', () => {
     const commercetoolsOrder = getTestOrderClickAndCollectWithCustomField();
     const fulfillmenttoolsOrder = await orderMapper.mapOrder(commercetoolsOrder);
     expect(fulfillmenttoolsOrder.deliveryPreferences?.collect?.[0].facilityRef).toEqual('store_hamburg_fft_id');
+  });
+
+  it('maps billing address as INVOICEADDRESS', async () => {
+    const order = getTestOrderWithBillingAddress();
+    const mapped = await orderMapper.mapOrder(order);
+    expect(mapped.consumer.addresses).toHaveLength(2);
+    const billing = mapped.consumer.addresses.find((a) => a.addressType === AddressType.INVOICEADDRESS);
+    expect(billing).toBeDefined();
+    expect(billing?.city).toEqual('Munich');
+  });
+
+  it('maps address fields email, state, mobile, and phone', async () => {
+    const order = getTestOrderWithFullAddress();
+    const mapped = await orderMapper.mapOrder(order);
+    const addr = mapped.consumer.addresses[0];
+    expect(addr.email).toEqual('addr@example.com');
+    expect(addr.province).toEqual('Bavaria');
+    expect(addr.phoneNumbers).toHaveLength(2);
+    expect(addr.phoneNumbers?.[0].type).toEqual(AddressPhoneNumbers.TypeEnum.MOBILE);
+    expect(addr.phoneNumbers?.[1].type).toEqual(AddressPhoneNumbers.TypeEnum.PHONE);
+  });
+
+  it('maps line item attributes of various types and filters empty/scannableCodes', async () => {
+    const order = getTestOrderWithAttributes();
+    const mapped = await orderMapper.mapOrder(order);
+    const attrs = mapped.orderLineItems[0].article.attributes ?? [];
+    expect(attrs.find((a) => a.key === 'stringAttr')?.value).toEqual('hello');
+    expect(attrs.find((a) => a.key === 'numAttr')?.value).toEqual('42');
+    expect(attrs.find((a) => a.key === 'boolAttr')?.value).toEqual('true');
+    expect(attrs.find((a) => a.key === 'labelAttr')?.value).toEqual('my label');
+    expect(attrs.find((a) => a.key === 'scannableCodes')).toBeUndefined();
+    expect(attrs.find((a) => a.key === 'emptyAttr')).toBeUndefined();
+    expect(attrs.find((a) => a.key === 'nullAttr')).toBeUndefined();
   });
 });

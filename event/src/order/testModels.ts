@@ -258,6 +258,58 @@ export function getTestOrderWithStore() {
   return mapTemplateToOrder(template);
 }
 
+export function getTestOrderWithBillingAddress(): CommercetoolsOrder {
+  return {
+    ...mapTemplateToOrder(commercetoolsOrderTemplate),
+    billingAddress: {
+      firstName: 'Bill',
+      lastName: 'Payer',
+      streetName: 'Invoice St',
+      streetNumber: '5',
+      postalCode: '80331',
+      city: 'Munich',
+      country: 'DE',
+    },
+  };
+}
+
+export function getTestOrderWithFullAddress(): CommercetoolsOrder {
+  return {
+    ...mapTemplateToOrder(commercetoolsOrderTemplate),
+    shippingAddress: {
+      ...shippingAddress,
+      email: 'addr@example.com',
+      state: 'Bavaria',
+      mobile: '0160111222',
+      phone: '022111222',
+    },
+  };
+}
+
+export function getTestOrderWithAttributes(): CommercetoolsOrder {
+  const lineItemWithAttrs: LineItem = {
+    ...lineItem,
+    variant: {
+      id: 1,
+      images: [],
+      sku: 'sku-attr-test',
+      attributes: [
+        { name: 'stringAttr', value: 'hello' },
+        { name: 'numAttr', value: 42 },
+        { name: 'boolAttr', value: true },
+        { name: 'nullAttr', value: null },
+        { name: 'labelAttr', value: { label: 'my label' } },
+        { name: 'scannableCodes', value: '123' },
+        { name: 'emptyAttr', value: '   ' },
+      ],
+    },
+  };
+  return {
+    ...mapTemplateToOrder(commercetoolsOrderTemplate),
+    lineItems: [lineItemWithAttrs],
+  };
+}
+
 function mapTemplateToOrder(template: CommercetoolsOrderTemplate): CommercetoolsOrder {
   return {
     anonymousId: template.anonymousId,

@@ -135,7 +135,73 @@ describe('ChannelService (event)', () => {
       expect(createFacilityMock).not.toHaveBeenCalled();
       expect(result).toEqual(updatedFacility);
     });
-  });
+
+    it('uses fallback values when address fields are empty strings', async () => {
+      server.use(
+        http.get(ctApi('/channels/:id'), () =>
+          HttpResponse.json({
+            id: 'ch-empty-fields',
+            version: 1,
+            key: 'channel_empty_fields',
+            roles: ['InventorySupply'],
+            createdAt: '',
+            lastModifiedAt: '',
+            address: {
+              streetName: '',
+              streetNumber: '',
+              postalCode: '',
+              city: '',
+              state: '',
+              country: '',
+            },
+          })
+        )
+      );
+      const createdFacility = { id: 'fft-fac-empty', tenantFacilityId: 'channel_empty_fields' };
+      getFacilityIdMock.mockImplementationOnce(() => Promise.resolve(undefined));
+      createFacilityMock.mockImplementationOnce(() => Promise.resolve(createdFacility));
+
+      const result = await channelService.upsertFacility('ch-empty-fields');
+      expect(result).toEqual(createdFacility);
+      expect(createFacilityMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          address: expect.objectContaining({
+            street: 'not set',
+            houseNumber: '0',
+            postalCode: '00000',
+            city: 'not set',
+            country: 'DE',
+          }),
+        })
+      );
+    });
+
+    it('uses DE as default country when project has no countries', async () => {
+      server.use(
+        http.get(ctApi(''), () =>
+          HttpResponse.json({
+            key: 'test-project',
+            name: 'Test Project',
+            countries: [],
+            currencies: ['EUR'],
+            languages: ['en-US'],
+            version: 1,
+          })
+        )
+      );
+      const createdFacility = { id: 'fft-fac-de', tenantFacilityId: 'channel_01' };
+      getFacilityIdMock.mockImplementationOnce(() => Promise.resolve(undefined));
+      createFacilityMock.mockImplementationOnce(() => Promise.resolve(createdFacility));
+
+      const result = await channelService.upsertFacility('f348e5c2-e2db-4cf3-b254-41220801d2c6');
+      expect(result).toEqual(createdFacility);
+      expect(createFacilityMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          address: expect.objectContaining({ country: 'DE' }),
+        })
+      );
+    });
+  });  // end upsertFacility
 
   describe('setFacilityOffline', () => {
     it('calls deleteFacility with the tenant facility id and soft-delete flag', async () => {
