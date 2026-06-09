@@ -28,6 +28,36 @@ describe('OrderProcessor', () => {
       await expect(firstPromise).resolves.not.toThrow();
     });
 
+    it('removes stale order locks that exceed the 60s expiration window', async () => {
+      jest.useFakeTimers();
+      jest.setSystemTime(new Date('2026-01-01T00:00:00.000Z'));
+
+      let releaseFirst!: () => void;
+      const findMock = jest.fn();
+      findMock
+        .mockImplementationOnce(
+          () => new Promise((resolve) => (releaseFirst = () => resolve({ id: 'fft-first', version: 1 })))
+        )
+        .mockImplementation(() => Promise.resolve({ id: 'fft-existing', version: 1 }));
+      const mockService = { findByTenantOrderId: findMock, create: jest.fn() } as unknown as FftOrderService;
+      const processor = new OrderProcessor(mockService, orderMapperMock);
+
+      // First call locks the order and hangs while loading from FFT.
+      const firstPromise = processor.processOrder('order-stale');
+
+      // Advance past the 60s lock expiration window.
+      jest.setSystemTime(new Date('2026-01-01T00:01:01.000Z'));
+
+      // Second call runs removeOldLocks(60), which deletes the now-stale lock,
+      // so re-locking the same order does not throw ResourceLockedError.
+      await expect(processor.processOrder('order-stale')).resolves.not.toThrow();
+
+      // Release the still-pending first call so it can settle.
+      releaseFirst();
+      await expect(firstPromise).resolves.not.toThrow();
+      jest.useRealTimers();
+    });
+
     it('skips mapping when the FFT order already exists', async () => {
       // FftOrderServiceMock hardcodes findByTenantOrderId to return undefined, so we use
       // the real FftOrderService here and let MSW return an existing order.

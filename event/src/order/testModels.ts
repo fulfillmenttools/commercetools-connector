@@ -67,6 +67,22 @@ const shippingMethodClickAndCollect: ShippingMethod = {
   active: true,
 };
 
+const shippingMethodUnknown: ShippingMethod = {
+  createdAt: '',
+  id: '',
+  isDefault: false,
+  lastModifiedAt: '',
+  name: 'Unknown',
+  taxCategory: {
+    typeId: 'tax-category',
+    id: '123',
+  },
+  version: 0,
+  zoneRates: [],
+  key: 'unknown_method',
+  active: true,
+};
+
 const price1: CentPrecisionMoney = { type: 'centPrecision', centAmount: 600, currencyCode: 'EUR', fractionDigits: 0 };
 const price2: CentPrecisionMoney = { type: 'centPrecision', centAmount: 0, currencyCode: 'EUR', fractionDigits: 0 };
 
@@ -92,6 +108,21 @@ const shippingInfoClickAndCollect: ShippingInfo = {
     typeId: 'shipping-method',
     id: '123',
     obj: shippingMethodClickAndCollect,
+  },
+  shippingMethodState: '',
+  shippingRate: {
+    price: price2,
+    tiers: [],
+  },
+};
+
+const shippingInfoUnknown: ShippingInfo = {
+  shippingMethodName: 'Unknown',
+  price: price2,
+  shippingMethod: {
+    typeId: 'shipping-method',
+    id: '999',
+    obj: shippingMethodUnknown,
   },
   shippingMethodState: '',
   shippingRate: {
@@ -216,6 +247,15 @@ export function getTestOrderClickAndCollect() {
   return mapTemplateToOrder(template);
 }
 
+export function getTestOrderUnknownServiceType() {
+  const template = commercetoolsOrderTemplate;
+  template.shippingInfo = shippingInfoUnknown;
+  template.lineItems = [lineItem];
+  template.store = undefined;
+  template.custom = undefined;
+  return mapTemplateToOrder(template);
+}
+
 export function getTestOrderClickAndCollectWithMultipleChannels() {
   const template = commercetoolsOrderTemplate;
   template.shippingInfo = shippingInfoClickAndCollect;
@@ -298,6 +338,7 @@ export function getTestOrderWithAttributes(): CommercetoolsOrder {
         { name: 'numAttr', value: 42 },
         { name: 'boolAttr', value: true },
         { name: 'nullAttr', value: null },
+        { name: 'bigintAttr', value: BigInt(7) },
         { name: 'labelAttr', value: { label: 'my label' } },
         { name: 'scannableCodes', value: '123' },
         { name: 'emptyAttr', value: '   ' },

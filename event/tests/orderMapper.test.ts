@@ -6,6 +6,7 @@ import {
   getTestOrderClickAndCollectNoChannels,
   getTestOrderClickAndCollectWithCustomField,
   getTestOrderClickAndCollectWithMultipleChannels,
+  getTestOrderUnknownServiceType,
   getTestOrderWithAttributes,
   getTestOrderWithBillingAddress,
   getTestOrderWithCustomField,
@@ -19,6 +20,16 @@ import { StoreService } from 'shared';
 import { server } from 'shared';
 import { getTestClient } from 'shared';
 import { AmbiguousChannelError } from 'shared';
+import {
+  CUSTOM_OBJECT_CONTAINER,
+  CUSTOM_OBJECT_KEY,
+  CUSTOM_TYPE_NAME,
+  ServiceType,
+  ctApi,
+  http,
+  HttpResponse,
+  mockCustomObject,
+} from 'shared';
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -147,5 +158,43 @@ describe('OrderMapper', () => {
     expect(attrs.find((a) => a.key === 'scannableCodes')).toBeUndefined();
     expect(attrs.find((a) => a.key === 'emptyAttr')).toBeUndefined();
     expect(attrs.find((a) => a.key === 'nullAttr')).toBeUndefined();
+    expect(attrs.find((a) => a.key === 'bigintAttr')).toBeUndefined();
+  });
+
+  it('falls back to plain shipping for a mapped service type that is neither SHIPPING nor CLICK_AND_COLLECT', async () => {
+    server.use(
+      http.get(ctApi(`/custom-objects/${CUSTOM_OBJECT_CONTAINER}/${CUSTOM_OBJECT_KEY}`), () =>
+        HttpResponse.json(
+          mockCustomObject({
+            value: {
+              orderCustomTypeKey: CUSTOM_TYPE_NAME,
+              shippingMethodMapping: { unknown_method: { serviceType: 'SOME_OTHER_TYPE' } },
+            },
+          })
+        )
+      )
+    );
+    const commercetoolsOrder = getTestOrderUnknownServiceType();
+    const fulfillmenttoolsOrder = await orderMapper.mapOrder(commercetoolsOrder);
+    expect(fulfillmenttoolsOrder.deliveryPreferences?.collect).toBeUndefined();
+    expect(fulfillmenttoolsOrder.deliveryPreferences?.shipping?.preselectedFacilities).toEqual([]);
+  });
+
+  it('maps click and collect via line item channel when no collect channel reference field is configured', async () => {
+    server.use(
+      http.get(ctApi(`/custom-objects/${CUSTOM_OBJECT_CONTAINER}/${CUSTOM_OBJECT_KEY}`), () =>
+        HttpResponse.json(
+          mockCustomObject({
+            value: {
+              orderCustomTypeKey: CUSTOM_TYPE_NAME,
+              shippingMethodMapping: { cc: { serviceType: ServiceType.CLICK_AND_COLLECT } },
+            },
+          })
+        )
+      )
+    );
+    const commercetoolsOrder = getTestOrderClickAndCollect();
+    const fulfillmenttoolsOrder = await orderMapper.mapOrder(commercetoolsOrder);
+    expect(fulfillmenttoolsOrder.deliveryPreferences?.collect?.[0].facilityRef).toEqual('store_cologne_fft_id');
   });
 });
