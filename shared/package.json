@@ -49,6 +49,9 @@
     "typescript": "5.5.4",
     "typescript-eslint": "8.32.1"
   },
+  "overrides": {
+    "js-yaml": "^4.2.0"
+  },
   "dependencies": {
     "@commercetools-backend/loggers": "^27.0.0",
     "@commercetools/platform-sdk": "7.22.0",

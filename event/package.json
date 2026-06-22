@@ -59,6 +59,9 @@
     "typescript": "5.5.4",
     "typescript-eslint": "8.32.1"
   },
+  "overrides": {
+    "js-yaml": "^4.2.0"
+  },
   "dependencies": {
     "@commercetools/platform-sdk": "7.22.0",
     "@fulfillmenttools/fulfillmenttools-sdk-typescript": "0.3.4",
