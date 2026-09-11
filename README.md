@@ -1,4 +1,4 @@
-# fulfillmenttools Connector
+# fulfillmenttools connector
 
 <p align="center">
   <a href="https://fulfillmenttools.com/">
@@ -22,23 +22,23 @@ These are [Connect applications](https://marketplace.commercetools.com/) built i
 
 ## 🔁 Functionality
 
-The fulfillmenttools Connect app is a certified integration connector that can be used to exchange information between your _commercetools_ project and your _fulfillmenttools_ project. While fully customizable it is very easy to setup and deploy so you can start fulfilling orders from you e-commerce system without a complicated integration process. It is available in the commercetools Connect [Marketplace](https://docs.commercetools.com/merchant-center/connect).
+The fulfillmenttools Connect app is a certified integration connector that can be used to exchange information between your commercetools project and your fulfillmenttools project. While fully customizable it's very easy to setup and deploy so you can start fulfilling orders from you eCommerce system without a complicated integration process. It's available in the [commercetools Connect marketplace](https://docs.commercetools.com/merchant-center/connect).
 
 ### 🛒 Orders
 
-The connector makes use of commercetools [subscriptions](https://docs.commercetools.com/api/projects/subscriptions) to get notified once the [OrderState](https://docs.commercetools.com/api/projects/orders#orderstate) of an Order is changed to `Confirmed`.
-At this state the order information is read and a new order is [created](https://fulfillmenttools.github.io/fulfillmenttools-api-reference-ui/#post-/api/orders) in the fulfillmenttools platform.
+The connector makes use of [commercetools subscriptions](https://docs.commercetools.com/api/projects/subscriptions) to get notified once the [OrderState](https://docs.commercetools.com/api/projects/orders#orderstate) of an Order is changed to `Confirmed`.
+At this state the order information is read and a new order is [created](https://fulfillmenttools.github.io/fulfillmenttools-api-reference-ui/#post-/api/orders) in fulfillmenttools.
 
 <img alt="ct order" src="./.github/images/ct-order-to-fft.png">
 
-Depending on the shipping method of the commercetools order, either a Ship-from-Store order or a Click&Collect order is created in fulfillmenttools.
+Depending on the shipping method of the commercetools order, either a ship-from-store order or a click-and-collect order is created in fulfillmenttools.
 
-The fulfillmenttools distributed order management system (DOMS) will process the new order and (based on its configuration) route the order to the best fulfillment location. Then the actual fulfillment process of picking, packing, and shipping can be executed in the selected location.
+fulfillmenttools will process the new order and (based on its configuration) route the order to the best fulfillment location. Then the actual fulfillment process of picking, packing, and shipping can be executed in the selected location.
 
-### 📦 Fulfillment Status
+### 📦 Fulfillment status
 
-As a result of the order routing process, a pick job will be created in the fulfillmenttools platform.
-During the life time of the pick job (picking started, finished) and the corresponding handover job (created, handed over) the platform will send out events with status updates.
+As a result of the order routing process, a pick job will be created in fulfillmenttools.
+During the lifecycle of the pick job (picking started, finished) and the corresponding handover job (created, handed over) fulfillmenttools will send out events with status updates.
 This information is processed by the connector to update custom fields and ultimately the [ShipmentState](https://docs.commercetools.com/api/projects/orders#shipmentstate) of the commercetools order.
 
 <img alt="fft status" src="./.github/images/fft-status-to-ct.png">
@@ -57,31 +57,31 @@ See the section on [customization](#⚙️-commercetools-customization) below fo
 
 ### Channels
 
-The connector also synchronizes information from commercetools [Channels](https://docs.commercetools.com/api/projects/channels) to create or update a fulfillmenttools [Facility](https://fulfillmenttools.github.io/fulfillmenttools-api-reference-ui/#post-/api/facilities). Please note that only Channels with the `InventorySupply` role are synchronized, other roles are ignored. The created fulfillmenttools Facility will be of type `STORE` and have the `SHIP_FROM_STORE` and `PICKUP` services enabled. In a future version of this connector, we will support Channel custom fields to configure the Facility type and services.
+The connector also synchronizes information from [commercetools channels](https://docs.commercetools.com/api/projects/channels) to create or update a fulfillmenttools [facility](https://fulfillmenttools.github.io/fulfillmenttools-api-reference-ui/#post-/api/facilities). Note that only channels with the `InventorySupply` role are synchronized, other roles are ignored. The created fulfillmenttools facility will be of type `STORE` and have the `SHIP_FROM_STORE` and `PICKUP` services enabled. In a future version of this connector, we will support channel custom fields to configure the facility type and services.
 
 <img alt="ct channel" src="./.github/images/ct-channel-to-fft.png">
 
-The Channel `key` is used as Facility `tenantFacilityId` to establish a relationship between the two entities.
-When the commercetools Channel has an address, it is used as the Facility's address, otherwise a default is used, because an address is mandatory for a fulfillmenttools Facility. In this case you may have to update/edit the Facility with the correct data, please see the [product documentation](https://docs.fulfillmenttools.com/documentation/products/core/facilities) for details.
+The channel `key` is used as facility `tenantFacilityId` to establish a relationship between the two entities.
+When the commercetools channel has an address, it's used as the facility's address, otherwise a default is used, because an address is mandatory for a fulfillmenttools facility. In this case, you may have to update/edit the facility with the correct data, see the [facility article in our documentation](https://docs.fulfillmenttools.com/documentation/getting-started/facilities) for details.
 
-When the commercetools Channel is deleted, the related fulfillmenttools Facility is NOT deleted but only set to `OFFLINE`. This is to prevent accidental deletion of operational data. You can still delete the Facility via the API or in the backoffice, should you wish to do so.
+When the commercetools channel is deleted, the related fulfillmenttools facility is not deleted but only set to `OFFLINE`. This is to prevent accidental deletion of operational data. You can still delete the facility via the API or in Backoffice.
 
-Currently, the synchronization between Channels and Facilities is in one direction only, i.e. changes made to a fulfillmenttools Facility will not be forwarded to related commercetools Channel.
+Currently, the synchronization between channels and facilities is in one direction only. Any changes made to a fulfillmenttools facility will not be forwarded to related commercetools channel.
 
 ## 🚀 Deployment
 
 ### 👉 Prerequisites
 
-1. commercetools Composable Commerce [account](https://commercetools.com/free-trial) and [API client](https://docs.commercetools.com/merchant-center/api-clients)
-1. fulfillmenttools [account](https://fulfillmenttools.com/en/request-free-trial/) and [API credentials](https://docs.fulfillmenttools.com/documentation/developer-docs/technical-basics/access-to-fulfillmenttools)
+1. [commercetools core commerce account](https://commercetools.com/free-trial) and [commercetools API client](https://docs.commercetools.com/merchant-center/api-clients)
+2. [fulfillmenttools account](https://www.fulfillmenttools.com/free-trial) and [API credentials](https://docs.fulfillmenttools.com/documentation/getting-started/access-to-fulfillmenttools-apis)
 
 ### Installing the connector
 
-While you can deploy the connector into your Composable Commerce project using the [Connect API](https://docs.commercetools.com/connect/deployments), the easiest way to deploy it is using the Merchant Center. In your project go to the Connect marketplace, select the fulfillmenttools Connector, click "Install" and follow the steps for deployment.
+While you can deploy the connector into your core commerce project using the [Connect API](https://docs.commercetools.com/connect/deployments), the easiest way to deploy it is using the Merchant Center. In your project go to the Connect marketplace, select the fulfillmenttools Connector, click **Install** and follow the steps for deployment.
 
 ### Uninstalling the connector
 
-Again, you can undeploy the connector from your project using the [Connect API](https://docs.commercetools.com/connect/deployments) or simply use the Merchant Center.
+You can undeploy the connector from your project using the [Connect API](https://docs.commercetools.com/connect/deployments) or use the Merchant Center.
 
 ## 👨‍💻 Development
 
@@ -121,11 +121,11 @@ When running the app in _development_ mode the `.env.local` file will be used (a
 
 To run the app in _production_ mode, you need to provide a `.env` file (but do not check this into the git repository).
 
-Do **not** check actual passwords etc. into the git repository!
+Do not check actual passwords into the git repository.
 
 ### 🕵️ Running unit tests
 
-When running unit tests the `.env.local` file will be used with dummy settings.
+When running unit tests the `.env.local` file will be used with placeholder settings.
 
 ```bash
 $ npm run test
@@ -161,17 +161,17 @@ For each commercetools project we need an [API client](https://docs.commercetool
 
 Use the received credentials to set `CTP_CLIENT_ID` and `CTP_CLIENT_SECRET` when deploying the app.
 
-### ⚙️ Commercetools customization
+### ⚙️ commercetools customization
 
-The connect apps use a Configuration [Custom Object](https://docs.commercetools.com/api/projects/custom-objects) identified by container `fft` and key `configuration` with the following settings:
+The connect apps use a configuration [custom object](https://docs.commercetools.com/api/projects/custom-objects) identified by container `fft` and key `configuration` with the following settings:
 
 | Setting                            | Description                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                             |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `collectChannelReferenceFieldName` | Name of custom field in a commercetools [Order](https://docs.commercetools.com/api/projects/orders) that holds the key of a channel that should be used for a Click&Collect order. This field can freely be defined by the customer. When the fulfillmenttools connect app receives a commercetools Order it checks if this custom field is present. If so, the value of the field is used to identify the fulfillmenttools [Facility](https://docs.fulfillmenttools.com/documentation/apps/backoffice/network-view/facilities) for a C&C order. |
-| `orderCustomTypeKey`               | Name of the commercetools [Custom Type](https://docs.commercetools.com/api/projects/types) that is used for the Orders. This can freely be chosen by the customer. When the fulfillmenttools connect app receives a commercetools Order it checks if it already has this type. Additional [Custom Fields](https://docs.commercetools.com/api/projects/custom-fields) are then added to this type and filled with information from the fulfillmenttools process.                                                                         |
-| `shippingMethodMapping`            | This is a map where the key is the `key` of a commercetools [Shipping Method](https://docs.commercetools.com/api/projects/shippingMethods). For each shipping method you want to use in your commercetools project you have to define a mapping. The value object of the mapping is used to select the [Delivery Preferences](https://docs.fulfillmenttools.com/documentation/developer-docs/more-integration-guides/place-your-first-order/ship-from-store-orders) of the fulfillmenttools Order.                                                                                                     |
+| `collectChannelReferenceFieldName` | Name of custom field in a commercetools [Order](https://docs.commercetools.com/api/projects/orders) that holds the key of a channel that should be used for a click-and-collect order. You can define this field as you wish. When the fulfillmenttools connect app receives a commercetools order, it checks if this custom field is present. If so, the value of the field is used to identify the fulfillmenttools [facility](https://docs.fulfillmenttools.com/documentation/apps/backoffice/network-view/facilities) for a click-and-collect order. |
+| `orderCustomTypeKey`               | Name of the commercetools [custom type](https://docs.commercetools.com/api/projects/types) that is used for the orders. This can freely be chosen by the customer. When the fulfillmenttools connect app receives a commercetools order it checks if it already has this type. Additional [custom fields](https://docs.commercetools.com/api/projects/custom-fields) are then added to this type and filled with information from the fulfillmenttools process.                                                                         |
+| `shippingMethodMapping`            | This is a map where the key is the `key` of a commercetools [shipping method](https://docs.commercetools.com/api/projects/shippingMethods). For each shipping method you want to use in your commercetools project you have to define a mapping. The value object of the mapping is used to select the [delivery preferences](https://docs.fulfillmenttools.com/documentation/developer-docs/more-integration-guides/place-your-first-order/ship-from-store-orders) of the fulfillmenttools order.                                                                                                     |
 
-Here's an example of the configuration object. The shipping method with key `dhl` is mapped to the `DHL_V2` carrier. The shipping method with key `cc` designates a Click&Collect order. In commercetools the shipping methods keys can be freely defined while the fulfillmenttools carrier keys are fixed by the platform:
+Here's an example of the configuration object. The shipping method with key `dhl` is mapped to the `DHL_V2` carrier. The shipping method with key `cc` designates a click-and-collect order. In commercetools the shipping methods keys can be freely defined while the fulfillmenttools carrier keys are fixed:
 
 ```json
 {
@@ -195,7 +195,7 @@ Here's an example of the configuration object. The shipping method with key `dhl
 }
 ```
 
-The following Order [Custom Fields](https://docs.commercetools.com/api/projects/custom-fields#customfields) are used by the connect apps and the configured custom [Type](https://docs.commercetools.com/api/projects/types) is automatically extended with these fields:
+The following order [custom fields](https://docs.commercetools.com/api/projects/custom-fields#customfields) are used by the connect apps and the configured [custom type](https://docs.commercetools.com/api/projects/types) is automatically extended with these fields:
 
 - `fft_order_id`
 - `fft_pickjob_id`
@@ -213,9 +213,9 @@ This is automatically done by the `connector:post-deploy` script which is invok
 
 This is automatically done by the `connector:post-deploy` script which is invoked after the app has been deployed into a commercetools environment.
 
-### ❌ Deactivate Event/Service
+### ❌ Deactivate events/services
 
-By default, all three events/services are activated (order sync, facility sync and status updates). However, you can deactivate each one individually by setting the corresponding value to `false` when installing the connector.
+By default, all three events/services are activated (order sync, facility sync, and status updates). However, you can deactivate each one individually by setting the corresponding value to `false` when installing the connector.
 
 | VAR                         | Description                                                               |
 | --------------------------- | ------------------------------------------------------------------------- |
@@ -226,10 +226,10 @@ By default, all three events/services are activated (order sync, facility sync a
 ## 🏰 Architecture principles for building a commercetools Connect application
 
 - Connector solution should be lightweight in nature
-- Connector solutions should follow test driven development. Unit , Integration (& E2E) tests should be included and successfully passed to be used
+- Connector solutions should follow test driven development. Unit, integration, and E2E tests should be included and successfully passed to be used
 - No hardcoding of customer related config. If needed, values in an environment file which should not be maintained in repository
 - Connector solution should be supported with detailed documentation
-- Connectors should be point to point in nature, currently doesnt support any persistence capabilities apart from in memory persistence
+- Connectors should be point to point in nature, currently doesn't support any persistence capabilities apart from in memory persistence
 - Connector solution should use open source technologies, although connector itself can be private for specific customer(s)
 - Code should not contain `console.log` statements, use [the included logger](https://github.com/commercetools/merchant-center-application-kit/tree/main/packages-backend/loggers#readme) instead.
 
@@ -239,8 +239,8 @@ All code in this repository is licensed under the [MIT license](https://github.c
 
 ## 🙌 Contributing
 
-We'd love to have your helping hand on this ecosystem! Please see [CONTRIBUTING.md](./CONTRIBUTING.md) for more information on our guidelines.
+We'd love to have your help on this ecosystem. See [the Contributing file](./CONTRIBUTING.md) for more information on our guidelines.
 
 ## :blue_heart: Thanks
 
-Thanks for all your contributions and efforts towards improving the fulfillmenttools commercetools Connect app. We thank you for being part of our :sparkles: community :sparkles:!
+Thanks for all your contributions and efforts towards improving the fulfillmenttools commercetools Connect app. And thanks for being part of our :sparkles: community :sparkles:!
