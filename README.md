@@ -59,7 +59,7 @@ See the section on [customization](#⚙️-commercetools-customization) below fo
 
 The connector also synchronizes information from [commercetools channels](https://docs.commercetools.com/api/projects/channels) to create or update a fulfillmenttools [facility](https://fulfillmenttools.github.io/fulfillmenttools-api-reference-ui/#post-/api/facilities). Note that only channels with the `InventorySupply` role are synchronized, other roles are ignored. The created fulfillmenttools facility will be of type `STORE` and have the `SHIP_FROM_STORE` and `PICKUP` services enabled. In a future version of this connector, we will support channel custom fields to configure the facility type and services.
 
-<img alt="ct channel" src="./.github/images/ct-channel-to-fft.png">
+<img alt="ct channel" src="./.github/images/commercetools sends channel.png">
 
 The channel `key` is used as facility `tenantFacilityId` to establish a relationship between the two entities.
 When the commercetools channel has an address, it's used as the facility's address, otherwise a default is used, because an address is mandatory for a fulfillmenttools facility. In this case, you may have to update/edit the facility with the correct data, see the [facility article in our documentation](https://docs.fulfillmenttools.com/documentation/getting-started/facilities) for details.
