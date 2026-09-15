@@ -2,7 +2,7 @@
 
 <p align="center">
   <a href="https://fulfillmenttools.com/">
-    <img alt="fulfillmenttools logo" src="./.github/images/fft-mach-alliance.svg">
+    <img alt="fulfillmenttools logo" src="./.github/images/fft_Logo_Claim_pos_RGB (1).png">
   </a></br>
 </p>
 
@@ -29,7 +29,7 @@ The fulfillmenttools Connect app is a certified integration connector that can b
 The connector makes use of [commercetools subscriptions](https://docs.commercetools.com/api/projects/subscriptions) to get notified once the [OrderState](https://docs.commercetools.com/api/projects/orders#orderstate) of an Order is changed to `Confirmed`.
 At this state the order information is read and a new order is [created](https://fulfillmenttools.github.io/fulfillmenttools-api-reference-ui/#post-/api/orders) in fulfillmenttools.
 
-<img alt="ct order" src="./.github/images/ct-order-to-fft.png">
+<img alt="ct order" src="./.github/images/commercetools sends order.png">
 
 Depending on the shipping method of the commercetools order, either a ship-from-store order or a click-and-collect order is created in fulfillmenttools.
 
@@ -41,7 +41,7 @@ As a result of the order routing process, a pick job will be created in fulfillm
 During the lifecycle of the pick job (picking started, finished) and the corresponding handover job (created, handed over) fulfillmenttools will send out events with status updates.
 This information is processed by the connector to update custom fields and ultimately the [ShipmentState](https://docs.commercetools.com/api/projects/orders#shipmentstate) of the commercetools order.
 
-<img alt="fft status" src="./.github/images/fft-status-to-ct.png">
+<img alt="fft status" src="./.github/images/fulfillmenttools sends fulfillment status.png">
 
 The following events are used to update the commercetools order:
 
