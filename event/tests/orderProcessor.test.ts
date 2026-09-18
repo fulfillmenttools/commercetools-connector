@@ -1,6 +1,15 @@
 import { afterAll, afterEach, beforeAll, describe, expect, it, jest } from '@jest/globals';
 import { FftOrderService, OrderStatus } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
-import { ResourceLockedError, FftOrderServiceMock, fftApi, ctApi, http, HttpResponse, server, getTestClient } from 'shared';
+import {
+  ResourceLockedError,
+  FftOrderServiceMock,
+  fftApi,
+  ctApi,
+  http,
+  HttpResponse,
+  server,
+  getTestClient,
+} from 'shared';
 import { OrderMapper } from '../src/order/orderMapper';
 import { OrderProcessor } from '../src/order/orderProcessor';
 
@@ -46,9 +55,7 @@ describe('OrderProcessor', () => {
 
     it('logs an error and continues when findByTenantOrderId throws', async () => {
       server.use(
-        http.get(ctApi('/orders/:id'), () =>
-          HttpResponse.json({ id: 'ct-any', version: 1, orderState: 'Cancelled' })
-        )
+        http.get(ctApi('/orders/:id'), () => HttpResponse.json({ id: 'ct-any', version: 1, orderState: 'Cancelled' }))
       );
       const findMock = jest.fn();
       findMock.mockImplementationOnce(() => Promise.reject(new Error('FFT down')));
@@ -58,11 +65,9 @@ describe('OrderProcessor', () => {
       await expect(processor.processOrder('ct-any')).resolves.not.toThrow();
     });
 
-    it('logs an error and continues when fftOrderService.create throws', async () => {
+    it('rethrows when fftOrderService.create throws, so the message is not acknowledged', async () => {
       server.use(
-        http.get(ctApi('/orders/:id'), () =>
-          HttpResponse.json({ id: 'ct-open', version: 1, orderState: 'Open' })
-        )
+        http.get(ctApi('/orders/:id'), () => HttpResponse.json({ id: 'ct-open', version: 1, orderState: 'Open' }))
       );
       const findMock = jest.fn();
       const createMock = jest.fn();
@@ -73,7 +78,49 @@ describe('OrderProcessor', () => {
       const mockService = { findByTenantOrderId: findMock, create: createMock } as unknown as FftOrderService;
       const processor = new OrderProcessor(mockService, mapperMock2);
 
-      await expect(processor.processOrder('ct-open')).resolves.not.toThrow();
+      await expect(processor.processOrder('ct-open')).rejects.toThrow('FFT create failed');
+    });
+
+    it('rethrows when the mapper throws, e.g. because a facility is missing in FFT', async () => {
+      server.use(
+        http.get(ctApi('/orders/:id'), () =>
+          HttpResponse.json({
+            id: 'ct-open',
+            version: 1,
+            orderState: 'Open',
+            store: { typeId: 'store', key: 'CHRIST-DE' },
+          })
+        )
+      );
+      const findMock = jest.fn();
+      const createMock = jest.fn();
+      const mapperMock2 = { mapOrder: jest.fn() } as unknown as OrderMapper;
+      findMock.mockImplementationOnce(() => Promise.resolve(undefined));
+      (mapperMock2.mapOrder as jest.Mock).mockImplementationOnce(() =>
+        Promise.reject(new Error("Did not find facility with tenantFacilityId '1000'"))
+      );
+      const mockService = { findByTenantOrderId: findMock, create: createMock } as unknown as FftOrderService;
+      const processor = new OrderProcessor(mockService, mapperMock2);
+
+      await expect(processor.processOrder('ct-open')).rejects.toThrow('Did not find facility');
+      expect(createMock).not.toHaveBeenCalled();
+    });
+
+    it('releases the order lock after a failure', async () => {
+      server.use(
+        http.get(ctApi('/orders/:id'), () => HttpResponse.json({ id: 'ct-open', version: 1, orderState: 'Open' }))
+      );
+      const mapperMock2 = { mapOrder: jest.fn() } as unknown as OrderMapper;
+      (mapperMock2.mapOrder as jest.Mock).mockImplementation(() => Promise.reject(new Error('nope')));
+      const mockService = {
+        findByTenantOrderId: jest.fn(() => Promise.resolve(undefined)),
+        create: jest.fn(),
+      } as unknown as FftOrderService;
+      const processor = new OrderProcessor(mockService, mapperMock2);
+
+      await expect(processor.processOrder('ct-open')).rejects.toThrow('nope');
+      // a retry must not be rejected with ResourceLockedError
+      await expect(processor.processOrder('ct-open')).rejects.toThrow('nope');
     });
 
     it('skips creating an FFT order when the CT order is already Cancelled', async () => {
@@ -175,9 +222,7 @@ describe('OrderProcessor', () => {
       const findMock = jest.fn();
       const cancelMock = jest.fn();
       findMock.mockImplementationOnce(() => Promise.resolve(openOrder));
-      cancelMock.mockImplementationOnce(() =>
-        Promise.reject({ status: 404, message: 'Not found', name: 'HttpError' })
-      );
+      cancelMock.mockImplementationOnce(() => Promise.reject({ status: 404, message: 'Not found', name: 'HttpError' }));
       const mockService = {
         findByTenantOrderId: findMock,
         cancel: cancelMock,

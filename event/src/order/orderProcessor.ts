@@ -1,4 +1,4 @@
-import { getCommercetoolsOrderById, isHttpError, logger, ResourceLockedError } from 'shared';
+import { formatError, getCommercetoolsOrderById, isHttpError, logger, ResourceLockedError } from 'shared';
 import { OrderMapper } from './orderMapper';
 import { FftOrderService, OrderStatus } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 import { isBefore, subSeconds } from 'date-fns';
@@ -19,7 +19,9 @@ export class OrderProcessor {
       try {
         fftOrder = await this.fftOrderService.findByTenantOrderId(orderNumber || orderId);
       } catch (e) {
-        logger.error(`Cannot load order ${orderNumber || orderId} from FFT: ${JSON.stringify(e)}`);
+        // Cannot tell "does not exist" from "lookup failed" here, so fall through
+        // and let the create attempt below decide.
+        logger.error(`Cannot load order '${orderNumber || orderId}' from FFT`, { error: formatError(e) });
       }
       if (fftOrder) {
         logger.info(`fulfillmenttools order for CT order '${orderId}' already exists => skip`);
@@ -30,11 +32,30 @@ export class OrderProcessor {
         logger.info(`CT order '${orderId}' is already cancelled => skip`);
         return;
       }
-      const fulfillmenttoolsOrder = await this.orderMapper.mapOrder(commercetoolsOrder);
+      let fulfillmenttoolsOrder;
       try {
-        await this.fftOrderService.create(fulfillmenttoolsOrder);
+        fulfillmenttoolsOrder = await this.orderMapper.mapOrder(commercetoolsOrder);
       } catch (e) {
-        logger.error(`Error trying to map order ${orderNumber || orderId}: ${JSON.stringify(e)}`);
+        logger.error(
+          `Could not map CT order '${orderId}' (orderNumber '${orderNumber ?? '-'}', store '${
+            commercetoolsOrder.store?.key ?? '-'
+          }') for fulfillmenttools`,
+          { error: formatError(e) }
+        );
+        throw e;
+      }
+
+      try {
+        const created = await this.fftOrderService.create(fulfillmenttoolsOrder);
+        logger.info(`Created fulfillmenttools order '${created?.id}' for CT order '${orderId}'`);
+      } catch (e) {
+        logger.error(
+          `Could not create fulfillmenttools order for CT order '${orderId}' (orderNumber '${orderNumber ?? '-'}')`,
+          { error: formatError(e) }
+        );
+        // Rethrow: swallowing this made the endpoint answer 201, so commercetools
+        // acknowledged the message and never retried - the order was lost silently.
+        throw e;
       }
     } finally {
       this.unlockOrder(orderId);

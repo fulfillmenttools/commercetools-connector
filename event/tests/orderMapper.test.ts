@@ -10,12 +10,16 @@ import {
   getTestOrderWithDHL,
   getTestOrderWithoutOrderNumber,
   getTestOrderWithStore,
+  getTestOrderWithLongCustomField,
+  getTestOrderWithUnmappableCustomField,
+  getTestOrderWithoutLineItems,
+  getTestOrderWithOnlyCustomLineItems,
 } from '../src/order/testModels';
 import { FftFacilityService } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
 import { StoreService } from 'shared';
 import { server } from 'shared';
 import { getTestClient } from 'shared';
-import { AmbiguousChannelError } from 'shared';
+import { AmbiguousChannelError, EmptyOrderError } from 'shared';
 
 beforeAll(() => server.listen());
 afterEach(() => server.resetHandlers());
@@ -73,6 +77,22 @@ describe('OrderMapper', () => {
     expect(fulfillmenttoolsOrder.tags?.[1].value).toEqual(commercetoolsOrder.custom?.fields['bar']);
   });
 
+  it('skips custom fields that cannot be a tag value instead of breaking the order', async () => {
+    const commercetoolsOrder = getTestOrderWithUnmappableCustomField();
+    const fulfillmenttoolsOrder = await orderMapper.mapOrder(commercetoolsOrder);
+    // 'foo' is an object, TagReference.value is a string - fft would answer 400 for the whole order
+    expect(fulfillmenttoolsOrder.tags).toEqual([{ id: 'tag_bar', value: '9' }]);
+  });
+
+  it('keeps long custom field values, the fft API defines no maximum for a tag value', async () => {
+    const commercetoolsOrder = getTestOrderWithLongCustomField();
+    const fulfillmenttoolsOrder = await orderMapper.mapOrder(commercetoolsOrder);
+    expect(fulfillmenttoolsOrder.tags).toEqual([
+      { id: 'tag_foo', value: 'x'.repeat(1200) },
+      { id: 'tag_bar', value: 'baz' },
+    ]);
+  });
+
   it('maps preselected facilities if a store is defined', async () => {
     const commercetoolsOrder = getTestOrderWithStore();
     const fulfillmenttoolsOrder = await orderMapper.mapOrder(commercetoolsOrder);
@@ -111,5 +131,20 @@ describe('OrderMapper', () => {
     const commercetoolsOrder = getTestOrderClickAndCollectWithCustomField();
     const fulfillmenttoolsOrder = await orderMapper.mapOrder(commercetoolsOrder);
     expect(fulfillmenttoolsOrder.deliveryPreferences?.collect?.[0].facilityRef).toEqual('store_hamburg_fft_id');
+  });
+
+  it('names customLineItems as the cause when the order carries its items that way', async () => {
+    const commercetoolsOrder = getTestOrderWithOnlyCustomLineItems();
+    await expect(orderMapper.mapOrder(commercetoolsOrder)).rejects.toThrow(EmptyOrderError);
+    await expect(orderMapper.mapOrder(commercetoolsOrder)).rejects.toThrow(
+      /carries its 1 item\(s\) as customLineItems, which this connector does not map/
+    );
+  });
+
+  it('says so plainly when the order has no items at all', async () => {
+    const commercetoolsOrder = getTestOrderWithoutLineItems();
+    await expect(orderMapper.mapOrder(commercetoolsOrder)).rejects.toThrow(
+      /has neither lineItems nor customLineItems/
+    );
   });
 });

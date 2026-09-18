@@ -10,6 +10,9 @@ export class CustomError extends Error {
   constructor(statusCode: number, message: string, errors?: ErrorItem[]) {
     super(message);
     Object.setPrototypeOf(this, CustomError.prototype);
+    // Without this every CustomError logs as `"name":"Error"`, which tells a
+    // reader nothing about which of them was thrown.
+    this.name = new.target.name;
     this.statusCode = statusCode;
     this.message = message;
     this.errors = errors;
