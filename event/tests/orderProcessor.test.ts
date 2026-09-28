@@ -88,7 +88,7 @@ describe('OrderProcessor', () => {
             id: 'ct-open',
             version: 1,
             orderState: 'Open',
-            store: { typeId: 'store', key: 'CHRIST-DE' },
+            store: { typeId: 'store', key: 'store_01' },
           })
         )
       );
