@@ -16,6 +16,7 @@
     "build-docker:local": "npm run build-docker -- -t $npm_package_config_docker_image_name",
     "build-docker:arm64": "docker buildx build -f Dockerfile ../ --load --platform linux/arm64 -t $npm_package_config_docker_image_name",
     "run-docker": "docker run -it --rm -p 8080:8080 --env-file=.env.local $npm_package_config_docker_image_name",
+    "debug:order": "ts-node --project scripts/tsconfig.json scripts/dumpOrderPayload.ts",
     "lint": "eslint .",
     "lint:fix": "eslint --fix .",
     "prettier": "prettier --write 'src/**/*.ts' 'tests/**/*.ts'",
@@ -60,7 +61,12 @@
     "typescript-eslint": "8.32.1"
   },
   "overrides": {
-    "js-yaml": "^4.2.0"
+    "brace-expansion@1": "^1.1.21",
+    "brace-expansion@2": "^2.1.7",
+    "brace-expansion@5": "^5.0.12",
+    "browserslist": "^4.29.0",
+    "js-yaml": "^4.3.2",
+    "shell-quote": "^1.10.0"
   },
   "dependencies": {
     "@commercetools/platform-sdk": "7.22.0",

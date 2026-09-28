@@ -1,0 +1,14 @@
+// Used only by `npm run debug:order`. The script deliberately lives outside ./src
+// so that it is never emitted into ./build and therefore never reaches the image.
+// Note: this file must NOT be named tsconfig.<name>.json in the package root -
+// eslint's `parserOptions.project` glob would pick it up and enable type-aware
+// linting for files that are not part of any project.
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "..",
+    "noEmit": true
+  },
+  "include": ["**/*.ts"],
+  "exclude": []
+}

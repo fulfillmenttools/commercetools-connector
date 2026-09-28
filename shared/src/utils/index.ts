@@ -3,3 +3,4 @@ export * from './configUtils';
 export * from './loggerUtils';
 export * from './fftOrderServiceMock';
 export * from './delay';
+export * from './errorUtils';

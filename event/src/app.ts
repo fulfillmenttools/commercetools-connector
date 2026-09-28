@@ -5,19 +5,13 @@ import express, { Express } from 'express';
 import bodyParser from 'body-parser';
 
 import { EventRouter } from './routes/eventRouter';
-import { readConfiguration, errorMiddleware, CustomError } from 'shared';
-import { FftApiClient } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
+import { readConfiguration, errorMiddleware, CustomError, createFftApiClient } from 'shared';
 
 // Read env variables
-const config = readConfiguration();
+readConfiguration();
 
-// setup FFT API client
-const fftApiClient = new FftApiClient(
-  config.fftProjectId || '',
-  config.fftApiUser || '',
-  config.fftApiPassword || '',
-  config.fftApiKey || ''
-);
+// setup FFT API client (logging is wired up inside the factory)
+const fftApiClient = createFftApiClient();
 
 const router = new EventRouter(fftApiClient);
 

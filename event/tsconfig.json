@@ -3,6 +3,7 @@
   "exclude": [
     "node_modules",
     "tmp",
+    "scripts",
     "**/*.spec.ts",
     "**/*.test.ts"
   ],
