@@ -123,6 +123,49 @@ describe('OrderProcessor', () => {
       await expect(processor.processOrder('ct-open')).rejects.toThrow('nope');
     });
 
+    it('expires a stale lock so a later retry is not rejected forever', async () => {
+      // A lock is only released in `finally`. Should a run ever be interrupted
+      // between locking and unlocking, the order must not stay locked for good.
+      // Only Date is faked here - faking the timers as well deadlocks the gate.
+      jest.useFakeTimers({
+        doNotFake: [
+          'setTimeout',
+          'clearTimeout',
+          'setInterval',
+          'clearInterval',
+          'setImmediate',
+          'clearImmediate',
+          'nextTick',
+          'queueMicrotask',
+        ],
+      });
+      try {
+        let openTheGate = () => {};
+        const gate = new Promise<void>((resolve) => {
+          openTheGate = resolve;
+        });
+        let call = 0;
+        const mockService = {
+          // the first run hangs while holding the lock, later ones return at once
+          findByTenantOrderId: jest.fn(() => (call++ === 0 ? gate.then(() => undefined) : Promise.resolve(undefined))),
+          create: jest.fn(),
+        } as unknown as FftOrderService;
+        const mapper = { mapOrder: jest.fn(() => Promise.resolve({})) } as unknown as OrderMapper;
+        const processor = new OrderProcessor(mockService, mapper);
+
+        const hanging = processor.processOrder('order-stale');
+        await expect(processor.processOrder('order-stale')).rejects.toThrow(ResourceLockedError);
+
+        jest.setSystemTime(new Date(Date.now() + 61_000));
+        await expect(processor.processOrder('order-stale')).resolves.not.toThrow();
+
+        openTheGate();
+        await hanging;
+      } finally {
+        jest.useRealTimers();
+      }
+    });
+
     it('skips creating an FFT order when the CT order is already Cancelled', async () => {
       server.use(
         http.get(fftApi('/orders'), () => HttpResponse.json({ total: 0, orders: [] })),

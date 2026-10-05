@@ -143,8 +143,157 @@ describe('OrderMapper', () => {
 
   it('says so plainly when the order has no items at all', async () => {
     const commercetoolsOrder = getTestOrderWithoutLineItems();
-    await expect(orderMapper.mapOrder(commercetoolsOrder)).rejects.toThrow(
-      /has neither lineItems nor customLineItems/
+    await expect(orderMapper.mapOrder(commercetoolsOrder)).rejects.toThrow(/has neither lineItems nor customLineItems/);
+  });
+});
+
+describe('OrderMapper address mapping', () => {
+  const orderMapper = new OrderMapper(new StoreService(), new FftFacilityService(getTestClient()));
+
+  it('maps the billing address as a second, invoice-typed address', async () => {
+    const commercetoolsOrder = {
+      ...getTestOrder(),
+      billingAddress: {
+        firstName: 'Erika',
+        lastName: 'Musterfrau',
+        streetName: 'Rechnungsweg',
+        streetNumber: '7',
+        postalCode: '50667',
+        city: 'Köln',
+        country: 'DE',
+      },
+    };
+
+    const { addresses } = (await orderMapper.mapOrder(commercetoolsOrder)).consumer;
+
+    expect(addresses).toHaveLength(2);
+    expect(addresses[0].addressType).toEqual('POSTAL_ADDRESS');
+    expect(addresses[1]).toEqual(
+      expect.objectContaining({
+        addressType: 'INVOICE_ADDRESS',
+        firstName: 'Erika',
+        street: 'Rechnungsweg',
+        houseNumber: '7',
+        city: 'Köln',
+      })
     );
+  });
+
+  it('maps mobile and landline into separate phone numbers and the state into province', async () => {
+    const base = getTestOrder();
+    const commercetoolsOrder = {
+      ...base,
+      shippingAddress: {
+        ...base.shippingAddress,
+        country: 'DE',
+        mobile: '+49 170 1234567',
+        phone: '+49 221 1234567',
+        state: 'NRW',
+        email: 'max.mustermann@fulfillmenttools.com',
+      },
+    };
+
+    const address = (await orderMapper.mapOrder(commercetoolsOrder)).consumer.addresses[0];
+
+    expect(address.province).toEqual('NRW');
+    expect(address.email).toEqual('max.mustermann@fulfillmenttools.com');
+    expect(address.phoneNumbers).toEqual([
+      { value: '+49 170 1234567', type: 'MOBILE' },
+      { value: '+49 221 1234567', type: 'PHONE' },
+    ]);
+  });
+
+  it('omits email, province and phone numbers when commercetools has none', async () => {
+    const commercetoolsOrder = {
+      ...getTestOrder(),
+      shippingAddress: { country: 'DE', city: 'Köln', postalCode: '50667', streetName: 'Hauptstr' },
+    };
+
+    const address = (await orderMapper.mapOrder(commercetoolsOrder)).consumer.addresses[0];
+
+    expect(address.email).toBeUndefined();
+    expect(address.province).toBeUndefined();
+    expect(address.phoneNumbers).toBeUndefined();
+  });
+
+  it('treats a blank email or state as absent', async () => {
+    const base = getTestOrder();
+    const commercetoolsOrder = {
+      ...base,
+      shippingAddress: { ...base.shippingAddress, country: 'DE', email: '   ', state: '' },
+    };
+
+    const address = (await orderMapper.mapOrder(commercetoolsOrder)).consumer.addresses[0];
+
+    expect(address.email).toBeUndefined();
+    expect(address.province).toBeUndefined();
+  });
+});
+
+describe('OrderMapper article attribute mapping', () => {
+  const orderMapper = new OrderMapper(new StoreService(), new FftFacilityService(getTestClient()));
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  async function attributesFor(attributes: { name: string; value: any }[]) {
+    const base = getTestOrder();
+    const order = {
+      ...base,
+      lineItems: [{ ...base.lineItems[0], variant: { ...base.lineItems[0].variant, attributes } }],
+    };
+    return (await orderMapper.mapOrder(order)).orderLineItems[0].article.attributes;
+  }
+
+  it('stringifies scalar values and categorises them as miscellaneous', async () => {
+    expect(
+      await attributesFor([
+        { name: 'ean', value: '4064721598983' },
+        { name: 'onlineOnly', value: false },
+        { name: 'ringSize', value: 50 },
+      ])
+    ).toEqual([
+      { key: 'ean', value: '4064721598983', category: 'miscellaneous' },
+      { key: 'onlineOnly', value: 'false', category: 'miscellaneous' },
+      { key: 'ringSize', value: '50', category: 'miscellaneous' },
+    ]);
+  });
+
+  it('picks a localized value, preferring English over German', async () => {
+    expect(await attributesFor([{ name: 'colour', value: { 'de-DE': 'weißgold', 'en-US': 'white gold' } }])).toEqual([
+      { key: 'colour', value: 'white gold', category: 'miscellaneous' },
+    ]);
+  });
+
+  it('falls back to German when no English locale is present', async () => {
+    expect(await attributesFor([{ name: 'colour', value: { 'de-DE': 'weißgold' } }])).toEqual([
+      { key: 'colour', value: 'weißgold', category: 'miscellaneous' },
+    ]);
+  });
+
+  it('unwraps the localized label of an enum-like value', async () => {
+    expect(
+      await attributesFor([{ name: 'availability', value: { key: 'OFFLINE', label: { 'de-DE': 'Nicht sichtbar' } } }])
+    ).toEqual([{ key: 'availability', value: 'Nicht sichtbar', category: 'miscellaneous' }]);
+  });
+
+  it('drops values that cannot be rendered, the fft API rejects empty attribute values', async () => {
+    expect(
+      await attributesFor([
+        // a money field, a reference and an empty list - none of them has a sensible string form
+        { name: 'strikePrice', value: { type: 'centPrecision', currencyCode: 'EUR', centAmount: 219900 } },
+        { name: 'details', value: { typeId: 'key-value-document', id: 'abc' } },
+        { name: 'summary', value: [] },
+        { name: 'missing', value: null },
+        { name: 'keep', value: 'kept' },
+      ])
+    ).toEqual([{ key: 'keep', value: 'kept', category: 'miscellaneous' }]);
+  });
+
+  it('never forwards scannableCodes as an attribute', async () => {
+    expect(
+      await attributesFor([
+        { name: 'scannableCodes', value: '4064721598983' },
+        { name: 'ean', value: '4064721598983' },
+      ])
+    ).toEqual([{ key: 'ean', value: '4064721598983', category: 'miscellaneous' }]);
   });
 });

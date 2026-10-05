@@ -91,9 +91,7 @@ describe('ChannelService (event)', () => {
 
       const result = await channelService.upsertFacility('ch-no-name');
       expect(result).toEqual(createdFacility);
-      expect(createFacilityMock).toHaveBeenCalledWith(
-        expect.objectContaining({ name: 'channel_no_name' })
-      );
+      expect(createFacilityMock).toHaveBeenCalledWith(expect.objectContaining({ name: 'channel_no_name' }));
     });
 
     it('uses default address values when channel has no address (mapAddress else-branch)', async () => {
@@ -122,6 +120,82 @@ describe('ChannelService (event)', () => {
       );
     });
 
+    it('fills in placeholders for the blank parts of a channel address', async () => {
+      server.use(
+        http.get(ctApi('/channels/:id'), () =>
+          HttpResponse.json({
+            id: 'ch-partial',
+            version: 1,
+            key: 'channel_partial',
+            roles: ['InventorySupply'],
+            createdAt: '',
+            lastModifiedAt: '',
+            // fft requires street, houseNumber, postalCode, city and country
+            address: { streetName: '  ', streetNumber: '', postalCode: '  ', city: '', country: '' },
+          })
+        )
+      );
+      getFacilityIdMock.mockImplementationOnce(() => Promise.resolve(undefined));
+      createFacilityMock.mockImplementationOnce(() =>
+        Promise.resolve({ id: 'f', tenantFacilityId: 'channel_partial' })
+      );
+
+      await channelService.upsertFacility('ch-partial');
+
+      expect(createFacilityMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          address: expect.objectContaining({
+            street: 'not set',
+            houseNumber: '0',
+            postalCode: '00000',
+            city: 'not set',
+            country: 'DE', // falls back to the project's first country
+            province: undefined,
+          }),
+        })
+      );
+    });
+
+    it('keeps a complete channel address and strips spaces from the postal code', async () => {
+      server.use(
+        http.get(ctApi('/channels/:id'), () =>
+          HttpResponse.json({
+            id: 'ch-full',
+            version: 1,
+            key: 'channel_full',
+            roles: ['InventorySupply'],
+            createdAt: '',
+            lastModifiedAt: '',
+            address: {
+              streetName: 'Schanzenstraße',
+              streetNumber: '30',
+              postalCode: '51 063',
+              city: 'Köln',
+              state: 'NRW',
+              country: 'DE',
+            },
+          })
+        )
+      );
+      getFacilityIdMock.mockImplementationOnce(() => Promise.resolve(undefined));
+      createFacilityMock.mockImplementationOnce(() => Promise.resolve({ id: 'f', tenantFacilityId: 'channel_full' }));
+
+      await channelService.upsertFacility('ch-full');
+
+      expect(createFacilityMock).toHaveBeenCalledWith(
+        expect.objectContaining({
+          address: expect.objectContaining({
+            street: 'Schanzenstraße',
+            houseNumber: '30',
+            postalCode: '51063',
+            city: 'Köln',
+            province: 'NRW',
+            country: 'DE',
+          }),
+        })
+      );
+    });
+
     it('updates the existing facility when one already exists in FFT', async () => {
       const updatedFacility = { id: 'existing-fac-id', tenantFacilityId: 'channel_01' };
       getFacilityIdMock.mockImplementationOnce(() => Promise.resolve('existing-fac-id'));
@@ -129,9 +203,12 @@ describe('ChannelService (event)', () => {
 
       const result = await channelService.upsertFacility('f348e5c2-e2db-4cf3-b254-41220801d2c6');
 
-      expect(updateFacilityMock).toHaveBeenCalledWith('existing-fac-id', expect.objectContaining({
-        tenantFacilityId: 'channel_01',
-      }));
+      expect(updateFacilityMock).toHaveBeenCalledWith(
+        'existing-fac-id',
+        expect.objectContaining({
+          tenantFacilityId: 'channel_01',
+        })
+      );
       expect(createFacilityMock).not.toHaveBeenCalled();
       expect(result).toEqual(updatedFacility);
     });

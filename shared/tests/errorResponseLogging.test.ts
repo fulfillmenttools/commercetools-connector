@@ -66,6 +66,61 @@ describe('installFftErrorResponseLogging', () => {
     expect(errorLog).not.toHaveBeenCalled();
   });
 
+  it('accepts a URL object as input', async () => {
+    const errorLog = jest.spyOn(logger, 'error').mockImplementation(() => logger);
+    respondWith(new Response('{"detail":"nope"}', { status: 400, statusText: 'Bad Request' }));
+    installFftErrorResponseLogging();
+    await globalThis.fetch(new URL(FFT_URL), { method: 'POST' });
+    expect(errorLog).toHaveBeenCalledWith(expect.stringContaining('POST'), expect.anything());
+  });
+
+  it('takes the method from a Request object', async () => {
+    const errorLog = jest.spyOn(logger, 'error').mockImplementation(() => logger);
+    respondWith(new Response('{"detail":"nope"}', { status: 400, statusText: 'Bad Request' }));
+    installFftErrorResponseLogging();
+    await globalThis.fetch(new Request(FFT_URL, { method: 'PATCH' }));
+    expect(errorLog).toHaveBeenCalledWith(expect.stringContaining('PATCH'), expect.anything());
+  });
+
+  it('stays silent when the url cannot be parsed', async () => {
+    const errorLog = jest.spyOn(logger, 'error').mockImplementation(() => logger);
+    respondWith(new Response('nope', { status: 400 }));
+    installFftErrorResponseLogging();
+    await globalThis.fetch('not-a-url');
+    expect(errorLog).not.toHaveBeenCalled();
+  });
+
+  it('never breaks the request when the body cannot be read', async () => {
+    const warnLog = jest.spyOn(logger, 'warn').mockImplementation(() => logger);
+    const unreadable = {
+      ok: false,
+      status: 500,
+      statusText: 'Internal Server Error',
+      clone: () => {
+        throw new Error('body already consumed');
+      },
+    } as unknown as Response;
+    respondWith(unreadable);
+    installFftErrorResponseLogging();
+
+    await expect(globalThis.fetch(FFT_URL)).resolves.toBe(unreadable);
+    expect(warnLog).toHaveBeenCalledWith(expect.stringContaining('Could not read body'), expect.anything());
+  });
+
+  it('does not install itself when there is no global fetch', () => {
+    const warnLog = jest.spyOn(logger, 'warn').mockImplementation(() => logger);
+    const original = globalThis.fetch;
+    // @ts-expect-error deliberately removing fetch for this test
+    delete globalThis.fetch;
+    try {
+      installFftErrorResponseLogging();
+      expect(globalThis.fetch).toBeUndefined();
+      expect(warnLog).toHaveBeenCalledWith(expect.stringContaining('Global fetch is not available'));
+    } finally {
+      globalThis.fetch = original;
+    }
+  });
+
   it('wraps fetch only once', () => {
     const fetchMock = respondWith(new Response('{}'));
     installFftErrorResponseLogging();
