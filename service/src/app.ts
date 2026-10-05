@@ -5,19 +5,13 @@ import express, { Express } from 'express';
 import bodyParser from 'body-parser';
 
 import { ServiceRouter } from './routes/serviceRouter';
-import { readConfiguration, errorMiddleware, CustomError } from 'shared';
-import { FftApiClient } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
+import { readConfiguration, errorMiddleware, CustomError, createFftApiClient } from 'shared';
 
 // Read env variables
 const config = readConfiguration();
 
-// setup FFT API client
-const fftApiClient = new FftApiClient(
-  config.fftProjectId || '',
-  config.fftApiUser || '',
-  config.fftApiPassword || '',
-  config.fftApiKey || ''
-);
+// setup FFT API client (logging is wired up inside the factory)
+const fftApiClient = createFftApiClient();
 
 const router = new ServiceRouter(fftApiClient);
 
@@ -30,7 +24,8 @@ app.use(bodyParser.urlencoded({ limit: '1mb', extended: true }));
 app.disable('x-powered-by');
 
 // Define routes
-if (config.featStatusupdatesActive.toLowerCase() === "false") { // FeatureFlag: Disables the Status Updates from fft to ct
+if (config.featStatusupdatesActive.toLowerCase() === 'false') {
+  // FeatureFlag: Disables the Status Updates from fft to ct
   app.use('*', () => {
     throw new CustomError(200, 'Service updates deactivated.');
   });

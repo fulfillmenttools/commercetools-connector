@@ -13,7 +13,15 @@ import {
   PreselectedFacility,
   TagReference,
 } from '@fulfillmenttools/fulfillmenttools-sdk-typescript';
-import { AmbiguousChannelError, Configuration, ServiceType, StoreService, getConfiguration, logger } from 'shared';
+import {
+  AmbiguousChannelError,
+  Configuration,
+  EmptyOrderError,
+  ServiceType,
+  StoreService,
+  getConfiguration,
+  logger,
+} from 'shared';
 import ArticleAttributeItemCategory = ArticleAttributeItem.CategoryEnum;
 
 function isValidString(input: unknown): boolean {
@@ -28,11 +36,26 @@ export class OrderMapper {
 
   public async mapOrder(commercetoolsOrder: CommercetoolsOrder): Promise<FulfillmenttoolsOrder> {
     const configuration = await getConfiguration();
+    const orderLineItems = this.mapOrderLineItems(commercetoolsOrder);
+    if (orderLineItems.length === 0) {
+      // fulfillmenttools rejects such an order with a bare 400 ("Please provide
+      // at least one orderLineItem or custom service.") that names neither the
+      // order nor the reason. Fail here instead, and say which case it is.
+      const customLineItemCount = commercetoolsOrder.customLineItems?.length ?? 0;
+      const cause =
+        customLineItemCount > 0
+          ? `it carries its ${customLineItemCount} item(s) as customLineItems, which this connector does not map`
+          : 'it has neither lineItems nor customLineItems';
+      throw new EmptyOrderError(
+        `CT order '${commercetoolsOrder.id}' cannot be synced to fulfillmenttools: ${cause}. ` +
+          `A fulfillmenttools order needs at least one orderLineItem.`
+      );
+    }
     const order: FulfillmenttoolsOrder = {
       tenantOrderId: commercetoolsOrder.orderNumber || commercetoolsOrder.id,
       consumer: this.mapConsumer(commercetoolsOrder),
       orderDate: new Date(commercetoolsOrder.createdAt),
-      orderLineItems: this.mapOrderLineItems(commercetoolsOrder),
+      orderLineItems,
       customAttributes: {
         commercetoolsId: commercetoolsOrder.id,
       },
@@ -260,14 +283,37 @@ export class OrderMapper {
     }
     if (configuration?.customFieldTagMapping) {
       for (const fieldName of Object.keys(configuration.customFieldTagMapping)) {
-        if (commercetoolsOrder.custom?.fields[fieldName]) {
+        const value = this.mapTagValue(commercetoolsOrder, fieldName);
+        if (value !== undefined) {
           tags.push({
             id: configuration.customFieldTagMapping[fieldName],
-            value: commercetoolsOrder.custom?.fields[fieldName],
+            value,
           });
         }
       }
     }
     return tags;
+  }
+
+  /**
+   * `TagReference.value` is a string in the fft API, so an object-valued custom
+   * field can never be a valid tag value - and it takes the whole order down
+   * with a 400. Skip what cannot work instead, and say so in the log.
+   *
+   * Length is deliberately not checked: the fft API defines no maximum for tag
+   * values, so a long value can be perfectly valid and must not be dropped.
+   */
+  private mapTagValue(commercetoolsOrder: CommercetoolsOrder, fieldName: string): string | undefined {
+    const value = commercetoolsOrder.custom?.fields[fieldName];
+    if (!value) {
+      return undefined;
+    }
+    if (typeof value === 'object') {
+      logger.warn(
+        `Custom field '${fieldName}' of CT order '${commercetoolsOrder.id}' is not a scalar value and cannot be mapped to a tag`
+      );
+      return undefined;
+    }
+    return String(value);
   }
 }

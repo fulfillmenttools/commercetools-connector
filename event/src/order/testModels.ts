@@ -252,6 +252,59 @@ export function getTestOrderWithCustomField() {
   return mapTemplateToOrder(template);
 }
 
+export function getTestOrderWithUnmappableCustomField() {
+  const template = commercetoolsOrderTemplate;
+  template.custom = {
+    type: { id: CUSTOM_TYPE_NAME, typeId: 'type' },
+    // a money field, as CT writes it, next to a numeric counter
+    fields: {
+      foo: { type: 'centPrecision', currencyCode: 'EUR', centAmount: 219900, fractionDigits: 2 },
+      bar: 9,
+    },
+  };
+  return mapTemplateToOrder(template);
+}
+
+export function getTestOrderWithLongCustomField() {
+  const template = commercetoolsOrderTemplate;
+  template.custom = {
+    type: { id: CUSTOM_TYPE_NAME, typeId: 'type' },
+    // the fft API defines no maximum length for a tag value, so this one is valid
+    fields: { foo: 'x'.repeat(1200), bar: 'baz' },
+  };
+  return mapTemplateToOrder(template);
+}
+
+const customLineItem: CustomLineItem = {
+  id: 'customLineItemId',
+  name: { 'de-DE': 'Sonderanfertigung Regal' },
+  money: { type: 'centPrecision', currencyCode: 'EUR', centAmount: 4999, fractionDigits: 2 },
+  totalPrice: { type: 'centPrecision', currencyCode: 'EUR', centAmount: 4999, fractionDigits: 2 },
+  slug: 'sonderanfertigung-regal',
+  quantity: 1,
+  priceMode: 'Standard',
+  discountedPricePerQuantity: [],
+  taxedPricePortions: [],
+  perMethodTaxRate: [],
+  state: [],
+};
+
+export function getTestOrderWithOnlyCustomLineItems() {
+  // deliberately a copy: the other helpers mutate the shared template
+  const template: CommercetoolsOrderTemplate = {
+    ...commercetoolsOrderTemplate,
+    lineItems: [],
+    customLineItems: [customLineItem],
+  };
+  return mapTemplateToOrder(template);
+}
+
+export function getTestOrderWithoutLineItems() {
+  // deliberately a copy: the other helpers mutate the shared template
+  const template: CommercetoolsOrderTemplate = { ...commercetoolsOrderTemplate, lineItems: [] };
+  return mapTemplateToOrder(template);
+}
+
 export function getTestOrderWithStore() {
   const template = commercetoolsOrderTemplate;
   template.store = { typeId: 'store', key: 'store_01' };

@@ -17,7 +17,8 @@ module.exports = {
     'src/**/*.ts',
     '!src/mocks/**',
     '!src/types/**',
-    '!src/fulfillmenttools/**',
+    // only the test helper is excluded; the rest of this folder is production code
+    '!src/fulfillmenttools/testClient.ts',
     '!src/**/*.d.ts',
     '!src/index.ts',
     '!src/**/index.ts',

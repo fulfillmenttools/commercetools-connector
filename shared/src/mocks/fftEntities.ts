@@ -31,11 +31,11 @@ export function mockFftShipment(initialValue = {}) {
     "created": "2025-12-02T10:05:24.991Z",
     "hasActiveCarrier": true,
     "sourceAddress": {
-      "city": "Göttingen",
+      "city": "Musterstadt",
       "country": "DE",
-      "postalCode": "37073",
-      "street": "Kornmarkt",
-      "companyName": "CHRIST - Göttingen - Kornmarkt",
+      "postalCode": "12345",
+      "street": "Musterstraße",
+      "companyName": "Example Retail - Musterstadt",
       "houseNumber": "1",
       "resolvedTimeZone": {
         "offsetInSeconds": 3600,
@@ -84,9 +84,9 @@ export function mockFftShipment(initialValue = {}) {
       {
         "id": "019ade86-2677-73f8-b5a7-460629010eb3",
         "article": {
-          "tenantArticleId": "87774317",
-          "title": "CHRIST Damenring 87774317",
-          "imageUrl": "https://assets.chrimg.com/image/christ/40001036/40001036/product_md_extend02/40001036.jpg",
+          "tenantArticleId": "4711",
+          "title": "Example Ring 4711",
+          "imageUrl": "https://example.com/images/4711.jpg",
           "attributes": [
             {
               "key": "Warengruppe",
@@ -97,7 +97,7 @@ export function mockFftShipment(initialValue = {}) {
             },
             {
               "key": "Hersteller",
-              "value": "CHRIST",
+              "value": "Example Brand",
               "type": "STRING",
               "category": "descriptive",
               "priority": 400
@@ -120,7 +120,7 @@ export function mockFftShipment(initialValue = {}) {
         "quantity": 1,
         "measurementUnitKey": null,
         "scannableCodes": [
-          "87774317"
+          "4711"
         ],
         "customAttributes": {
           "commercetoolsId": "92c31b0a-3212-4a7d-ab2b-c6d1a78a297b"
