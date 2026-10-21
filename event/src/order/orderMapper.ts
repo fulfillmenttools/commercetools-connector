@@ -1,4 +1,4 @@
-import { Address, Order as CommercetoolsOrder } from '@commercetools/platform-sdk';
+import { Address, Order as CommercetoolsOrder, LineItem } from '@commercetools/platform-sdk';
 import {
   AddressPhoneNumbers,
   AddressType,
@@ -23,6 +23,8 @@ import {
   logger,
 } from 'shared';
 import ArticleAttributeItemCategory = ArticleAttributeItem.CategoryEnum;
+
+const MAX_ARTICLE_ATTRIBUTES = 40;
 
 function isValidString(input: unknown): boolean {
   return typeof input === 'string' && input.trim().length > 0;
@@ -173,23 +175,35 @@ export class OrderMapper {
       }
     }
 
+    function mapArticleAttributes(lineItem: LineItem): OrderArticleAttributeItem[]  {
+      const attributes = lineItem.variant?.attributes
+        ?.filter((item) => item.name != 'scannableCodes')
+        .map(
+          (attr) =>
+            ({
+              key: attr.name,
+              value: mapAttributeValue(attr.value),
+              category: ArticleAttributeItemCategory.Miscellaneous,
+            }) as OrderArticleAttributeItem
+        )
+        .filter((attr) => attr.value.trim().length > 0);
+      if (attributes && attributes.length > MAX_ARTICLE_ATTRIBUTES) {
+        logger.warn(
+          `Line item '${lineItem.id}' of CT order '${commercetoolsOrder.id}' has ${attributes.length} attributes; ` +
+            `fulfillmenttools allows ${MAX_ARTICLE_ATTRIBUTES}, so ${attributes.length - MAX_ARTICLE_ATTRIBUTES} will not be mapped`
+        );
+        return attributes.slice(0, MAX_ARTICLE_ATTRIBUTES);
+      }
+      return attributes as OrderArticleAttributeItem[];
+    }
+
     return commercetoolsOrder.lineItems.map((lineItem) => {
       const orderLineItemForCreation: OrderLineItemForCreation = {
         article: {
           tenantArticleId: lineItem.variant?.sku || lineItem.productId,
           title: mapAttributeValue(lineItem.name),
           imageUrl: lineItem.variant?.images?.[0]?.url,
-          attributes: lineItem.variant?.attributes
-            ?.filter((item) => item.name != 'scannableCodes')
-            .map(
-              (attr) =>
-                ({
-                  key: attr.name,
-                  value: mapAttributeValue(attr.value),
-                  category: ArticleAttributeItemCategory.Miscellaneous,
-                }) as OrderArticleAttributeItem
-            )
-            .filter((attr) => attr.value.trim().length > 0),
+          attributes: mapArticleAttributes(lineItem),
         },
         quantity: lineItem.quantity,
         shopPrice: lineItem.price?.value?.centAmount / 10 ** lineItem.price?.value?.fractionDigits,

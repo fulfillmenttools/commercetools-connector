@@ -296,4 +296,18 @@ describe('OrderMapper article attribute mapping', () => {
       ])
     ).toEqual([{ key: 'ean', value: '4064721598983', category: 'miscellaneous' }]);
   });
+
+  it('keeps at most 40 attributes, the fft API rejects more', async () => {
+    const many = Array.from({ length: 45 }, (_, i) => ({ name: `attr${i}`, value: `v${i}` }));
+    const result = await attributesFor(many);
+    expect(result).toHaveLength(40);
+    expect(result?.[0].key).toBe('attr0');
+    expect(result?.[39].key).toBe('attr39');
+  });
+
+  it('does not let unmappable values use up the 40 slots', async () => {
+    const empty = Array.from({ length: 10 }, (_, i) => ({ name: `empty${i}`, value: null }));
+    const valid = Array.from({ length: 40 }, (_, i) => ({ name: `attr${i}`, value: `v${i}` }));
+    expect(await attributesFor([...empty, ...valid])).toHaveLength(40);
+  });
 });
